@@ -79,7 +79,7 @@ public class AccountTypeController {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
-	// exception for Id not Found ..
+	// exception for Id not Found 
 	@ExceptionHandler(IdNotFoundException.class)
 	public ResponseEntity<String> userNotFound(IdNotFoundException e) {
 

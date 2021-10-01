@@ -21,4 +21,12 @@ public interface AccountTypeSevice {
 
 	public AccountType getAccountByAccountNo(String accountNo);
 
+	public List<AccountType> viewCustomerById(Long customerId);
+
+	public AccountType isAccountTypeExists(String mobileNo,String email,String type);
+	
+	public String updateAccountStatus(String accountStatus,String accountNo);
+	
+	public List<AccountType> getCustomersByIFSC(String ifscCode);
+	
 }

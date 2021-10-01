@@ -22,9 +22,13 @@ public interface EmployeeDAO {
 
 	public boolean isEmployeeExistsByEmail(String email);// to add account
 
-	public String updatePassword(String mobileNo, String password);// updation of password
+	public String updatePassword(String mobileNo, String password,String newPassword);// updation of password
 
 	public Employee getEmployeeByMobileNo(String mobileNo);// to update password needs number
 
+	public Employee getEmployeeByEmail(String email);
+
+	public String forgetPassword(String email,String password);
+	
 	public Employee validateEmployeeLogin(String mobileNo, String password);
 }

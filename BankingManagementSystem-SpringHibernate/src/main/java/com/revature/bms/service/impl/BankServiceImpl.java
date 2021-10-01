@@ -10,8 +10,8 @@ import com.revature.bms.dto.BankDto;
 import com.revature.bms.entity.Bank;
 import com.revature.bms.exception.DuplicateException;
 import com.revature.bms.exception.IdNotFoundException;
+import com.revature.bms.mapper.BankMapper;
 import com.revature.bms.service.BankService;
-import com.revature.bms.util.BankMapper;
 
 @Service
 public class BankServiceImpl implements BankService {

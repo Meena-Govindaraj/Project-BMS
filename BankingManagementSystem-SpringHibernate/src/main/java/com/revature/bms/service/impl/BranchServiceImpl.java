@@ -2,8 +2,11 @@ package com.revature.bms.service.impl;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.revature.bms.dao.BankDAO;
 import com.revature.bms.dao.BranchDAO;
 import com.revature.bms.dto.BranchDto;
@@ -11,11 +14,13 @@ import com.revature.bms.entity.Branch;
 import com.revature.bms.exception.DuplicateException;
 import com.revature.bms.exception.IdNotFoundException;
 import com.revature.bms.exception.InvalidInputException;
+import com.revature.bms.mapper.BranchMapper;
 import com.revature.bms.service.BranchService;
-import com.revature.bms.util.BranchMapper;
 
 @Service
 public class BranchServiceImpl implements BranchService {
+
+	private static final Logger logger = LogManager.getLogger(BranchService.class.getName());
 
 	@Autowired
 	BranchDAO branchDAO;
@@ -25,6 +30,8 @@ public class BranchServiceImpl implements BranchService {
 
 	@Override
 	public String addBranch(BranchDto branchDto) {
+
+		logger.debug(" Add Branch called in Service");
 
 		if (branchDto != null) {
 
@@ -44,12 +51,16 @@ public class BranchServiceImpl implements BranchService {
 	@Override
 	public List<Branch> viewAllBranch() {
 
+		logger.debug("View AllBranch Called in Service.... ");
+
 		List<Branch> branches = branchDAO.viewAllBranch();
 		return (branches != null) ? branches : null;
 	}
 
 	@Override
 	public String deleteBranch(Long branchId) {
+
+		logger.debug("Delete Branch Called in Service.... ");
 
 		if (branchDAO.isBranchExists(branchId))
 			throw new IdNotFoundException("Branch Id:" + branchId + " Not Found to Delete!");
@@ -65,6 +76,8 @@ public class BranchServiceImpl implements BranchService {
 
 	@Override
 	public String updateBranch(BranchDto branchDto) {
+
+		logger.debug("Update Branch Called in Service.... ");
 
 		if (branchDto != null) {
 
@@ -86,26 +99,35 @@ public class BranchServiceImpl implements BranchService {
 	@Override
 	public Branch viewBranchById(Long branchId) {
 
-		if (branchDAO.isBranchExists(branchId))
-			throw new IdNotFoundException("Branch Id:" + branchId + " Not Found !");
-		else
-			return branchDAO.viewBranchById(branchId);
+		logger.debug("View BranchById Called in Service.... ");
+
+		return branchDAO.viewBranchById(branchId);
 
 	}
 
 	@Override
 	public boolean isBranchExistsBYCode(String ifscCode) {
 
+		logger.debug("Is Branch Exists Called in Service.... ");
+
 		return branchDAO.isBranchExistsBYCode(ifscCode);
 	}
 
 	@Override
 	public Branch getBranchByIfscCode(String ifscCode) {
-		if (branchDAO.isBranchExistsBYCode(ifscCode))
-			throw new IdNotFoundException("ifscCode:" + ifscCode + " Not Found !");
-		else
+
+		logger.debug("View Branch By IFSC Called in Service.... ");
+
 		return branchDAO.getBranchByIfscCode(ifscCode);
 
+	}
+
+	@Override
+	public Branch viewBranchByName(String branchName) {
+
+		logger.debug("View BranchBy Name Called in Service.... ");
+
+		return branchDAO.viewBranchByName(branchName);
 	}
 
 }

@@ -19,13 +19,15 @@ public class CustomerDto {
 
 	private String password;
 
-	private Date dateOfBirth;
+	private Integer age;
 
 	private String email;
 
 	private Date createdDate;
 
 	private Date updatedDate;
-
+	
+	private String state;
+	
 	private Branch branch;
 }

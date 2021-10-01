@@ -1,4 +1,4 @@
-package com.revature.bms.util;
+package com.revature.bms.mapper;
 
 import com.revature.bms.dto.EmployeeDto;
 import com.revature.bms.entity.Employee;

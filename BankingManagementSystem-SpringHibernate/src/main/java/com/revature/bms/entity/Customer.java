@@ -42,40 +42,42 @@ public class Customer {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "mobileno", nullable = false, unique = false)
+	@Column(name = "mobile_no", nullable = false, unique = false)
 	private String mobileNo;
 
 	@Column(name = "password", nullable = false)
 	private String password;
 
-	@Temporal(TemporalType.DATE)
-	@Column(name = "date_of_birth", nullable = false)
-	private Date dateOfBirth;
+	@Column(name = "age", nullable = false)
+	private Integer age;
 
 	@Column(name = "email", nullable = false, unique = false)
 	private String email;
 
+	@Column(name = "state")
+	private String state;
+	
 	@Temporal(TemporalType.DATE)
-	@Column(name = "createddate")
+	@Column(name = "created_date")
 	private Date createdDate;
 
 	@Temporal(TemporalType.DATE)
-	@Column(name = "updateddate")
+	@Column(name = "updated_date")
 	private Date updatedDate;
 
 	@ManyToOne
-	@JoinColumn(name = "branchid", foreignKey = @ForeignKey(name = "FK_CUSTOMER_BRANCHID"))
+	@JoinColumn(name = "branch_id", foreignKey = @ForeignKey(name = "FK_CUSTOMER_BRANCHID"))
 	private Branch branch;
 
 	// for cascade delete
 	@JsonIgnore
 	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<AccountType> accountType;
-
+	
 	@Override
 	public String toString() {
 		return "Customer [id=" + id + ", name=" + name + ", mobileNo=" + mobileNo + ", password=" + password
-				+ ", dateOfBirth=" + dateOfBirth + ", email=" + email + ", createdDate=" + createdDate
+				+ ", age=" + age + ", email=" + email + ", createdDate=" + createdDate
 				+ ", updatedDate=" + updatedDate + "]";
 	}
 

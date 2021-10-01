@@ -1,4 +1,4 @@
-package com.revature.bms.util;
+package com.revature.bms.mapper;
 
 import com.revature.bms.dto.AccountTypeDto;
 import com.revature.bms.entity.AccountType;
@@ -13,6 +13,7 @@ public class AccountTypeMapper {
 		AccountType at = new AccountType();
 		at.setId(accountTypeDto.getId());
 		at.setType(accountTypeDto.getType());
+		at.setAccountStatus(accountTypeDto.getAccountStatus());
 		at.setAccountNo(accountTypeDto.getAccountNo());
 		at.setCustomer(accountTypeDto.getCustomer());
 

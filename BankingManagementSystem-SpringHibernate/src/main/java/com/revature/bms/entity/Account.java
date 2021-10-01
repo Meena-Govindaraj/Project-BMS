@@ -12,9 +12,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,40 +24,44 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "bms_accounttype")
+@Table(name = "bms_account")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Component
-public class AccountType {
+
+@NamedNativeQuery(
+	    name = "callBankTransfer",
+	    query = "CALL tranferBank(:sender,:reciever,:amount)",
+	    resultClass =Account.class
+	    )
+
+public class Account {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "type_id")
+	@Column(name = "account_id")
 	private Long id;
 
-	@Column(name = "account_type", nullable = false)
-	private String type;
+	@Column(name = "balance")
+	private Long balance;
 
-	@Column(name = "account_no", nullable = false)
-	private String accountNo;
-
-	@Column(name = "account_status", nullable = false)
-	private String accountStatus;
+	@Column(name = "transaction_pin")
+	private String transactionPIN;
 
 	@ManyToOne
-	@JoinColumn(name = "customer_id", foreignKey = @ForeignKey(name = "FK_CUSTOMER_BRANCHID"))
-	private Customer customer;
+	@JoinColumn(name = "type_id", foreignKey = @ForeignKey(name = "FK_ACCOUNT_TYPEID"))
+	private AccountType accountType;
 
 	// for cascade delete
 	@JsonIgnore
-	@OneToMany(mappedBy = "accountType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Account> account;
+	@OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<TransactionDetails> transaction;
 
 	@Override
 	public String toString() {
-		return "AccountTypeDto [id=" + id + ", type=" + type + ", accountNo=" + accountNo + ", accountStatus="
-				+ accountStatus + "]";
+		return "Account [id=" + id + ", balance=" + balance + ", transactionPIN=" + transactionPIN + "]";
 	}
 
+	
 }

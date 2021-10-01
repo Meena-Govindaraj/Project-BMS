@@ -28,5 +28,13 @@ public interface CustomerService {
 	public Customer validateCustomerLogin(String mobileNo, String password);
 
 	public Customer getCustomerByMobileNo(String mobileNo);
+	
+	public Customer getCustomerByEmail(String email);
+
+	public List<Customer> getCustomersByIFSC(String ifscCode);
+	
+	public String forgetPassword(String email);
+	
+
 
 }

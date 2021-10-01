@@ -1,11 +1,14 @@
 package com.revature.bms.dao.impl;
 
 import org.hibernate.Transaction;
+import static com.revature.bms.util.BankingManagementConstants.*;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.revature.bms.dao.BranchDAO;
 import com.revature.bms.entity.Branch;
+import com.revature.bms.exception.DatabaseException;
+
 import org.hibernate.SessionFactory;
 import java.util.Date;
 import java.util.List;
@@ -25,8 +28,8 @@ public class BranchDAOImpl implements BranchDAO {
 	@Override
 	public String addBranch(Branch branch) {
 
-		System.out.println("Add Branch Called in Dao.... ");
-		logger.info("Entering Add Branch Function");
+		logger.debug(" Add Branch called in DAO");
+
 		try (Session session = sessionFactory.openSession()) {
 			Transaction transaction = session.beginTransaction();
 			branch.setCreatedDate(new Date());
@@ -35,13 +38,16 @@ public class BranchDAOImpl implements BranchDAO {
 			Long branchId = branch.getId();
 
 			return branch.getName() + " added successfully with Branch Id: " + branchId;
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_INSERT);
 		}
+
 	}
 
 	@Override
 	public List<Branch> viewAllBranch() {
 
-		System.out.println("viewAllBranch Called in Dao.... ");
+		logger.debug("View AllBranch Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
@@ -49,13 +55,15 @@ public class BranchDAOImpl implements BranchDAO {
 			List<Branch> branches = query.list();
 
 			return (branches.isEmpty() ? null : branches);
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
 
 	@Override
 	public String deleteBranch(Long branchId) {
 
-		System.out.println("deleteBranch Called in Dao.... ");
+		logger.debug("Delete Branch Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
@@ -66,6 +74,8 @@ public class BranchDAOImpl implements BranchDAO {
 			transaction.commit();
 
 			return " Branch Id:" + branchId + ", Branch deleted successfully!";
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_DELETE);
 		}
 
 	}
@@ -73,13 +83,15 @@ public class BranchDAOImpl implements BranchDAO {
 	@Override
 	public boolean isBranchExists(Long branchId) {
 
+		logger.debug("Is Branch Exists Called in Dao.... ");
+
 		try (Session session = sessionFactory.openSession()) {
 
 			Query<Branch> query = session.createQuery("from com.revature.bms.entity.Branch where id=" + branchId);
 
-			// System.err.println(query.list());
-
 			return query.list().isEmpty();
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
 	}
@@ -87,7 +99,7 @@ public class BranchDAOImpl implements BranchDAO {
 	@Override
 	public String updateBranch(Branch branch) {
 
-		System.out.println("update Branch Called in Dao.... ");
+		logger.debug("Update Branch Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 			Transaction transaction = session.beginTransaction();
@@ -96,6 +108,8 @@ public class BranchDAOImpl implements BranchDAO {
 			Long branchId = branch.getId();
 
 			return "Branch Updated successfully with Branch Id: " + branchId;
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
 
 	}
@@ -103,17 +117,20 @@ public class BranchDAOImpl implements BranchDAO {
 	@Override
 	public Branch viewBranchById(Long branchId) {
 
-		System.out.println("viewBranchById Called in Dao.... ");
+		logger.debug("View BranchById Called in Dao.... ");
+		
 		try (Session session = sessionFactory.openSession()) {
 
 			return session.get(Branch.class, branchId);
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
 
 	@Override
 	public boolean isBranchExistsBYCode(String ifscCode) {
 
-		System.out.println("viewBranchById Called in Dao.... ");
+		logger.debug("View BranchById Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
@@ -122,12 +139,16 @@ public class BranchDAOImpl implements BranchDAO {
 
 			return query.list().isEmpty();
 
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
 	}
 
 	@Override
 	public Branch getBranchByIfscCode(String ifscCode) {
+
+		logger.debug("View Branch By IFSC Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
@@ -136,6 +157,25 @@ public class BranchDAOImpl implements BranchDAO {
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
+		}
+	}
+
+	@Override
+	public Branch viewBranchByName(String branchName) {
+
+		logger.debug("View BranchBy Name Called in Dao.... ");
+
+		try (Session session = sessionFactory.openSession()) {
+
+			List<Branch> resultList = session.createQuery("select b from Branch b where b.name=?1")
+					.setParameter(1, branchName).getResultList();
+
+			return (resultList.isEmpty() ? null : resultList.get(0));
+
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package com.revature.bms.util;
+package com.revature.bms.mapper;
 
 import com.revature.bms.dto.CustomerDto;
 import com.revature.bms.entity.Customer;
@@ -14,7 +14,8 @@ public class CustomerMapper {
 		customer.setName(customerDto.getName());
 		customer.setMobileNo(customerDto.getMobileNo());
 		customer.setPassword(customerDto.getPassword());
-		customer.setDateOfBirth(customerDto.getDateOfBirth());
+		customer.setState(customerDto.getState());
+		customer.setAge(customerDto.getAge());
 		customer.setEmail(customerDto.getEmail());
 		customer.setCreatedDate(customerDto.getCreatedDate());
 		customer.setUpdatedDate(customerDto.getUpdatedDate());

@@ -1,9 +1,12 @@
 package com.revature.bms.service.impl;
 
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.revature.bms.controller.MailSend;
 import com.revature.bms.dao.BranchDAO;
 import com.revature.bms.dao.EmployeeDAO;
 import com.revature.bms.dto.EmployeeDto;
@@ -12,8 +15,8 @@ import com.revature.bms.entity.Employee;
 import com.revature.bms.exception.DuplicateException;
 import com.revature.bms.exception.IdNotFoundException;
 import com.revature.bms.exception.InvalidInputException;
+import com.revature.bms.mapper.EmployeeMapper;
 import com.revature.bms.service.*;
-import com.revature.bms.util.EmployeeMapper;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -24,7 +27,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private BranchDAO branchDAO;
 
-	@Override
+		@Override
 	public String addEmployee(EmployeeDto employeeDto) {
 
 		if (employeeDto != null && employeeDto.getBranch() != null) {
@@ -40,7 +43,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 				// dto to entity..
 				Employee employee = EmployeeMapper.dtoToEntity(employeeDto);
-				System.out.println(employee);
+				employee.setPassword(generatePassword());
+				
+				String password=employee.getPassword();
+				MailSend.sendMail(employee.getEmail(),"Employee Account" , "Welcome! "+employee.getName()
+									+"\n Thanks For joining with us \n Registered Mobile No: "+employee.getMobileNo()
+									+"Password: "+password
+									+"You can Change Your password once Your logged in..Thank You ");
+				
+				
 				return employeeDAO.addEmployee(employee);
 			} else
 				throw new DuplicateException("Employee Mobile Number Or Email Already exists!!");
@@ -120,32 +131,56 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public String updatePassword(String mobileNo, String password) {
+	public String updatePassword(String mobileNo, String oldPassword,String newPassword) {
 
 		if (employeeDAO.isEmployeeExistsByMobileNo(mobileNo))
 			throw new IdNotFoundException("Employee Phone Number:" + mobileNo + " Not Found to Update Password!");
-		else
-			return employeeDAO.updatePassword(mobileNo, password);
+		else {
+			return employeeDAO.updatePassword(mobileNo,oldPassword, newPassword);
+		}
 	}
 
 	@Override
 	public Employee getEmployeeByMobileNo(String mobileNo) {
 
-		if (employeeDAO.isEmployeeExistsByMobileNo(mobileNo))
-			throw new IdNotFoundException("Employee Phone Number:" + mobileNo + " Not Found get details!");
 		return employeeDAO.getEmployeeByMobileNo(mobileNo);
 	}
 
 	@Override
 	public Employee validateEmployeeLogin(String mobileNo, String password) {
 
-		if (employeeDAO.isEmployeeExistsByMobileNo(mobileNo))
-			throw new IdNotFoundException("Invalid Phone No:" + mobileNo + " Not Found !");
-		Employee employee = employeeDAO.validateEmployeeLogin(mobileNo, password);
-		if (employee == null)
-			throw new InvalidInputException("Invalid Phone No or Password!");
-		else
-			return employee;
+		return employeeDAO.validateEmployeeLogin(mobileNo, password);
+	}
+
+	@Override
+	public String forgetPassword(String email) {
+	
+		if (employeeDAO.isEmployeeExistsByEmail(email))
+			throw new IdNotFoundException("Employee email:" + email + " Not Found to reset Password!");
+		
+		String password=generatePassword();
+		 MailSend.sendMail(email,"Reset Password" ,"Mail: "+email+"\nPassword:"+password);
+		
+			return employeeDAO.forgetPassword(email,password );		
+	}
+
+	@Override
+	public Employee getEmployeeByEmail(String email) {
+		
+		return employeeDAO.getEmployeeByEmail(email);
+	}
+
+	
+	public String generatePassword()
+	{
+		// It will generate 6 digit random Number.
+	    // from 0 to 999999
+	    Random rnd = new Random();
+	    int number = rnd.nextInt(999999);
+
+	    // this will convert any number sequence into 6 character.
+	    return String.format("%06d", number);
+
 	}
 
 }

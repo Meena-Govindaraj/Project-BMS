@@ -42,11 +42,18 @@ public class EmployeeController {
 
 	}
 
-	@PutMapping("updatePassword/{mobileNo}/{password}")
+	@PutMapping("updatePassword/{mobileNo}/{oldPassword}/{newPassaword}")
 	public ResponseEntity<String> updatePassword(@PathVariable("mobileNo") String mobileNo,
-			@PathVariable("password") String password) {
+			@PathVariable("oldPassword") String oldPassword, @PathVariable("newPassaword") String newPassaword) {
 
-		return new ResponseEntity<>(employeeService.updatePassword(mobileNo, password), HttpStatus.OK);
+		return new ResponseEntity<>(employeeService.updatePassword(mobileNo, oldPassword, newPassaword), HttpStatus.OK);
+
+	}
+
+	@PutMapping("forgetPassword/{email}")
+	public ResponseEntity<String> forgetPassword(@PathVariable("email") String email) {
+
+		return new ResponseEntity<>(employeeService.forgetPassword(email), HttpStatus.OK);
 
 	}
 
@@ -70,6 +77,21 @@ public class EmployeeController {
 
 	}
 
+	@GetMapping("getEmployeeByMobileNo/{mobileNo}")
+	public ResponseEntity<Employee> getEmployeeByMobileNo(@PathVariable("mobileNo") String mobileNo) {
+
+		return new ResponseEntity<>(employeeService.getEmployeeByMobileNo(mobileNo), HttpStatus.OK);
+
+	}
+
+	@GetMapping("getEmployeeByEmail/{email}")
+	public ResponseEntity<Employee> getEmployeeByEmail(@PathVariable("email") String email) {
+
+		return new ResponseEntity<>(employeeService.getEmployeeByEmail(email), HttpStatus.OK);
+
+	}
+
+	
 	@GetMapping("/employeeLogin/{mobileNo}/{password}")
 	public ResponseEntity<Employee> validateEmployeeLogin(@PathVariable("mobileNo") String mobileNo,
 			@PathVariable("password") String password) {

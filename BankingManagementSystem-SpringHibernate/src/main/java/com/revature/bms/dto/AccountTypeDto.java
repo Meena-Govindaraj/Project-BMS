@@ -16,6 +16,16 @@ public class AccountTypeDto {
 	private String type;
 
 	private String accountNo;
+	
+	private String accountStatus;
 
 	private Customer customer;
+	
+	@Override
+	public String toString() {
+		return "AccountTypeDto [id=" + id + ", type=" + type + ", accountNo=" + accountNo + ", accountStatus="
+				+ accountStatus + "]";
+	}
+
+
 }

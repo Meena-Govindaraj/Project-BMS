@@ -1,4 +1,4 @@
-package com.revature.bms.util;
+package com.revature.bms.mapper;
 
 import com.revature.bms.dto.BankDto;
 import com.revature.bms.entity.Bank;

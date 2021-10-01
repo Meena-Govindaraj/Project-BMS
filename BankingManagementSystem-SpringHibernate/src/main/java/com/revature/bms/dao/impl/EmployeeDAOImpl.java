@@ -29,6 +29,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		System.out.println("addEmployee Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
+		
 			Transaction transaction = session.beginTransaction();
 			employee.setCreatedDate(new Date());
 			employee.setUpdatedDate(new Date());
@@ -36,9 +37,11 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			transaction.commit();
 			Long employeeId = employee.getId();
 
+		
 			return employee.getName() + " added successfully with Employee Id: " + employeeId + " at " + localTime;
 		}
-	}
+		
+}
 
 	@Override
 	public String deleteEmployee(Long employeeId) {
@@ -136,14 +139,14 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	}
 
 	@Override
-	public String updatePassword(String mobileNo, String password) {
+	public String updatePassword(String mobileNo, String oldPassword,String newPassword) {
 
 		try (Session session = sessionFactory.openSession()) {
 
 			Transaction transaction = session.beginTransaction();
 
 			Employee employee = getEmployeeByMobileNo(mobileNo);
-			employee.setPassword(password);
+			employee.setPassword(newPassword);
 
 			session.update(employee);
 			transaction.commit();
@@ -176,4 +179,36 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		}
 	}
 
+	@Override
+	public String forgetPassword(String email,String password) {
+		
+		try (Session session = sessionFactory.openSession()) {
+
+			Transaction transaction = session.beginTransaction();
+
+			Employee employee=getEmployeeByEmail(email);
+			employee.setPassword(password);
+
+			session.update(employee);
+			
+			
+			transaction.commit();
+		}
+		return "Employee forget password reseted successfully!";
+	}
+
+	@Override
+	public Employee getEmployeeByEmail(String email) {
+		
+		try (Session session = sessionFactory.openSession()) {
+
+			List<Employee> resultList = session.createQuery("select e from Employee e where e.email=?1")
+					.setParameter(1, email).getResultList();
+
+			return (resultList.isEmpty() ? null : resultList.get(0));
+
+		}
+	}
+
+	
 }

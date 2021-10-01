@@ -25,8 +25,12 @@ public interface EmployeeService {
 
 	public Employee getEmployeeByMobileNo(String mobileNo);
 
-	public String updatePassword(String mobileNo, String password);
+	public String updatePassword(String mobileNo, String password,String newPassword);
 
 	public Employee validateEmployeeLogin(String mobileNo, String password);
+	
+	public String forgetPassword(String email);
+
+	public Employee getEmployeeByEmail(String email);
 
 }

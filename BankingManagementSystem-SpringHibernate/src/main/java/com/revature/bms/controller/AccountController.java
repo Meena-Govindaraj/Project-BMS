@@ -62,7 +62,7 @@ public class AccountController {
 
 		return new ResponseEntity<>(accountService.getAccountsByType(customerId, type), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("getaccountbyaccountno/{accountNo}")
 	public ResponseEntity<Account> getAccountByAccountNo(@PathVariable("accountNo") String accountNo) {
 
@@ -74,10 +74,10 @@ public class AccountController {
 			@PathVariable("receiverId") Long receiverId, @PathVariable("amount") Long amount) {
 		return new ResponseEntity<>(accountService.bankTransfer(senderId, receiverId, amount), HttpStatus.OK);
 	}
-	
 
 	@PutMapping("updatePassword/{typeId}/{newPassword}")
-	public ResponseEntity<String> updatePassword(@PathVariable("typeId") Long typeId, @PathVariable("newPassword") String newPassaword) {
+	public ResponseEntity<String> updatePassword(@PathVariable("typeId") Long typeId,
+			@PathVariable("newPassword") String newPassaword) {
 
 		return new ResponseEntity<>(accountService.updateTransactionPIN(typeId, newPassaword), HttpStatus.OK);
 

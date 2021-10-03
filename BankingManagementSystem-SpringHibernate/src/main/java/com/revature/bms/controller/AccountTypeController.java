@@ -33,12 +33,10 @@ public class AccountTypeController {
 
 	@PostMapping
 	public ResponseEntity<String> addAccountType(@RequestBody AccountTypeDto accountTypeDto) {
-
 		System.out.println(accountTypeDto);
 		return new ResponseEntity<>(accountTypeSevice.addAccountType(accountTypeDto), HttpStatus.OK);
-
 	}
-	
+
 	@DeleteMapping("/{typeId}")
 	public ResponseEntity<String> deleteAccountType(@PathVariable("typeId") Long typeId) {
 
@@ -59,7 +57,6 @@ public class AccountTypeController {
 		return new ResponseEntity<>(accountTypeSevice.viewAllAccount(), HttpStatus.OK);
 	}
 
-	
 	@GetMapping("getByAccountNumber/{accountNo}")
 	public ResponseEntity<AccountType> viewAccountByAccountNumber(@PathVariable("accountNo") String accountNo) {
 
@@ -71,33 +68,33 @@ public class AccountTypeController {
 	public ResponseEntity<String> updateAccountType(@RequestBody AccountTypeDto accountTypeDto) {
 		return new ResponseEntity<>(accountTypeSevice.updateAccountType(accountTypeDto), HttpStatus.OK);
 	}
-	
-	
+
 	@PutMapping("updateAccountStatus/{accountStatus}/{accountNo}")
 	public ResponseEntity<String> updateAccountType(@PathVariable("accountStatus") String accountStatus,
 			@PathVariable("accountNo") String accountNo) {
 		return new ResponseEntity<>(accountTypeSevice.updateAccountStatus(accountStatus, accountNo), HttpStatus.OK);
 	}
+
 	@GetMapping("getCustomerById/{customerId}")
 	public ResponseEntity<List<AccountType>> viewCustomerById(@PathVariable("customerId") Long customerId) {
 
 		return new ResponseEntity<>(accountTypeSevice.viewCustomerById(customerId), HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("accountExists/{mobileNo}/{email}/{type}")
-	public ResponseEntity<AccountType> isAccountTypeExists(@PathVariable("mobileNo") String mobileNo,String email,String type) {
+	public ResponseEntity<AccountType> isAccountTypeExists(@PathVariable("mobileNo") String mobileNo, String email,
+			String type) {
 
 		return new ResponseEntity<>(accountTypeSevice.isAccountTypeExists(mobileNo, email, type), HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("getCustomersByIFSC/{ifscCode}")
 	public ResponseEntity<List<AccountType>> getCustomersByIFSC(@PathVariable("ifscCode") String ifscCode) {
 
 		return new ResponseEntity<>(accountTypeSevice.getCustomersByIFSC(ifscCode), HttpStatus.OK);
 	}
-	
 
 	// exception for Duplication
 	@ExceptionHandler(DuplicateException.class)
@@ -107,7 +104,7 @@ public class AccountTypeController {
 		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 	}
 
-	// exception for Id not Found 
+	// exception for Id not Found
 	@ExceptionHandler(IdNotFoundException.class)
 	public ResponseEntity<String> userNotFound(IdNotFoundException e) {
 

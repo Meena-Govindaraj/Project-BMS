@@ -56,12 +56,10 @@ public class CustomerServiceImpl implements CustomerService {
 					// dto to entity..
 					Customer customer = CustomerMapper.dtoToEntity(customerDto);
 					customer.setPassword(generatePIN());
-				
 
-					MailSend.sendMail(customer.getEmail(), " Account Credentials",
-							"Regsitered Phone No: " + customer.getMobileNo() + "\n Password: " + customer.getPassword());
+					MailSend.sendMail(customer.getEmail(), " Account Credentials", "Regsitered Phone No: "
+							+ customer.getMobileNo() + "\n Password: " + customer.getPassword());
 
-			
 					return customerDAO.addCustomer(customer);
 
 				} else
@@ -104,7 +102,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 				// dto to entity..
 				Customer customer = CustomerMapper.dtoToEntity(customerDto);
-				
+
 				return customerDAO.updateCustomer(customer);
 
 			}
@@ -118,7 +116,6 @@ public class CustomerServiceImpl implements CustomerService {
 	public List<Customer> viewAllCustomer() {
 
 		logger.debug("viewAllCustomer Called in Service.... ");
-
 
 		List<Customer> customers = customerDAO.viewAllCustomer();
 		return (customers != null) ? customers : null;
@@ -166,7 +163,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public String updatePassword(String mobileNo, String password) {
 
 		logger.debug("Update password called in customer Sevice");
-		
+
 		if (customerDAO.isCustomerExistsByMobileNo(mobileNo))
 			throw new IdNotFoundException("Customer Phone Number:" + mobileNo + " Not Found to Update Password!");
 		else
@@ -178,7 +175,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public Customer validateCustomerLogin(String mobileNo, String password) {
 
 		logger.debug("validate Customer Login called in customer Service");
-		
+
 		return customerDAO.validateCustomerLogin(mobileNo, password);
 
 	}
@@ -187,7 +184,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public Customer getCustomerByMobileNo(String mobileNo) {
 
 		logger.debug("Get CustomerBy MobileNo called in customer Service");
-		
+
 		return customerDAO.getCustomerByMobileNo(mobileNo);
 
 	}
@@ -196,16 +193,15 @@ public class CustomerServiceImpl implements CustomerService {
 	public Customer getCustomerByEmail(String email) {
 
 		logger.debug("Get CustomerBy email called in customer Service");
-		
+
 		return customerDAO.getCustomerByEmail(email);
 	}
 
 	@Override
 	public List<Customer> getCustomersByIFSC(String ifscCode) {
 
-
 		logger.debug("Get CustomerBy IFSC called in customer Service");
-		
+
 		return customerDAO.getCustomersByIFSC(ifscCode);
 	}
 
@@ -213,19 +209,17 @@ public class CustomerServiceImpl implements CustomerService {
 	public String forgetPassword(String email) {
 
 		logger.debug("Forget Password called in customer Service");
-		
-		
+
 		if (customerDAO.isCustomerExistsByEmail(email))
 			throw new IdNotFoundException("Customer email:" + email + " Not Found to reset Password!");
 
-		String password= generatePIN();
+		String password = generatePIN();
 		MailSend.sendMail(email, "Reset Password", "Mail: " + email + "\nPassword:" + password);
 
-		return customerDAO.forgetPassword(email,password);
+		return customerDAO.forgetPassword(email, password);
 
 	}
 
-	
 	public String generatePIN() {
 
 		// It will generate 6 digit random Number.

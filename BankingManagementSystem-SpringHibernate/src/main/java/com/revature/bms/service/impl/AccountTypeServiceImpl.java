@@ -29,15 +29,14 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 	public String addAccountType(AccountTypeDto accountTypeDto) {
 
 		if (accountTypeDto != null && accountTypeDto.getCustomer() != null) {
-			
+
 			Long customerId = accountTypeDto.getCustomer().getId();
 			if (customerDAO.isCustomerExistsById(customerId))
 				throw new IdNotFoundException("Customer Id:" + customerId + " Not Found to add type!");
-			
-			
+
 			Customer customer = customerDAO.viewCustomerById(customerId);
 
-			System.out.println("###customer "+customer);
+			System.out.println("###customer " + customer);
 			// to check account type already exists or not
 			if (accountTypeDAO.isAccountTypeExists(customer.getMobileNo(), customer.getEmail(),
 					accountTypeDto.getType()) != null)
@@ -49,11 +48,10 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 			accountTypeDto.setCustomer(customer);
 
 			AccountType accountType = AccountTypeMapper.dtoToEntity(accountTypeDto);
-			
+
 			return accountTypeDAO.addAccountType(accountType);
-		
-		} 
-		else
+
+		} else
 			throw new InvalidInputException("Account details are Not Found to add!");
 
 	}
@@ -63,7 +61,7 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 
 		if (accountTypeDto != null && accountTypeDto.getCustomer() != null) {
 
-			System.out.println("###account no "+accountTypeDAO.getAccountByAccountNo(accountTypeDto.getAccountNo()));
+			System.out.println("###account no " + accountTypeDAO.getAccountByAccountNo(accountTypeDto.getAccountNo()));
 			if (accountTypeDAO.getAccountByAccountNo(accountTypeDto.getAccountNo()) == null)
 				throw new IdNotFoundException("Account NO:" + accountTypeDto.getAccountNo() + " Not Found to update!");
 			if (accountTypeDAO.isAccountExists(accountTypeDto.getId()))
@@ -121,8 +119,6 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 
 	}
 
-	
-
 	@Override
 	public List<AccountType> viewCustomerById(Long customerId) {
 
@@ -135,17 +131,17 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 
 		return accountTypeDAO.isAccountTypeExists(mobileNo, email, type);
 	}
-	
+
 	@Override
-	public String updateAccountStatus(String accountStatus,String accountNo) {
-		
-		if (accountTypeDAO.getAccountByAccountNo(accountNo)==null)
+	public String updateAccountStatus(String accountStatus, String accountNo) {
+
+		if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
 			throw new IdNotFoundException("Account No:" + accountNo + " Not Found to update status!");
-		
+
 		return accountTypeDAO.updateAccountStatus(accountStatus, accountNo);
-		
+
 	}
-	
+
 	public String generateAccountNo() {
 		String number = "60";
 		for (int i = 0; i < 10; i++) {
@@ -159,9 +155,8 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 
 	@Override
 	public List<AccountType> getCustomersByIFSC(String ifscCode) {
-		
+
 		return accountTypeDAO.getCustomersByIFSC(ifscCode);
 	}
 
-	
 }

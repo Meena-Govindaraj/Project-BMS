@@ -1,8 +1,9 @@
 package com.revature.bms.service.impl;
 
 import java.util.List;
-import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,14 +13,20 @@ import com.revature.bms.dao.EmployeeDAO;
 import com.revature.bms.dto.EmployeeDto;
 import com.revature.bms.entity.Branch;
 import com.revature.bms.entity.Employee;
+import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.exception.DuplicateException;
 import com.revature.bms.exception.IdNotFoundException;
 import com.revature.bms.exception.InvalidInputException;
 import com.revature.bms.mapper.EmployeeMapper;
-import com.revature.bms.service.*;
+import com.revature.bms.service.EmployeeService;
+import com.revature.bms.util.GeneratePassword;
+import static com.revature.bms.util.BankingManagementConstants.*;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
+
+	private static final Logger logger = LogManager.getLogger(EmployeeServiceImpl.class.getName());
 
 	@Autowired
 	private EmployeeDAO employeeDAO;
@@ -27,160 +34,226 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	private BranchDAO branchDAO;
 
-		@Override
+	@Override
 	public String addEmployee(EmployeeDto employeeDto) {
 
-		if (employeeDto != null && employeeDto.getBranch() != null) {
-			long branchId = employeeDto.getBranch().getId();
+		logger.info("Add Employee Called in Service... ");
+		try {
+			if (employeeDto != null && employeeDto.getBranch() != null) {
+				long branchId = employeeDto.getBranch().getId();
 
-			if (branchDAO.isBranchExists(branchId))
-				throw new IdNotFoundException("Branch Id:" + branchId + " Not Found to add employee!");
-			if (employeeDAO.isEmployeeExistsByMobileNo(employeeDto.getMobileNo())
-					&& employeeDAO.isEmployeeExistsByEmail(employeeDto.getEmail())) {
-				// getting branch details to set in employee..
-				Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
-				employeeDto.setBranch(branch);
+				if (branchDAO.isBranchExists(branchId))
+					throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
 
-				// dto to entity..
-				Employee employee = EmployeeMapper.dtoToEntity(employeeDto);
-				employee.setPassword(generatePassword());
-				
-				String password=employee.getPassword();
-				MailSend.sendMail(employee.getEmail(),"Employee Account" , "Welcome! "+employee.getName()
-									+"\n Thanks For joining with us \n Registered Mobile No: "+employee.getMobileNo()
-									+"Password: "+password
-									+"You can Change Your password once Your logged in..Thank You ");
-				
-				
-				return employeeDAO.addEmployee(employee);
+				if (employeeDAO.isEmployeeExistsByMobileNo(employeeDto.getMobileNo())
+						&& employeeDAO.isEmployeeExistsByEmail(employeeDto.getEmail())) {
+
+					// getting branch details to set in employee..
+					Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
+					employeeDto.setBranch(branch);
+
+					// dto to entity..
+					Employee employee = EmployeeMapper.dtoToEntity(employeeDto);
+					employee.setPassword(GeneratePassword.generatePassword());
+
+					String password = employee.getPassword();
+
+					MailSend.sendMail(employee.getEmail(), "Employee Account",
+							"Welcome! " + employee.getName() + "\n Thanks For joining with us \n Registered Mobile No: "
+									+ employee.getMobileNo() + "Password: " + password
+									+ "You can Change Your password once Your logged in..Thank You ");
+
+					return employeeDAO.addEmployee(employee);
+
+				} else
+					throw new BussinessLogicException("Employee " + DUPLICATE_RECORD);
+
 			} else
-				throw new DuplicateException("Employee Mobile Number Or Email Already exists!!");
+				throw new BussinessLogicException("Employee " + INVALID_DETAILS);
 
-		} else
-			throw new InvalidInputException("employee details Not Found to add employee!");
-
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public String deleteEmployee(Long employeeId) {
 
-		if (employeeDAO.isEmployeeExistsById(employeeId))
-			throw new IdNotFoundException("Employee Id:" + employeeId + " Not Found to Delete!");
-		else
-			return employeeDAO.deleteEmployee(employeeId);
+		logger.info("Delete Employee Called in Service... ");
+		try {
+			if (employeeDAO.isEmployeeExistsById(employeeId))
+				throw new BussinessLogicException("Employee Id:" + employeeId + ID_NOT_FOUND);
+			else
+				return employeeDAO.deleteEmployee(employeeId);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public String updateEmployee(EmployeeDto employeeDto) {
 
-		if (employeeDto != null && employeeDto.getBranch() != null) {
-			if (!employeeDAO.isEmployeeExistsById(employeeDto.getId())) {
-				long branchId = employeeDto.getBranch().getId();
+		logger.info("Update Employee Called in Service... ");
 
-				if (branchDAO.isBranchExists(branchId))
-					throw new IdNotFoundException("Branch Id:" + branchId + " Not Found to add Employee!");
+		try {
+			if (employeeDto != null && employeeDto.getBranch() != null) {
+				if (!employeeDAO.isEmployeeExistsById(employeeDto.getId())) {
+					long branchId = employeeDto.getBranch().getId();
 
-				Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
-				employeeDto.setBranch(branch);
+					if (branchDAO.isBranchExists(branchId))
+						throw new BussinessLogicException("Branch Id:" + branchId + INVALID_DETAILS);
 
-				// dto to entity..
-				Employee employee = EmployeeMapper.dtoToEntity(employeeDto);
-				System.out.println(employee);
-				return employeeDAO.updateEmployee(employee);
+					Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
+					employeeDto.setBranch(branch);
 
-			} else
-				throw new IdNotFoundException("EmployeeId:" + employeeDto.getId() + " Not Found to add employee!");
+					// dto to entity..
+					Employee employee = EmployeeMapper.dtoToEntity(employeeDto);
+					logger.info(employee);
 
+					return employeeDAO.updateEmployee(employee);
+
+				} else
+					throw new BussinessLogicException("EmployeeId:" + employeeDto.getId() + ID_NOT_FOUND);
+
+			}
+
+			else
+				throw new BussinessLogicException("Employee " + INVALID_DETAILS);
+
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
 		}
-
-		else
-			throw new InvalidInputException("Employee details Not Found to add employee!");
-
 	}
 
 	@Override
 	public List<Employee> viewAllemployee() {
 
-		List<Employee> employees = employeeDAO.viewAllemployee();
-		return (employees != null) ? employees : null;
+		logger.info("View All Employee Called in Service... ");
+		try {
+			List<Employee> employees = employeeDAO.viewAllemployee();
+			return (employees != null) ? employees : null;
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public Employee viewEmployeeById(Long employeeId) {
 
-		if (employeeDAO.isEmployeeExistsById(employeeId))
-			throw new IdNotFoundException("Employee Id:" + employeeId + " Not Found View!");
-		return employeeDAO.viewEmployeeById(employeeId);
+		logger.info("View EmployeeById Called in Service... ");
+		try {
+			if (employeeDAO.isEmployeeExistsById(employeeId))
+				throw new BussinessLogicException("Employee Id:" + employeeId + ID_NOT_FOUND);
+			return employeeDAO.viewEmployeeById(employeeId);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public boolean isEmployeeExistsById(Long employeeId) {
 
-		return employeeDAO.isEmployeeExistsById(employeeId);
+		logger.info("Is Employee Exists By Id Called in Service... ");
+		try {
+			return employeeDAO.isEmployeeExistsById(employeeId);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public boolean isEmployeeExistsByMobileNo(String mobileNo) {
 
-		return employeeDAO.isEmployeeExistsByMobileNo(mobileNo);
+		logger.info("Is Employee MobileNo Exists Called in Service... ");
+
+		try {
+			return employeeDAO.isEmployeeExistsByMobileNo(mobileNo);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public boolean isEmployeeExistsByEmail(String email) {
-		return employeeDAO.isEmployeeExistsByEmail(email);
+
+		logger.info("Is Employee Exists ByMobileNo Called in Service... ");
+		try {
+			return employeeDAO.isEmployeeExistsByEmail(email);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
-	public String updatePassword(String mobileNo, String oldPassword,String newPassword) {
+	public String updatePassword(String mobileNo, String oldPassword, String newPassword) {
 
-		if (employeeDAO.isEmployeeExistsByMobileNo(mobileNo))
-			throw new IdNotFoundException("Employee Phone Number:" + mobileNo + " Not Found to Update Password!");
-		else {
-			return employeeDAO.updatePassword(mobileNo,oldPassword, newPassword);
+		logger.info("Update Password of employee Called in Service... ");
+		try {
+			if (employeeDAO.isEmployeeExistsByMobileNo(mobileNo))
+				throw new BussinessLogicException("Employee Phone Number:" + mobileNo + ID_NOT_FOUND);
+			else {
+				return employeeDAO.updatePassword(mobileNo, oldPassword, newPassword);
+			}
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
 		}
 	}
 
 	@Override
 	public Employee getEmployeeByMobileNo(String mobileNo) {
 
-		return employeeDAO.getEmployeeByMobileNo(mobileNo);
+		Employee employee = null;
+
+		logger.info("Get Employee By MobileNo Called in Service... ");
+
+		try {
+			employee = employeeDAO.getEmployeeByMobileNo(mobileNo);
+			return employee;
+
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
+
 	}
 
 	@Override
 	public Employee validateEmployeeLogin(String mobileNo, String password) {
 
-		return employeeDAO.validateEmployeeLogin(mobileNo, password);
+		logger.info("Validate Employee Login Called in Service... ");
+
+		try {
+			return employeeDAO.validateEmployeeLogin(mobileNo, password);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public String forgetPassword(String email) {
-	
-		if (employeeDAO.isEmployeeExistsByEmail(email))
-			throw new IdNotFoundException("Employee email:" + email + " Not Found to reset Password!");
-		
-		String password=generatePassword();
-		 MailSend.sendMail(email,"Reset Password" ,"Mail: "+email+"\nPassword:"+password);
-		
-			return employeeDAO.forgetPassword(email,password );		
+
+		logger.info("Forget Password od employee Called in Service... ");
+		try {
+			if (employeeDAO.isEmployeeExistsByEmail(email))
+				throw new BussinessLogicException("Employee email:" + email + ID_NOT_FOUND);
+
+			String password = GeneratePassword.generatePassword();
+			MailSend.sendMail(email, "Reset Password", "Mail: " + email + "\nPassword:" + password);
+
+			return employeeDAO.forgetPassword(email, password);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public Employee getEmployeeByEmail(String email) {
-		
-		return employeeDAO.getEmployeeByEmail(email);
-	}
 
-	
-	public String generatePassword()
-	{
-		// It will generate 6 digit random Number.
-	    // from 0 to 999999
-	    Random rnd = new Random();
-	    int number = rnd.nextInt(999999);
-
-	    // this will convert any number sequence into 6 character.
-	    return String.format("%06d", number);
-
+		logger.info("Is Employee Exists By Email Called in Service... ");
+		try {
+			return employeeDAO.getEmployeeByEmail(email);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 }

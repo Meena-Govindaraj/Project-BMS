@@ -23,31 +23,31 @@ public class AccountServiceImpl implements AccountService {
 
 	@Autowired
 	private AccountDAO accountDAO;
-	
+
 	@Autowired
 	private AccountTypeDAO accountTypeDAO;
+
 	@Override
 	public String addAccount(AccountDto accountDto) {
-		
+
 		System.out.println("Add Account Called in service.... ");
 
 		if (accountDto != null && accountDto.getAccountType() != null) {
-			
-			String accountNo=accountDto.getAccountType().getAccountNo();
-			if(accountTypeDAO.getAccountByAccountNo(accountNo)==null)
+
+			String accountNo = accountDto.getAccountType().getAccountNo();
+			if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
 				throw new IdNotFoundException("accountNo:" + accountNo + " Not Found to add Account!");
-			
-			AccountType accountType=accountTypeDAO.getAccountByAccountNo(accountNo);
-			System.out.println("##accountType"+accountType);
-			
+
+			AccountType accountType = accountTypeDAO.getAccountByAccountNo(accountNo);
+			System.out.println("##accountType" + accountType);
+
 			accountDto.setAccountType(accountType);
 			accountDto.setTransactionPIN(generatePIN());
-			
-			System.out.println("##Account "+accountDto);
-	
-			
-			Account account=AccountMapper.dtoToEntity(accountDto);
-			
+
+			System.out.println("##Account " + accountDto);
+
+			Account account = AccountMapper.dtoToEntity(accountDto);
+
 			String email = account.getAccountType().getCustomer().getEmail();
 			String name = account.getAccountType().getCustomer().getName();
 
@@ -61,76 +61,65 @@ public class AccountServiceImpl implements AccountService {
 			MailSend.sendMail(email, "Account Created Successfully", message);
 
 			return accountDAO.addAccount(account);
-			
-		}
-		else
+
+		} else
 			throw new InvalidInputException("Account details are Not Found to add!");
 
 	}
 
-	
 	@Override
 	public List<Account> viewAllAccount() {
-		
+
 		List<Account> types = accountDAO.viewAllAccount();
 		return (types != null) ? types : null;
 	}
 
-	
 	@Override
 	public Account getAccountByAccountNo(String accountNo) {
-		
+
 		return accountDAO.getAccountByAccountNo(accountNo);
 	}
-	
+
 	@Override
 	public List<Account> getCustomersByIFSC(String ifscCode) {
-		
+
 		return accountDAO.getCustomersByIFSC(ifscCode);
 	}
-	
 
 	@Override
 	public Account getAccountsByType(Long customerId, String type) {
-		
+
 		return accountDAO.getAccountsByType(customerId, type);
 	}
 
-	
 	@Override
 	public List<Account> getCustomerByCustomerId(Long customerId) {
-		
+
 		return accountDAO.getCustomerByCustomerId(customerId);
 	}
-	
-
 
 	@Override
 	public String bankTransfer(Long senderId, Long receiverId, Long amount) {
-		
+
 		return accountDAO.bankTransfer(senderId, receiverId, amount);
 	}
 
-
 	@Override
 	public String updateTransactionPIN(Long typeId, String password) {
-		
+
 		return accountDAO.updateTransactionPIN(typeId, password);
 	}
-	
-	public String generatePIN()
-	{
-		
+
+	public String generatePIN() {
+
 		// It will generate 6 digit random Number.
-	    // from 0 to 999999
-	    Random rnd = new Random();
-	    int number = rnd.nextInt(999999);
+		// from 0 to 999999
+		Random rnd = new Random();
+		int number = rnd.nextInt(999999);
 
-	    // this will convert any number sequence into 6 character.
-	    return String.format("%06d", number);
+		// this will convert any number sequence into 6 character.
+		return String.format("%06d", number);
 
-		
 	}
-
 
 }

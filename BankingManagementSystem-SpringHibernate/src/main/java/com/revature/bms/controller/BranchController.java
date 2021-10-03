@@ -1,5 +1,7 @@
 package com.revature.bms.controller;
 
+import static com.revature.bms.util.BankingManagementConstants.RETRIVED;
+
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,152 +21,173 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.bms.dto.BranchDto;
 import com.revature.bms.entity.Branch;
-import com.revature.bms.exception.DatabaseException;
-import com.revature.bms.exception.DuplicateException;
-import com.revature.bms.exception.IdNotFoundException;
-import com.revature.bms.exception.InvalidInputException;
+import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.response.HttpResponseStatus;
 import com.revature.bms.service.BranchService;
 
 @RestController
 @RequestMapping("/branch")
 @CrossOrigin("http://localhost:4200")
 public class BranchController {
-	
+
 	private static final Logger logger = LogManager.getLogger(BranchController.class.getName());
 
 	@Autowired
 	private BranchService branchService;
 
 	/**
-	 * To add branch 
+	 * To add branch
+	 * 
 	 * @param branchDto
 	 * @return response as string with status code
 	 */
 
 	@PostMapping
-	public ResponseEntity<String> addBranch(@RequestBody BranchDto branchDto) {
+	public ResponseEntity<HttpResponseStatus> addBranch(@RequestBody BranchDto branchDto) {
 
-		logger.debug(" Add Branch called in Controller");
+		logger.info(" Add Branch called in Controller");
 
-		return new ResponseEntity<>(branchService.addBranch(branchDto), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), branchService.addBranch(branchDto)), HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage()),
+					HttpStatus.BAD_REQUEST);
+		}
+
 	}
 
 	/**
 	 * to get all branches that stored
+	 * 
 	 * @return list of branches as response entity with status code
 	 */
-	
+
 	@GetMapping
-	public ResponseEntity<List<Branch>> viewAllBranch() {
+	public ResponseEntity<HttpResponseStatus> viewAllBranch() {
 
-		logger.debug("View AllBranch Called in Controller.... ");
+		logger.info("View AllBranch Called in Controller.... ");
 
-		return new ResponseEntity<>(branchService.viewAllBranch(), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, branchService.viewAllBranch()),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+
 	}
 
 	/**
 	 * to delete the branch by Id
+	 * 
 	 * @param branchId
 	 * @return response string entity with status code
 	 */
-	
+
 	@DeleteMapping("/{branchId}")
-	public ResponseEntity<String> deleteBranch(@PathVariable("branchId") Long branchId) {
+	public ResponseEntity<HttpResponseStatus> deleteBranch(@PathVariable("branchId") Long branchId) {
 
-		logger.debug("Delete Branch Called in Controller.... ");
-
-		return new ResponseEntity<>(branchService.deleteBranch(branchId), HttpStatus.OK);
+		logger.info("Delete Branch Called in Controller.... ");
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), branchService.deleteBranch(branchId)), HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+		}
 
 	}
 
 	/**
 	 * to update branch details
+	 * 
 	 * @param branchDto
 	 * @return response entity as string status code
 	 */
-	
+
 	@PutMapping
-	public ResponseEntity<String> updateBranch(@RequestBody BranchDto branchDto) {
+	public ResponseEntity<HttpResponseStatus> updateBranch(@RequestBody BranchDto branchDto) {
 
-		logger.debug("Update Branch Called in Controller.... ");
-
-		return new ResponseEntity<>(branchService.updateBranch(branchDto), HttpStatus.OK);
+		logger.info("Update Branch Called in Controller.... ");
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), branchService.updateBranch(branchDto)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+		}
 	}
 
 	/**
 	 * to view branch by BranchId
+	 * 
 	 * @param branchId
 	 * @return returns the data of particular branch
 	 */
 
 	@GetMapping("/{branchId}")
-	public ResponseEntity<Branch> viewBranchById(@PathVariable("branchId") Long branchId) {
+	public ResponseEntity<HttpResponseStatus> viewBranchById(@PathVariable("branchId") Long branchId) {
 
-		logger.debug("View BranchById Called in Controller.... ");
-		
-		return new ResponseEntity<>(branchService.viewBranchById(branchId), HttpStatus.OK);
+		logger.info("View BranchById Called in Controller.... ");
+
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, branchService.viewBranchById(branchId)),
+					HttpStatus.OK);
+
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+		}
 
 	}
-	
+
 	/**
 	 * to get branches details on IFSC code
+	 * 
 	 * @param ifscCode
 	 * @return returns the data of particular branch on given IFSC CODE
 	 */
 
-	@GetMapping("getBranchByIfscCode/{ifscCode}")
-	public ResponseEntity<Branch> getBranchByIfscCode(@PathVariable("ifscCode") String ifscCode) {
+	@GetMapping("/getBranchByIfscCode/{ifscCode}")
+	public ResponseEntity<HttpResponseStatus> getBranchByIfscCode(@PathVariable("ifscCode") String ifscCode) {
 
-		logger.debug("View Branch By IFSC Called in Service.... ");
+		logger.info("View Branch By IFSC Called in Service.... ");
 
-		return new ResponseEntity<>(branchService.getBranchByIfscCode(ifscCode), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					branchService.getBranchByIfscCode(ifscCode)), HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+		}
 
 	}
 
 	/**
 	 * to view branch by branch name
+	 * 
 	 * @param branchName
 	 * @return returns the data of particular branch on name
 	 */
 
-	@GetMapping("getBranchByName/{branchName}")
-	public ResponseEntity<Branch> viewBranchByName(@PathVariable("branchName") String branchName) {
+	@GetMapping("/getBranchByName/{branchName}")
+	public ResponseEntity<HttpResponseStatus> viewBranchByName(@PathVariable("branchName") String branchName) {
 
-		logger.debug("View BranchBy Name Called in Service.... ");
-
-		return new ResponseEntity<>(branchService.viewBranchByName(branchName), HttpStatus.OK);
+		logger.info("View BranchBy Name Called in Service.... ");
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, branchService.viewBranchByName(branchName)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+		}
 
 	}
-	
-	// exception for Duplicate branch insertion..
-	@ExceptionHandler(DuplicateException.class)
-	public ResponseEntity<String> duplicateIdFound(DuplicateException e) {
 
-		System.out.println(e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
-	// exception for Id not Found ..
-	@ExceptionHandler(IdNotFoundException.class)
-	public ResponseEntity<String> userNotFound(IdNotFoundException e) {
-
-		System.out.println(e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-	}
-
-	// exception for invalid input
-	@ExceptionHandler(InvalidInputException.class)
-	public ResponseEntity<String> invalidInput(InvalidInputException e) {
-
-		System.out.println(e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-	}
-
-	// database Exception
-	@ExceptionHandler(DatabaseException.class)
-
-	public ResponseEntity<String> databaseException(DatabaseException e) {
-
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
 }

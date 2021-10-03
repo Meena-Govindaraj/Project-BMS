@@ -30,12 +30,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Component
 
-@NamedNativeQuery(
-	    name = "callBankTransfer",
-	    query = "CALL tranferBank(:sender,:reciever,:amount)",
-	    resultClass =Account.class
-	    )
-
 public class Account {
 
 	@Id

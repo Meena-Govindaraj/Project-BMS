@@ -8,10 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class BankingManagementSystemSpringHibernateApplication {
 
-	private static final Logger logger = LogManager.getLogger(BankingManagementSystemSpringHibernateApplication.class.getName());
+	private static final Logger logger = LogManager
+			.getLogger(BankingManagementSystemSpringHibernateApplication.class.getName());
 
 	public static void main(String[] args) {
-		
+
 		logger.info("###Application Started");
 		SpringApplication.run(BankingManagementSystemSpringHibernateApplication.class, args);
 	}

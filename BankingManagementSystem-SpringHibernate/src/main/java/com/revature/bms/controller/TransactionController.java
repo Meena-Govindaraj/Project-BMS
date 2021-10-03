@@ -21,25 +21,24 @@ import com.revature.bms.service.TransactionService;
 @RequestMapping("/transaction")
 @CrossOrigin("http://localhost:4200")
 public class TransactionController {
-	
+
 	@Autowired
 	TransactionService transactionService;
-	
+
 	@GetMapping
 	public ResponseEntity<List<TransactionDetails>> viewAllTransacations() {
 
 		return new ResponseEntity<>(transactionService.viewAllTransaction(), HttpStatus.OK);
 	}
-	
-	
+
 	@PostMapping
-	public ResponseEntity<String> addTransacations(@RequestBody TransactionDetailsDto transactionDetailsDto ) {
+	public ResponseEntity<String> addTransacations(@RequestBody TransactionDetailsDto transactionDetailsDto) {
 
 		return new ResponseEntity<>(transactionService.addTransaction(transactionDetailsDto), HttpStatus.OK);
 	}
-	
+
 	@GetMapping("transactionById/{accountId}")
-	public ResponseEntity<List<TransactionDetails>> viewTransacationsById(@PathVariable("accountId")  Long accountId) {
+	public ResponseEntity<List<TransactionDetails>> viewTransacationsById(@PathVariable("accountId") Long accountId) {
 
 		return new ResponseEntity<>(transactionService.viewTransactionByAccount(accountId), HttpStatus.OK);
 	}

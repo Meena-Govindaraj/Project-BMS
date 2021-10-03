@@ -11,16 +11,19 @@ import com.revature.bms.dao.BankDAO;
 import com.revature.bms.dao.BranchDAO;
 import com.revature.bms.dto.BranchDto;
 import com.revature.bms.entity.Branch;
+import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.exception.DuplicateException;
 import com.revature.bms.exception.IdNotFoundException;
 import com.revature.bms.exception.InvalidInputException;
 import com.revature.bms.mapper.BranchMapper;
 import com.revature.bms.service.BranchService;
+import static com.revature.bms.util.BankingManagementConstants.*;
 
 @Service
 public class BranchServiceImpl implements BranchService {
 
-	private static final Logger logger = LogManager.getLogger(BranchService.class.getName());
+	private static final Logger logger = LogManager.getLogger(BranchServiceImpl.class.getName());
 
 	@Autowired
 	BranchDAO branchDAO;
@@ -31,103 +34,159 @@ public class BranchServiceImpl implements BranchService {
 	@Override
 	public String addBranch(BranchDto branchDto) {
 
-		logger.debug(" Add Branch called in Service");
+		logger.info(" Add Branch called in Service");
+		try {
+			if (branchDto != null) {
 
-		if (branchDto != null) {
+				if (!branchDAO.isBranchExistsBYCode(branchDto.getIfscCode()))
+					throw new BussinessLogicException("Branch IFSC Code:" + branchDto.getIfscCode() + DUPLICATE_RECORD);
+				else {
+					// dto to entity
+					Branch branch = BranchMapper.dtoToEntity(branchDto);
+					return branchDAO.addBranch(branch);
+				}
+			} else
+				throw new BussinessLogicException("Branch " + INVALID_DETAILS);
 
-			if (!branchDAO.isBranchExistsBYCode(branchDto.getIfscCode()))
-				throw new DuplicateException("Branch IFSC Code:" + branchDto.getIfscCode() + "Already Found!");
-			else {
-				// dto to entity
-				Branch branch = BranchMapper.dtoToEntity(branchDto);
-				System.out.println(branch);
-				return branchDAO.addBranch(branch);
-			}
-		} else
-			throw new InvalidInputException("Branch details Not Found to add Branch!");
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
+	}
+	
+	@Override
+	public String deleteBranch(Long branchId) {
 
+		logger.info("Delete Branch Called in Service.... ");
+		try {
+			if (branchDAO.isBranchExists(branchId))
+				throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
+			else
+				return branchDAO.deleteBranch(branchId);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+
+		}
 	}
 
 	@Override
 	public List<Branch> viewAllBranch() {
 
-		logger.debug("View AllBranch Called in Service.... ");
+		logger.info("View AllBranch Called in Service.... ");
+		try {
+			List<Branch> branches =null;
+			branches=branchDAO.viewAllBranch();
+			if(branches!=null)
+				return branches;
+			else
+				throw new BussinessLogicException("No records Found");
+		
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
 
-		List<Branch> branches = branchDAO.viewAllBranch();
-		return (branches != null) ? branches : null;
+		}
 	}
 
-	@Override
-	public String deleteBranch(Long branchId) {
-
-		logger.debug("Delete Branch Called in Service.... ");
-
-		if (branchDAO.isBranchExists(branchId))
-			throw new IdNotFoundException("Branch Id:" + branchId + " Not Found to Delete!");
-		else
-			return branchDAO.deleteBranch(branchId);
-	}
-
-	@Override
-	public boolean isBranchExists(Long branchId) {
-
-		return branchDAO.isBranchExists(branchId);
-	}
-
+	
 	@Override
 	public String updateBranch(BranchDto branchDto) {
 
-		logger.debug("Update Branch Called in Service.... ");
+		logger.info("Update Branch Called in Service.... ");
 
-		if (branchDto != null) {
+		try {
+			if (branchDto != null) {
 
-			if (branchDAO.isBranchExists(branchDto.getId()))
-				throw new IdNotFoundException("Branch Id:" + branchDto.getId() + " Not Found to Update!");
+				if (branchDAO.isBranchExists(branchDto.getId()))
+					throw new BussinessLogicException("Branch Id:" + branchDto.getId() + ID_NOT_FOUND);
 
-			else {
+				else {
+					// dto to entity
+					Branch branch = BranchMapper.dtoToEntity(branchDto);
+					return branchDAO.updateBranch(branch);
+				}
+			} else
+				throw new BussinessLogicException("Branch " + INVALID_DETAILS);
+		}
 
-				// dto to entity
-				Branch branch = BranchMapper.dtoToEntity(branchDto);
-				System.out.println(branch);
-				return branchDAO.updateBranch(branch);
-			}
-		} else
-			throw new InvalidInputException("Branch details Not Found to add Branch!");
-
+		catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public Branch viewBranchById(Long branchId) {
 
-		logger.debug("View BranchById Called in Service.... ");
+		logger.info("View BranchById Called in Service.... ");
+		
+		Branch branch=null;
+		try {
+			branch= branchDAO.viewBranchById(branchId);
+			if(branch!=null)
+				return branch;
+		    else
+		    	throw new BussinessLogicException("No records Found");
+			
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
+	}
 
-		return branchDAO.viewBranchById(branchId);
+	@Override
+	public Branch getBranchByIfscCode(String ifscCode) {
+
+		logger.info("View Branch By IFSC Called in Service.... ");
+		
+		Branch branch=null;
+		try {
+			branch=branchDAO.getBranchByIfscCode(ifscCode);
+			if(branch!=null)
+				return branch;
+		    else
+			    return null;
+						
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
+	}
+
+	@Override
+	public Branch viewBranchByName(String branchName) {
+
+		logger.info("View Branch By Name Called in Service.... ");
+		
+		Branch branch=null;
+		try {
+		branch=branchDAO.viewBranchByName(branchName);
+		if(branch!=null)
+			return branch;
+	    else
+		    throw new BussinessLogicException("No records Found");	
+	
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 
 	}
 
 	@Override
 	public boolean isBranchExistsBYCode(String ifscCode) {
 
-		logger.debug("Is Branch Exists Called in Service.... ");
-
-		return branchDAO.isBranchExistsBYCode(ifscCode);
+		logger.info("Is Branch Exists Called in Service.... ");
+		try {
+			return branchDAO.isBranchExistsBYCode(ifscCode);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
-	public Branch getBranchByIfscCode(String ifscCode) {
+	public boolean isBranchExists(Long branchId) {
 
-		logger.debug("View Branch By IFSC Called in Service.... ");
+		logger.info("Is Branch Exists By Id Called in Service.... ");
 
-		return branchDAO.getBranchByIfscCode(ifscCode);
-
+		try {
+			return branchDAO.isBranchExists(branchId);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
-
-	@Override
-	public Branch viewBranchByName(String branchName) {
-
-		logger.debug("View BranchBy Name Called in Service.... ");
-
-		return branchDAO.viewBranchByName(branchName);
-	}
-
 }

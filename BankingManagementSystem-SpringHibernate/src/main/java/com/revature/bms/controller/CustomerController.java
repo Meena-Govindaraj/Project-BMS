@@ -62,20 +62,18 @@ public class CustomerController {
 		return new ResponseEntity<>(customerService.viewCustomerById(customerId), HttpStatus.OK);
 
 	}
-	
+
 	@PutMapping("forgetPassword/{email}")
 	public ResponseEntity<String> forgetPassword(@PathVariable("email") String email) {
 
 		logger.debug("Forget Password called in customer Controller");
-		
+
 		return new ResponseEntity<>(customerService.forgetPassword(email), HttpStatus.OK);
 
 	}
 
-
 	@GetMapping
 	public ResponseEntity<List<Customer>> viewAllCustomer() {
-
 
 		logger.debug("viewAllCustomer Called in Controller.... ");
 
@@ -94,48 +92,45 @@ public class CustomerController {
 	public ResponseEntity<Customer> viewCyustomerByMobileNo(@PathVariable("mobileNo") String mobileNo) {
 
 		logger.debug("Get CustomerBy MobileNo called in customer Controller");
-		
+
 		return new ResponseEntity<>(customerService.getCustomerByMobileNo(mobileNo), HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("getCustomerByEmail/{email}")
 	public ResponseEntity<Customer> getCustomerByEmail(@PathVariable("email") String email) {
 
 		logger.debug("Get CustomerBy email called in customer Controller");
-		
+
 		return new ResponseEntity<>(customerService.getCustomerByEmail(email), HttpStatus.OK);
 
 	}
-	
 
 	@PutMapping("updatePassword/{mobileNo}/{newPassword}")
 	public ResponseEntity<String> updatePassword(@PathVariable("mobileNo") String mobileNo,
 			@PathVariable("newPassword") String newPassword) {
 
 		logger.debug("Update password called in customer Controller");
-		
+
 		return new ResponseEntity<>(customerService.updatePassword(mobileNo, newPassword), HttpStatus.OK);
 
 	}
-	
-	
 
 	@GetMapping("/customerLogin/{mobileNo}/{password}")
 	public ResponseEntity<Customer> validateCustomerLogin(@PathVariable("mobileNo") String mobileNo,
 			@PathVariable("password") String password) {
 
 		logger.debug("validate Customer Login called in customer Controller");
-		
+
 		return new ResponseEntity<>(customerService.validateCustomerLogin(mobileNo, password), HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("getCustomersByIFSC/{ifscCode}")
 	public ResponseEntity<List<Customer>> getCustomersByIFSC(@PathVariable("ifscCode") String ifscCode) {
 
 		logger.debug("Get CustomerBy IFSC called in customer Controller");
-		
+
 		return new ResponseEntity<>(customerService.getCustomersByIFSC(ifscCode), HttpStatus.OK);
 	}
 

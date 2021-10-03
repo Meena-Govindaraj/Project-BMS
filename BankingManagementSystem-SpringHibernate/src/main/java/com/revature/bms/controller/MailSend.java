@@ -1,4 +1,5 @@
 package com.revature.bms.controller;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,13 +18,12 @@ public class MailSend {
 	public static void sendMail(String toReceiver, String subject, String message) {
 
 		SimpleMailMessage msg = new SimpleMailMessage();
-		
-			msg.setTo(toReceiver);
-			msg.setSubject(subject);
-			msg.setText(message);
 
-			javaMailSender.send(msg);
-		
+		msg.setTo(toReceiver);
+		msg.setSubject(subject);
+		msg.setText(message);
+
+		javaMailSender.send(msg);
 
 	}
 

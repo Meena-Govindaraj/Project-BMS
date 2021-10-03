@@ -25,13 +25,13 @@ public interface CustomerDAO {
 	public Customer validateCustomerLogin(String mobileNo, String password);
 
 	public Customer getCustomerByMobileNo(String mobileNo);
-	
+
 	public Customer getCustomerByEmail(String email);
 
 	public boolean isCustomerExistsById(Long customerId);// for deleting/updating
 
 	public List<Customer> getCustomersByIFSC(String ifscCode);
-	
-	public String forgetPassword(String email,String password);
-	
+
+	public String forgetPassword(String email, String password);
+
 }

@@ -3,6 +3,8 @@ package com.revature.bms.service.impl;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.revature.bms.dao.AccountTypeDAO;
@@ -10,14 +12,18 @@ import com.revature.bms.dao.CustomerDAO;
 import com.revature.bms.dto.AccountTypeDto;
 import com.revature.bms.entity.AccountType;
 import com.revature.bms.entity.Customer;
-import com.revature.bms.exception.DuplicateException;
-import com.revature.bms.exception.IdNotFoundException;
-import com.revature.bms.exception.InvalidInputException;
+import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.mapper.AccountTypeMapper;
 import com.revature.bms.service.AccountTypeSevice;
+import com.revature.bms.util.GeneratePassword;
+
+import static com.revature.bms.util.BankingManagementConstants.*;
 
 @Service
 public class AccountTypeServiceImpl implements AccountTypeSevice {
+
+	private static final Logger logger = LogManager.getLogger(AccountTypeServiceImpl.class.getName());
 
 	@Autowired
 	private AccountTypeDAO accountTypeDAO;
@@ -28,135 +34,181 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 	@Override
 	public String addAccountType(AccountTypeDto accountTypeDto) {
 
-		if (accountTypeDto != null && accountTypeDto.getCustomer() != null) {
+		logger.info("Add AccountType Called in Service.... ");
 
-			Long customerId = accountTypeDto.getCustomer().getId();
-			if (customerDAO.isCustomerExistsById(customerId))
-				throw new IdNotFoundException("Customer Id:" + customerId + " Not Found to add type!");
+		try {
+			if (accountTypeDto != null && accountTypeDto.getCustomer() != null) {
 
-			Customer customer = customerDAO.viewCustomerById(customerId);
+				Long customerId = accountTypeDto.getCustomer().getId();
+				if (customerDAO.isCustomerExistsById(customerId))
+					throw new BussinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
 
-			System.out.println("###customer " + customer);
-			// to check account type already exists or not
-			if (accountTypeDAO.isAccountTypeExists(customer.getMobileNo(), customer.getEmail(),
-					accountTypeDto.getType()) != null)
-				throw new DuplicateException("Account Type: " + accountTypeDto.getType()
-						+ "Already exists with this email and mobileno with customerID: " + customer.getId());
+				Customer customer = customerDAO.viewCustomerById(customerId);
 
-			accountTypeDto.setAccountNo(generateAccountNo());
-			accountTypeDto.setAccountStatus("No");
-			accountTypeDto.setCustomer(customer);
+				// to check account type already exists or not
+				if (accountTypeDAO.isAccountTypeExists(customer.getMobileNo(), customer.getEmail(),
+						accountTypeDto.getType()) != null)
+					throw new BussinessLogicException("Account Type: " + accountTypeDto.getType() + DUPLICATE_RECORD
+							+ " customerID: " + customer.getId());
 
-			AccountType accountType = AccountTypeMapper.dtoToEntity(accountTypeDto);
+				accountTypeDto.setAccountNo(GeneratePassword.generateAccountNo());
+				accountTypeDto.setAccountStatus("No");
+				accountTypeDto.setCustomer(customer);
 
-			return accountTypeDAO.addAccountType(accountType);
+				AccountType accountType = AccountTypeMapper.dtoToEntity(accountTypeDto);
 
-		} else
-			throw new InvalidInputException("Account details are Not Found to add!");
+				return accountTypeDAO.addAccountType(accountType);
 
+			} else
+				throw new BussinessLogicException("Account " + INVALID_DETAILS);
+
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public String updateAccountType(AccountTypeDto accountTypeDto) {
 
-		if (accountTypeDto != null && accountTypeDto.getCustomer() != null) {
+		logger.info("Update AccountType Called in Service.... ");
+		try {
+			if (accountTypeDto != null && accountTypeDto.getCustomer() != null) {
 
-			System.out.println("###account no " + accountTypeDAO.getAccountByAccountNo(accountTypeDto.getAccountNo()));
-			if (accountTypeDAO.getAccountByAccountNo(accountTypeDto.getAccountNo()) == null)
-				throw new IdNotFoundException("Account NO:" + accountTypeDto.getAccountNo() + " Not Found to update!");
-			if (accountTypeDAO.isAccountExists(accountTypeDto.getId()))
-				throw new IdNotFoundException("Type Id:" + accountTypeDto.getId() + " Not Found to update!");
+				if (accountTypeDAO.getAccountByAccountNo(accountTypeDto.getAccountNo()) == null)
+					throw new BussinessLogicException("Account NO:" + accountTypeDto.getAccountNo() + ID_NOT_FOUND);
+				if (accountTypeDAO.isAccountExists(accountTypeDto.getId()))
+					throw new BussinessLogicException("Type Id:" + accountTypeDto.getId() + ID_NOT_FOUND);
 
-			Customer customer = accountTypeDto.getCustomer();
+				Customer customer = accountTypeDto.getCustomer();
 
-			customer = customerDAO.viewCustomerById(customer.getId());
-			accountTypeDto.setCustomer(customer);
+				customer = customerDAO.viewCustomerById(customer.getId());
+				accountTypeDto.setCustomer(customer);
 
-			AccountType accountType = AccountTypeMapper.dtoToEntity(accountTypeDto);
-			return accountTypeDAO.updateAccountType(accountType);
+				AccountType accountType = AccountTypeMapper.dtoToEntity(accountTypeDto);
+				return accountTypeDAO.updateAccountType(accountType);
 
+			}
+
+			else
+				throw new BussinessLogicException("Account " + INVALID_DETAILS);
+
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
 		}
-
-		else
-			throw new InvalidInputException("Account details are Not Found to add!");
-
 	}
 
 	@Override
 	public String deleteAccountType(Long typeId) {
 
-		if (accountTypeDAO.isAccountExists(typeId))
-			throw new IdNotFoundException("AccountType Id: " + typeId + " Not Found!");
-		return accountTypeDAO.deleteAccountType(typeId);
+		logger.info("Delete AccountType Called in Service.... ");
+		try {
+			if (accountTypeDAO.isAccountExists(typeId))
+				throw new BussinessLogicException("AccountType Id: " + typeId + ID_NOT_FOUND);
+
+			return accountTypeDAO.deleteAccountType(typeId);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public boolean isAccountExists(Long typeId) {
 
-		return accountTypeDAO.isAccountExists(typeId);
+		logger.info("Is Account Exists Called in Service.... ");
+		try {
+			return accountTypeDAO.isAccountExists(typeId);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public List<AccountType> viewAllAccount() {
 
-		List<AccountType> types = accountTypeDAO.viewAllAccount();
-		return (types != null) ? types : null;
+		logger.info("View All Account Types Called in Service.... ");
+		try {
+			List<AccountType> types = accountTypeDAO.viewAllAccount();
+			return (types != null) ? types : null;
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public List<AccountType> getAccountsByType(String type) {
 
-		List<AccountType> types = accountTypeDAO.getAccountsByType(type);
-		return (types != null) ? types : null;
+		logger.info("Get AccountsBy Type Called in Service.... ");
+		try {
+			List<AccountType> types = accountTypeDAO.getAccountsByType(type);
+			return (types != null) ? types : null;
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public AccountType getAccountByAccountNo(String accountNo) {
 
-		if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
-			throw new IdNotFoundException("Account  No:" + accountNo + " Not Found!");
-		return accountTypeDAO.getAccountByAccountNo(accountNo);
+		logger.info("Get AccountBy AccountNo Called in Service.... ");
+		try {
+			if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
+				throw new BussinessLogicException("Account  No:" + accountNo + ID_NOT_FOUND);
+			return accountTypeDAO.getAccountByAccountNo(accountNo);
 
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public List<AccountType> viewCustomerById(Long customerId) {
 
-		return accountTypeDAO.viewCustomerById(customerId);
+		logger.info("View CustomerBy Id Called in Service.... ");
+		try {
+			return accountTypeDAO.viewCustomerById(customerId);
 
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public AccountType isAccountTypeExists(String mobileNo, String email, String type) {
 
-		return accountTypeDAO.isAccountTypeExists(mobileNo, email, type);
+		logger.info("Is AccountType Exists Called in Service.... ");
+		try {
+			return accountTypeDAO.isAccountTypeExists(mobileNo, email, type);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
 
 	@Override
 	public String updateAccountStatus(String accountStatus, String accountNo) {
 
-		if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
-			throw new IdNotFoundException("Account No:" + accountNo + " Not Found to update status!");
+		logger.info("Update AccountStatus Called in Service.... ");
+		try {
+			if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
+				throw new BussinessLogicException("Account No:" + accountNo + ID_NOT_FOUND);
 
-		return accountTypeDAO.updateAccountStatus(accountStatus, accountNo);
+			return accountTypeDAO.updateAccountStatus(accountStatus, accountNo);
 
-	}
-
-	public String generateAccountNo() {
-		String number = "60";
-		for (int i = 0; i < 10; i++) {
-			Random rand = new Random();
-			int n = rand.nextInt(10) + 0;
-			number += Integer.toString(n);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
 		}
-		System.out.println("Generated Account No: " + number);
-		return number;
 	}
 
 	@Override
 	public List<AccountType> getCustomersByIFSC(String ifscCode) {
 
-		return accountTypeDAO.getCustomersByIFSC(ifscCode);
+		logger.info("viewAllCustomer BY Ifsc Called in Service.... ");
+		try {
+			return accountTypeDAO.getCustomersByIFSC(ifscCode);
+		} catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
 	}
+	
+	
 
 }

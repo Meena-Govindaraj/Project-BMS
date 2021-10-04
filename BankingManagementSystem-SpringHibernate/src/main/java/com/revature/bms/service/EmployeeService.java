@@ -7,30 +7,30 @@ import com.revature.bms.entity.Employee;
 
 public interface EmployeeService {
 
-	public String addEmployee(EmployeeDto employeeDto);
+	 String addEmployee(EmployeeDto employeeDto);
 
-	public String deleteEmployee(Long employeeId);
+	 String deleteEmployee(Long employeeId);
 
-	public String updateEmployee(EmployeeDto employeeDto);
+	 String updateEmployee(EmployeeDto employeeDto);
 
-	public List<Employee> viewAllemployee();
+	 List<Employee> viewAllemployee();
 
-	public Employee viewEmployeeById(Long employeeId);
+	 Employee viewEmployeeById(Long employeeId);
 
-	public boolean isEmployeeExistsById(Long employeeId);
+	 boolean isEmployeeExistsById(Long employeeId);
 
-	public boolean isEmployeeExistsByMobileNo(String mobileNo);// to add account
+	 boolean isEmployeeExistsByMobileNo(String mobileNo);// to add account
 
-	public boolean isEmployeeExistsByEmail(String email);// to add account
+	 boolean isEmployeeExistsByEmail(String email);// to add account
+	 
+	 Employee getEmployeeByMobileNo(String mobileNo);
 
-	public Employee getEmployeeByMobileNo(String mobileNo);
+	 String updatePassword(String mobileNo, String password,String newPassword);
 
-	public String updatePassword(String mobileNo, String password,String newPassword);
-
-	public Employee validateEmployeeLogin(String mobileNo, String password);
+	 Employee validateEmployeeLogin(String mobileNo, String password);
 	
-	public String forgetPassword(String email);
+	 String forgetPassword(String email);
 
-	public Employee getEmployeeByEmail(String email);
+	 Employee getEmployeeByEmail(String email);
 
 }

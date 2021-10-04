@@ -64,25 +64,22 @@ public class EmployeeController {
 		}
 
 	}
+	
+	@GetMapping
+	public ResponseEntity<HttpResponseStatus> viewAllemployee() {
+		
+		logger.info("View All Employee Called in Controller... ");
 
-	@PutMapping("/updatePassword/{mobileNo}/{oldPassword}/{newPassaword}")
-	public ResponseEntity<HttpResponseStatus> updatePassword(@PathVariable("mobileNo") String mobileNo,
-			@PathVariable("oldPassword") String oldPassword, @PathVariable("newPassaword") String newPassaword) {
+		try {
+		
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, employeeService.viewAllemployee()),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
 
-		logger.info("Update Password of employee Called in Controller... ");
-
-		return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(),
-				employeeService.updatePassword(mobileNo, oldPassword, newPassaword)), HttpStatus.OK);
-
-	}
-
-	@PutMapping("/forgetPassword/{email}")
-	public ResponseEntity<HttpResponseStatus> forgetPassword(@PathVariable("email") String email) {
-
-		logger.info("Forget Password od employee Called in Controller... ");
-
-		return new ResponseEntity<>(
-				new HttpResponseStatus(HttpStatus.OK.value(), employeeService.forgetPassword(email)), HttpStatus.OK);
+		}
 
 	}
 
@@ -102,15 +99,33 @@ public class EmployeeController {
 
 	}
 
-	@GetMapping
-	public ResponseEntity<HttpResponseStatus> viewAllemployee() {
-		
-		logger.info("View All Employee Called in Controller... ");
+
+	@PutMapping("/updatePassword/{mobileNo}/{oldPassword}/{newPassaword}")
+	public ResponseEntity<HttpResponseStatus> updatePassword(@PathVariable("mobileNo") String mobileNo,
+			@PathVariable("oldPassword") String oldPassword, @PathVariable("newPassaword") String newPassaword) {
+
+		logger.info("Update Password of employee Called in Controller... ");
 
 		try {
-		
 			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, employeeService.viewAllemployee()),
+					new HttpResponseStatus(HttpStatus.OK.value(), employeeService.updatePassword(mobileNo, oldPassword, newPassaword)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+		
+	}
+
+	@PutMapping("/forgetPassword/{email}")
+	public ResponseEntity<HttpResponseStatus> forgetPassword(@PathVariable("email") String email) {
+
+		logger.info("Forget Password od employee Called in Controller... ");
+
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), employeeService.forgetPassword(email)),
 					HttpStatus.OK);
 		} catch (BussinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
@@ -120,6 +135,7 @@ public class EmployeeController {
 
 	}
 
+	
 	@GetMapping("/{employeeId}")
 	public ResponseEntity<HttpResponseStatus> viewEmployeeById(@PathVariable("employeeId") Long employeeId) {
 

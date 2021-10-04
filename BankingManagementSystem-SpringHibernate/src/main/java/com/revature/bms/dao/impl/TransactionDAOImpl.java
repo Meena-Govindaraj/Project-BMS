@@ -1,21 +1,27 @@
 package com.revature.bms.dao.impl;
 
+import static com.revature.bms.util.BankingManagementConstants.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.revature.bms.dao.TransactionDAO;
 import com.revature.bms.entity.TransactionDetails;
+import com.revature.bms.exception.DatabaseException;
 
 @SuppressWarnings("unchecked")
 @Repository
 public class TransactionDAOImpl implements TransactionDAO {
+
+	private static final Logger logger = LogManager.getLogger(TransactionDAOImpl.class.getName());
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -25,23 +31,27 @@ public class TransactionDAOImpl implements TransactionDAO {
 	@Override
 	public String addTransaction(TransactionDetails transactionDetails) {
 
-		System.out.println("Add AccountType Called in Dao.... ");
+		logger.info("Add Transaction details Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			Transaction transaction = session.beginTransaction();
+
+			session.beginTransaction();
 			session.save(transactionDetails);
-			transaction.commit();
+			session.getTransaction().commit();
 
-			return "Transacation of " + transactionDetails.getAccount().getAccountType().getAccountNo()
-					+ " added successfully with Type Id: " + transactionDetails;
+			logger.info(transactionDetails);
+			
+			return "Transacation of " + transactionDetails.getAccount().getAccountType().getAccountNo() + SAVED;
 		}
-
+		catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_INSERT);
+		}
 	}
 
 	@Override
 	public List<TransactionDetails> viewAllTransaction() {
 
-		System.out.println("viewAllTransaction Called in Dao.... ");
+		logger.info("view All Transaction Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
@@ -50,23 +60,30 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 			return (transactions.isEmpty() ? null : transactions);
 		}
+		catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
+		}
 	}
 
 	@Override
 	public List<TransactionDetails> viewTransactionByAccount(Long accountId) {
-		System.out.println("viewATransaction in Dao.... ");
+		
+		logger.info("View A Transaction on account in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
 			Query<TransactionDetails> query = session
-					.createQuery("from com.revature.bms.entity.TransactionDetails a where a.account.id=?1")
-					.setParameter(1, accountId);
+					.createQuery("from com.revature.bms.entity.TransactionDetails a where a.account.id=:accountId")
+					.setParameter("accountId", accountId);
 
 			List<TransactionDetails> accounts = query.list();
-		
+
 			return (accounts.isEmpty() ? null : accounts);
 
 		}
+		 catch (Exception e) {
+				throw new DatabaseException(ERROR_IN_FETCH);
+			}
 
 	}
 

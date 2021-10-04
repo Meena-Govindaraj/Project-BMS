@@ -1,9 +1,7 @@
 package com.revature.bms.dao.impl;
 
-import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_DELETE;
-import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_FETCH;
-import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_INSERT;
-import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_UPDATE;
+
+import static com.revature.bms.util.BankingManagementConstants.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -36,17 +34,19 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public String addCustomer(Customer customer) {
 
-		logger.debug("Add Customer Called in Dao.... ");
+		logger.info("Add Customer Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			Transaction transaction = session.beginTransaction();
+			
+		    session.beginTransaction();
 			customer.setCreatedDate(new Date());
 			customer.setUpdatedDate(new Date());
 			session.save(customer);
-			transaction.commit();
-			Long customerId = customer.getId();
-
-			return customer.getName() + " added successfully with Customer Id: " + customerId + " at " + localTime;
+			session.getTransaction().commit();
+			
+			logger.info(customer);
+			
+			return "Customer: "+customer.getName() + SAVED + " at " + localTime;
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
@@ -55,17 +55,17 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public String deleteCustomer(Long customerId) {
 
-		logger.debug("Delete Customer Called in Dao.... ");
+		logger.info("Delete Customer Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Transaction transaction = session.beginTransaction();
+			session.beginTransaction();
 			Customer customer = session.get(Customer.class, customerId);
 			session.delete(customer);
 			session.flush();
-			transaction.commit();
+			session.getTransaction().commit();
 
-			return "Customer deleted successfully!, Customer Id: " + customerId;
+			return "Customer: "+customerId +DELETED;
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_DELETE);
 		}
@@ -74,16 +74,18 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public String updateCustomer(Customer customer) {
 
-		logger.debug("update customer Called in Dao.... ");
+		logger.info("update customer Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			Transaction transaction = session.beginTransaction();
+			
+			session.beginTransaction();
 			customer.setUpdatedDate(new Date());
 			session.update(customer);
-			transaction.commit();
-			Long customerId = customer.getId();
-
-			return "customer Updated successfully with customer Id: " + customerId;
+			session.getTransaction().commit();
+			
+			logger.info(customer);
+			
+			return "customer"+UPDATED;
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
@@ -92,7 +94,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public List<Customer> viewAllCustomer() {
 
-		logger.debug("viewAllCustomer Called in Dao.... ");
+		logger.info("viewAllCustomer Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
@@ -109,7 +111,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public Customer viewCustomerById(Long customerId) {
 
-		logger.debug("viewCustomerById Called in Dao.... ");
+		logger.info("viewCustomerById Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
@@ -123,7 +125,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public boolean isCustomerExistsByMobileNo(String mobileNo) {
 
-		logger.debug("Is Customer Exists By MobileNo Called in Dao.... ");
+		logger.info("Is Customer Exists By MobileNo Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
@@ -139,7 +141,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public boolean isCustomerExistsById(Long customerId) {
 
-		logger.debug("Is Customer Exists By customerId Called in Dao.... ");
+		logger.info("Is Customer Exists By customerId Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
@@ -154,7 +156,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public boolean isCustomerExistsByEmail(String email) {
 
-		logger.debug("Is Customer Exists By email Called in Dao.... ");
+		logger.info("Is Customer Exists By email Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 			Query<Customer> query = session
@@ -169,7 +171,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public String updatePassword(String mobileNo, String password) {
 
-		logger.debug("Update password called in customer dao");
+		logger.info("Update password called in customer dao");
 		
 		try (Session session = sessionFactory.openSession()) {
 
@@ -181,7 +183,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 			session.update(customer);
 			transaction.commit();
 
-			return "Customer Password Updated successfully!";
+			return "Customer"+PASSWORDUPDATED;
 		}
 
 	}
@@ -189,13 +191,14 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public Customer validateCustomerLogin(String mobileNo, String password) {
 
-		logger.debug("validate Customer Login called in customer dao");
+		logger.info("validate Customer Login called in customer dao");
 		
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Customer> resultList = session
-					.createQuery("select c from Customer c where c.mobileNo=?1 and password=?2")
-					.setParameter(1, mobileNo).setParameter(2, password).getResultList();
+					.createQuery("select c from Customer c where c.mobileNo=:mobileNo and password=:password")
+					.setParameter("mobileNo", mobileNo)
+					.setParameter("password", password).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 		} catch (Exception e) {
@@ -206,13 +209,13 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public Customer getCustomerByMobileNo(String mobileNo) {
 
-		logger.debug("Get CustomerBy MobileNo called in customer dao");
+		logger.info("Get CustomerBy MobileNo called in customer dao");
 		
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Customer> resultList = session
-					.createQuery("from com.revature.bms.entity.Customer c where c.mobileNo=?1")
-					.setParameter(1, mobileNo).getResultList();
+					.createQuery("from com.revature.bms.entity.Customer c where c.mobileNo=:mobileNo")
+					.setParameter("mobileNo", mobileNo).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
@@ -225,12 +228,12 @@ public class CustomerDAOImpl implements CustomerDAO {
 	public Customer getCustomerByEmail(String email) {
 
 
-		logger.debug("Get CustomerBy email called in customer dao");
+		logger.info("Get CustomerBy email called in customer dao");
 		
 		try (Session session = sessionFactory.openSession()) {
 
-			List<Customer> resultList = session.createQuery("from com.revature.bms.entity.Customer c where c.email=?1")
-					.setParameter(1, email).getResultList();
+			List<Customer> resultList = session.createQuery("from com.revature.bms.entity.Customer c where c.email=:email")
+					.setParameter("email", email).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
@@ -243,14 +246,14 @@ public class CustomerDAOImpl implements CustomerDAO {
 	public List<Customer> getCustomersByIFSC(String ifscCode) {
 
 
-		logger.debug("Get CustomerBy IFSC called in customer dao");
+		logger.info("Get CustomerBy IFSC called in customer dao");
 		
 		
 		try (Session session = sessionFactory.openSession()) {
 
 			Query<Customer> query = session
-					.createQuery("from com.revature.bms.entity.Customer c where c.branch.ifscCode=?1")
-					.setParameter(1, ifscCode);
+					.createQuery("from com.revature.bms.entity.Customer c where c.branch.ifscCode=:ifscCode")
+					.setParameter("ifscCode", ifscCode);
 			List<Customer> customers = query.list();
 
 			return (customers.isEmpty() ? null : customers);
@@ -262,22 +265,21 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public String forgetPassword(String email, String password) {
 		
-		logger.debug("Forget Password called in customer dao");
+		logger.info("Forget Password called in customer dao");
 		
 		
 		try (Session session = sessionFactory.openSession()) {
 
-			Transaction transaction = session.beginTransaction();
+		    session.beginTransaction();
 
 			Customer customer = getCustomerByEmail(email);
 			customer.setPassword(password);
 
 			session.update(customer);
+			session.getTransaction().commit();
 
+			return "customer"+PASSWORDUPDATED;
 			
-			transaction.commit();
-
-			return "customer forget password reseted successfully!";
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}

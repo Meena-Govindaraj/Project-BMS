@@ -209,7 +209,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Employee> resultList = session
-					.createQuery("select e from Employee e where e.mobileNo:mobileNo and password=:password")
+					.createQuery("select e from Employee e where e.mobileNo=:mobileNo and password=:password")
 					.setParameter("mobileNo", mobileNo)
 					.setParameter("password", password).getResultList();
 

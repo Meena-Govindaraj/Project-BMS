@@ -6,29 +6,29 @@ import com.revature.bms.entity.Employee;
 
 public interface EmployeeDAO {
 
-	public String addEmployee(Employee employee);
+	 String addEmployee(Employee employee);
 
-	public String deleteEmployee(Long employeeId);
+	 String deleteEmployee(Long employeeId);
 
-	public String updateEmployee(Employee employee);
+	 String updateEmployee(Employee employee);
 
-	public List<Employee> viewAllemployee();
+	 List<Employee> viewAllemployee();
 
-	public Employee viewEmployeeById(Long employeeId);
+	 Employee viewEmployeeById(Long employeeId);
 
-	public boolean isEmployeeExistsById(Long employeeId);// for deleting/updating
+	 boolean isEmployeeExistsById(Long employeeId);// for deleting/updating
 
-	public boolean isEmployeeExistsByMobileNo(String mobileNo);// to add account
+	 boolean isEmployeeExistsByMobileNo(String mobileNo);// to add account
 
-	public boolean isEmployeeExistsByEmail(String email);// to add account
+	 boolean isEmployeeExistsByEmail(String email);// to add account
 
-	public String updatePassword(String mobileNo, String password,String newPassword);// updation of password
+	 String updatePassword(String mobileNo, String password,String newPassword);// updation of password
 
-	public Employee getEmployeeByMobileNo(String mobileNo);// to update password needs number
+	 Employee getEmployeeByMobileNo(String mobileNo);// to update password needs number
 
-	public Employee getEmployeeByEmail(String email);
+	 Employee getEmployeeByEmail(String email);
 
-	public String forgetPassword(String email,String password);
+	 String forgetPassword(String email,String password);
 	
-	public Employee validateEmployeeLogin(String mobileNo, String password);
+	 Employee validateEmployeeLogin(String mobileNo, String password);
 }

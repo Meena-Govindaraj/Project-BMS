@@ -6,22 +6,20 @@ import com.revature.bms.entity.Account;
 
 public interface AccountDAO {
 
-	public String addAccount(Account accountType);
+	 String addAccount(Account accountType);
 
-	public List<Account> viewAllAccount();
+	 List<Account> viewAllAccount();
 
-	public Account getAccountsByType(Long customerId, String type);
+	 Account getAccountsByType(Long customerId, String type);
 
-	public Account getAccountByAccountNo(String accountNo);
+	 Account getAccountByAccountNo(String accountNo);
 
-	public Account getAccountByMobileNo(String mobileNo);
+	 List<Account> getCustomersByIFSC(String ifscCode);
 
-	public List<Account> getCustomersByIFSC(String ifscCode);
+	 List<Account> getCustomerByCustomerId(Long customerId);
 
-	public List<Account> getCustomerByCustomerId(Long customerId);
+	 String bankTransfer(Long senderId, Long receiverId, Long amount);
 
-	public String bankTransfer(Long senderId, Long receiverId, Long amount);
-
-	public String updateTransactionPIN(Long typeId, String password);
+	 String updateTransactionPIN(Long typeId, String password);
 
 }

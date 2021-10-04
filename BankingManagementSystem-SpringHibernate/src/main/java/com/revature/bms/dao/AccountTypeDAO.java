@@ -6,26 +6,26 @@ import com.revature.bms.entity.AccountType;
 
 public interface AccountTypeDAO {
 
-	public String addAccountType(AccountType accountType);
+	 String addAccountType(AccountType accountType);
 
-	public String updateAccountType(AccountType accountType);
+	 String updateAccountType(AccountType accountType);
 
-	public String deleteAccountType(Long typeId);
+	 String deleteAccountType(Long typeId);
 
-	public boolean isAccountExists(Long typeId);
+	 boolean isAccountExists(Long typeId);
 
-	public List<AccountType> viewAllAccount();
+	 List<AccountType> viewAllAccount();
 
-	public List<AccountType> getAccountsByType(String type);
+	 List<AccountType> getAccountsByType(String type);
 
-	public AccountType getAccountByAccountNo(String accountNo);
+	 AccountType getAccountByAccountNo(String accountNo);
 
-	public List<AccountType> viewCustomerById(Long customerId);
+	 List<AccountType> viewCustomerById(Long customerId);
 
-	public AccountType isAccountTypeExists(String mobileNo, String email, String type);
+	 AccountType isAccountTypeExists(String mobileNo, String email, String type);
 
-	public String updateAccountStatus(String accountStatus, String accountNo);
+	 String updateAccountStatus(String accountStatus, String accountNo);
 
-	public List<AccountType> getCustomersByIFSC(String ifscCode);
+	 List<AccountType> getCustomersByIFSC(String ifscCode);
 
 }

@@ -1,24 +1,20 @@
 package com.revature.bms.service.impl;
 
+import static com.revature.bms.util.BankingManagementConstants.*;
+
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.revature.bms.dao.BankDAO;
 import com.revature.bms.dao.BranchDAO;
 import com.revature.bms.dto.BranchDto;
 import com.revature.bms.entity.Branch;
 import com.revature.bms.exception.BussinessLogicException;
 import com.revature.bms.exception.DatabaseException;
-import com.revature.bms.exception.DuplicateException;
-import com.revature.bms.exception.IdNotFoundException;
-import com.revature.bms.exception.InvalidInputException;
 import com.revature.bms.mapper.BranchMapper;
 import com.revature.bms.service.BranchService;
-import static com.revature.bms.util.BankingManagementConstants.*;
 
 @Service
 public class BranchServiceImpl implements BranchService {
@@ -27,9 +23,6 @@ public class BranchServiceImpl implements BranchService {
 
 	@Autowired
 	BranchDAO branchDAO;
-
-	@Autowired
-	BankDAO bankDAO;
 
 	@Override
 	public String addBranch(BranchDto branchDto) {
@@ -134,14 +127,9 @@ public class BranchServiceImpl implements BranchService {
 	public Branch getBranchByIfscCode(String ifscCode) {
 
 		logger.info("View Branch By IFSC Called in Service.... ");
-		
-		Branch branch=null;
+	
 		try {
-			branch=branchDAO.getBranchByIfscCode(ifscCode);
-			if(branch!=null)
-				return branch;
-		    else
-			    return null;
+			return branchDAO.getBranchByIfscCode(ifscCode);
 						
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -156,11 +144,7 @@ public class BranchServiceImpl implements BranchService {
 		Branch branch=null;
 		try {
 		branch=branchDAO.viewBranchByName(branchName);
-		if(branch!=null)
 			return branch;
-	    else
-		    throw new BussinessLogicException("No records Found");	
-	
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}

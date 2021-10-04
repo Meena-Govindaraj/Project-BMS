@@ -170,7 +170,7 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			List<Branch> resultList = session.createQuery("select b from Branch b where b.name:branchName")
+			List<Branch> resultList = session.createQuery("select b from Branch b where b.name=:branchName")
 					.setParameter("branchName", branchName).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));

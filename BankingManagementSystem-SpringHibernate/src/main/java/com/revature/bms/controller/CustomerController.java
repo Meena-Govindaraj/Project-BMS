@@ -1,5 +1,7 @@
 package com.revature.bms.controller;
 
+import static com.revature.bms.util.BankingManagementConstants.RETRIVED;
+
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -21,9 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.revature.bms.dao.impl.CustomerDAOImpl;
 import com.revature.bms.dto.CustomerDto;
 import com.revature.bms.entity.Customer;
-import com.revature.bms.exception.DuplicateException;
-import com.revature.bms.exception.IdNotFoundException;
-import com.revature.bms.exception.InvalidInputException;
+import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.response.HttpResponseStatus;
 import com.revature.bms.service.CustomerService;
 
 @RestController
@@ -31,130 +32,206 @@ import com.revature.bms.service.CustomerService;
 @CrossOrigin("http://localhost:4200")
 public class CustomerController {
 
-	private static final Logger logger = LogManager.getLogger(CustomerDAOImpl.class.getName());
+	private static final Logger logger = LogManager.getLogger(CustomerController.class.getName());
 
 	@Autowired
 	private CustomerService customerService;
 
 	@PostMapping
-	public ResponseEntity<String> addCustomer(@RequestBody CustomerDto customerDto) {
+	public ResponseEntity<HttpResponseStatus> addCustomer(@RequestBody CustomerDto customerDto) {
 
-		logger.debug("Add Customer Called in controller.... ");
+		logger.info("Add Customer Called in controller.... ");
 
-		return new ResponseEntity<>(customerService.addCustomer(customerDto), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), customerService.addCustomer(customerDto)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage()),
+					HttpStatus.BAD_REQUEST);
+		}
 
 	}
 
 	@DeleteMapping("/{customerId}")
-	public ResponseEntity<String> deleteCustomer(@PathVariable("customerId") Long customerId) {
+	public ResponseEntity<HttpResponseStatus> deleteCustomer(@PathVariable("customerId") Long customerId) {
 
-		logger.debug("Delete Customer Called in Controller.... ");
+		logger.info("Delete Customer Called in Controller.... ");
 
-		return new ResponseEntity<>(customerService.deleteCustomer(customerId), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), customerService.deleteCustomer(customerId)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
 
 	}
 
 	@GetMapping("/{customerId}")
-	public ResponseEntity<Customer> viewCustomerById(@PathVariable("customerId") Long customerId) {
+	public ResponseEntity<HttpResponseStatus> viewCustomerById(@PathVariable("customerId") Long customerId) {
 
-		logger.debug("Is Customer Exists By customerId Called in Controller.... ");
+		logger.info("Is Customer Exists By customerId Called in Controller.... ");
 
-		return new ResponseEntity<>(customerService.viewCustomerById(customerId), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					customerService.viewCustomerById(customerId)), HttpStatus.OK);
+
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
 
 	}
 
-	@PutMapping("forgetPassword/{email}")
-	public ResponseEntity<String> forgetPassword(@PathVariable("email") String email) {
+	@PutMapping("/forgetPassword/{email}")
+	public ResponseEntity<HttpResponseStatus> forgetPassword(@PathVariable("email") String email) {
 
-		logger.debug("Forget Password called in customer Controller");
+		logger.info("Forget Password called in customer Controller");
 
-		return new ResponseEntity<>(customerService.forgetPassword(email), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), customerService.forgetPassword(email)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
 
+		}
+		
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Customer>> viewAllCustomer() {
+	public ResponseEntity<HttpResponseStatus> viewAllCustomer() {
 
-		logger.debug("viewAllCustomer Called in Controller.... ");
+		logger.info("viewAllCustomer Called in Controller.... ");
 
-		return new ResponseEntity<>(customerService.viewAllCustomer(), HttpStatus.OK);
+		try {
+			
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(),RETRIVED , customerService.viewAllCustomer()),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+
 	}
 
 	@PutMapping
-	public ResponseEntity<String> updateCustomer(@RequestBody CustomerDto customerDto) {
+	public ResponseEntity<HttpResponseStatus> updateCustomer(@RequestBody CustomerDto customerDto) {
 
-		logger.debug("update customer Called in Controller.... ");
+		logger.info("update customer Called in Controller.... ");
 
-		return new ResponseEntity<>(customerService.updateCustomer(customerDto), HttpStatus.OK);
-	}
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), customerService.updateCustomer(customerDto)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
 
-	@GetMapping("getCustomerByMobileNo/{mobileNo}")
-	public ResponseEntity<Customer> viewCyustomerByMobileNo(@PathVariable("mobileNo") String mobileNo) {
-
-		logger.debug("Get CustomerBy MobileNo called in customer Controller");
-
-		return new ResponseEntity<>(customerService.getCustomerByMobileNo(mobileNo), HttpStatus.OK);
-
-	}
-
-	@GetMapping("getCustomerByEmail/{email}")
-	public ResponseEntity<Customer> getCustomerByEmail(@PathVariable("email") String email) {
-
-		logger.debug("Get CustomerBy email called in customer Controller");
-
-		return new ResponseEntity<>(customerService.getCustomerByEmail(email), HttpStatus.OK);
+		}
 
 	}
 
-	@PutMapping("updatePassword/{mobileNo}/{newPassword}")
-	public ResponseEntity<String> updatePassword(@PathVariable("mobileNo") String mobileNo,
+	@GetMapping("/getCustomerByMobileNo/{mobileNo}")
+	public ResponseEntity<HttpResponseStatus> viewCustomerByMobileNo(@PathVariable("mobileNo") String mobileNo) {
+
+		logger.info("Get CustomerBy MobileNo called in customer Controller");
+		
+		try {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					customerService.getCustomerByMobileNo(mobileNo)), HttpStatus.OK);
+
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+		
+	}
+
+	@GetMapping("/getCustomerByEmail/{email}")
+	public ResponseEntity<HttpResponseStatus> getCustomerByEmail(@PathVariable("email") String email) {
+
+		logger.info("Get CustomerBy email called in customer Controller");
+
+		try {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					customerService.getCustomerByEmail(email)), HttpStatus.OK);
+
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+		
+	}
+
+	@PutMapping("/updatePassword/{mobileNo}/{newPassword}")
+	public ResponseEntity<HttpResponseStatus> updatePassword(@PathVariable("mobileNo") String mobileNo,
 			@PathVariable("newPassword") String newPassword) {
 
-		logger.debug("Update password called in customer Controller");
+		logger.info("Update password called in customer Controller");
 
-		return new ResponseEntity<>(customerService.updatePassword(mobileNo, newPassword), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), customerService.updatePassword(mobileNo, newPassword)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
 
+		}
+	
 	}
 
 	@GetMapping("/customerLogin/{mobileNo}/{password}")
-	public ResponseEntity<Customer> validateCustomerLogin(@PathVariable("mobileNo") String mobileNo,
+	public ResponseEntity<HttpResponseStatus> validateCustomerLogin(@PathVariable("mobileNo") String mobileNo,
 			@PathVariable("password") String password) {
 
-		logger.debug("validate Customer Login called in customer Controller");
+		logger.info("validate Customer Login called in customer Controller");
 
-		return new ResponseEntity<>(customerService.validateCustomerLogin(mobileNo, password), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					customerService.validateCustomerLogin(mobileNo, password)), HttpStatus.OK);
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
 
 	}
 
-	@GetMapping("getCustomersByIFSC/{ifscCode}")
-	public ResponseEntity<List<Customer>> getCustomersByIFSC(@PathVariable("ifscCode") String ifscCode) {
+	@GetMapping("/getCustomersByIFSC/{ifscCode}")
+	public ResponseEntity<HttpResponseStatus> getCustomersByIFSC(@PathVariable("ifscCode") String ifscCode) {
 
-		logger.debug("Get CustomerBy IFSC called in customer Controller");
+		logger.info("Get CustomerBy IFSC called in customer Controller");
 
-		return new ResponseEntity<>(customerService.getCustomersByIFSC(ifscCode), HttpStatus.OK);
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, customerService.getCustomersByIFSC(ifscCode)),
+					HttpStatus.OK);
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
 	}
 
-	// exception for Duplication
-	@ExceptionHandler(DuplicateException.class)
-	public ResponseEntity<String> duplicateIdFound(DuplicateException e) {
-
-		logger.error(e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
-	// exception for Id not Found ..
-	@ExceptionHandler(IdNotFoundException.class)
-	public ResponseEntity<String> userNotFound(IdNotFoundException e) {
-
-		logger.error(e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-	}
-
-	// exception for invalid input
-	@ExceptionHandler(InvalidInputException.class)
-	public ResponseEntity<String> invalidInput(InvalidInputException e) {
-
-		logger.error(e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-	}
 }

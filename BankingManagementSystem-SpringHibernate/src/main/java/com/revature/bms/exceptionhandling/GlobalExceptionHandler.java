@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.revature.bms.exception.BussinessLogicException;
 import com.revature.bms.exception.DatabaseException;
-import com.revature.bms.exception.DuplicateException;
-import com.revature.bms.exception.IdNotFoundException;
-import com.revature.bms.exception.InvalidInputException;
 import com.revature.bms.response.HttpResponseStatus;
 
 @ControllerAdvice

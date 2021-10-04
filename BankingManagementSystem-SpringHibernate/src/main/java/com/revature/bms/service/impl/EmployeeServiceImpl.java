@@ -15,9 +15,6 @@ import com.revature.bms.entity.Branch;
 import com.revature.bms.entity.Employee;
 import com.revature.bms.exception.BussinessLogicException;
 import com.revature.bms.exception.DatabaseException;
-import com.revature.bms.exception.DuplicateException;
-import com.revature.bms.exception.IdNotFoundException;
-import com.revature.bms.exception.InvalidInputException;
 import com.revature.bms.mapper.EmployeeMapper;
 import com.revature.bms.service.EmployeeService;
 import com.revature.bms.util.GeneratePassword;
@@ -221,8 +218,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		logger.info("Validate Employee Login Called in Service... ");
 
+		Employee employee=null;
 		try {
-			return employeeDAO.validateEmployeeLogin(mobileNo, password);
+			employee=employeeDAO.validateEmployeeLogin(mobileNo, password);
+			if(employee!=null)
+				return employee;
+			else
+				throw new BussinessLogicException("No records found");
+			
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}

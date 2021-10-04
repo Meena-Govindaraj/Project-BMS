@@ -7,10 +7,9 @@ import com.revature.bms.entity.TransactionDetails;
 
 public interface TransactionService {
 
-	public String addTransaction(TransactionDetailsDto transactionDetailsDto);
+	 String addTransaction(TransactionDetailsDto transactionDetailsDto);
 
-	public List<TransactionDetails> viewAllTransaction();
+	 List<TransactionDetails> viewAllTransaction();
 
-	public List<TransactionDetails> viewTransactionByAccount(Long accountId);
-
+	 List<TransactionDetails> viewTransactionByAccount(Long accountId);
 }

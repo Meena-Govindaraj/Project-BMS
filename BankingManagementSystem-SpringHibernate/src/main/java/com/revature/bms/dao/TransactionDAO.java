@@ -6,10 +6,10 @@ import com.revature.bms.entity.TransactionDetails;
 
 public interface TransactionDAO {
 	
-	public String addTransaction(TransactionDetails transactionDetails);
+	 String addTransaction(TransactionDetails transactionDetails);
 	
-	public List<TransactionDetails> viewAllTransaction();
+	 List<TransactionDetails> viewAllTransaction();
 	
-	public List<TransactionDetails> viewTransactionByAccount(Long accountId);
+	 List<TransactionDetails> viewTransactionByAccount(Long accountId);
 	
 }

@@ -1,13 +1,14 @@
 package com.revature.bms.controller;
 
-import java.util.List;
+import static com.revature.bms.util.BankingManagementConstants.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.bms.dto.AccountTypeDto;
 import com.revature.bms.entity.AccountType;
-import com.revature.bms.exception.DuplicateException;
-import com.revature.bms.exception.IdNotFoundException;
-import com.revature.bms.exception.InvalidInputException;
+import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.response.HttpResponseStatus;
 import com.revature.bms.service.AccountTypeSevice;
 
 @RestController
@@ -28,95 +28,180 @@ import com.revature.bms.service.AccountTypeSevice;
 @CrossOrigin("http://localhost:4200")
 public class AccountTypeController {
 
+	private static final Logger logger = LogManager.getLogger(AccountTypeController.class.getName());
+
 	@Autowired
 	private AccountTypeSevice accountTypeSevice;
 
 	@PostMapping
-	public ResponseEntity<String> addAccountType(@RequestBody AccountTypeDto accountTypeDto) {
-		System.out.println(accountTypeDto);
-		return new ResponseEntity<>(accountTypeSevice.addAccountType(accountTypeDto), HttpStatus.OK);
+	public ResponseEntity<HttpResponseStatus> addAccountType(@RequestBody AccountTypeDto accountTypeDto) {
+
+		logger.info("Add AccountType Called in Controller.... ");
+
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), accountTypeSevice.addAccountType(accountTypeDto)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage()),
+					HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@DeleteMapping("/{typeId}")
-	public ResponseEntity<String> deleteAccountType(@PathVariable("typeId") Long typeId) {
+	public ResponseEntity<HttpResponseStatus> deleteAccountType(@PathVariable("typeId") Long typeId) {
 
-		return new ResponseEntity<>(accountTypeSevice.deleteAccountType(typeId), HttpStatus.OK);
+		logger.info("Delete AccountType Called in Controller.... ");
 
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), accountTypeSevice.deleteAccountType(typeId)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
 	}
 
-	@GetMapping("getByAccountType/{accountType}")
-	public ResponseEntity<List<AccountType>> viewAccountByAccountType(@PathVariable("accountType") String accountType) {
+	@GetMapping("/getByAccountType/{accountType}")
+	public ResponseEntity<HttpResponseStatus> viewAccountByAccountType(
+			@PathVariable("accountType") String accountType) {
 
-		return new ResponseEntity<>(accountTypeSevice.getAccountsByType(accountType), HttpStatus.OK);
+		logger.info("Get AccountsBy Type Called in Controller.... ");
+
+		try {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					accountTypeSevice.getAccountsByType(accountType)), HttpStatus.OK);
+
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
 
 	}
 
 	@GetMapping
-	public ResponseEntity<List<AccountType>> viewAllAccount() {
+	public ResponseEntity<HttpResponseStatus> viewAllAccount() {
 
-		return new ResponseEntity<>(accountTypeSevice.viewAllAccount(), HttpStatus.OK);
+		logger.info("View All Account Types Called in Controller.... ");
+
+		try {
+
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, accountTypeSevice.viewAllAccount()),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+
 	}
 
-	@GetMapping("getByAccountNumber/{accountNo}")
-	public ResponseEntity<AccountType> viewAccountByAccountNumber(@PathVariable("accountNo") String accountNo) {
+	@GetMapping("/getByAccountNumber/{accountNo}")
+	public ResponseEntity<HttpResponseStatus> viewAccountByAccountNumber(@PathVariable("accountNo") String accountNo) {
 
-		return new ResponseEntity<>(accountTypeSevice.getAccountByAccountNo(accountNo), HttpStatus.OK);
+		logger.info("Get AccountBy AccountNo Called in Controller.... ");
 
+		try {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					accountTypeSevice.getAccountByAccountNo(accountNo)), HttpStatus.OK);
+
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+	
 	}
 
 	@PutMapping
 	public ResponseEntity<String> updateAccountType(@RequestBody AccountTypeDto accountTypeDto) {
+
+		logger.info("Update AccountType Called in Controller.... ");
 		return new ResponseEntity<>(accountTypeSevice.updateAccountType(accountTypeDto), HttpStatus.OK);
 	}
 
-	@PutMapping("updateAccountStatus/{accountStatus}/{accountNo}")
-	public ResponseEntity<String> updateAccountType(@PathVariable("accountStatus") String accountStatus,
+	@PutMapping("/updateAccountStatus/{accountStatus}/{accountNo}")
+	public ResponseEntity<HttpResponseStatus> updateAccountType(@PathVariable("accountStatus") String accountStatus,
 			@PathVariable("accountNo") String accountNo) {
-		return new ResponseEntity<>(accountTypeSevice.updateAccountStatus(accountStatus, accountNo), HttpStatus.OK);
+
+		logger.info("Update Status of account Called in Controller.... ");
+	
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(),accountTypeSevice.updateAccountStatus(accountStatus, accountNo)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+		
 	}
 
-	@GetMapping("getCustomerById/{customerId}")
-	public ResponseEntity<List<AccountType>> viewCustomerById(@PathVariable("customerId") Long customerId) {
+	@GetMapping("/getCustomerById/{customerId}")
+	public ResponseEntity<HttpResponseStatus> viewCustomerById(@PathVariable("customerId") Long customerId) {
 
-		return new ResponseEntity<>(accountTypeSevice.viewCustomerById(customerId), HttpStatus.OK);
+		logger.info("View CustomerBy Id Called in Controller.... ");
 
+		try {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					accountTypeSevice.viewCustomerById(customerId)), HttpStatus.OK);
+
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+
+	
 	}
 
-	@GetMapping("accountExists/{mobileNo}/{email}/{type}")
-	public ResponseEntity<AccountType> isAccountTypeExists(@PathVariable("mobileNo") String mobileNo, String email,
+	@GetMapping("/accountExists/{mobileNo}/{email}/{type}")
+	public ResponseEntity<HttpResponseStatus> isAccountTypeExists(@PathVariable("mobileNo") String mobileNo, String email,
 			String type) {
 
-		return new ResponseEntity<>(accountTypeSevice.isAccountTypeExists(mobileNo, email, type), HttpStatus.OK);
+		logger.info("Is AccountType Exists Called in Controller.... ");
+
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, accountTypeSevice.isAccountTypeExists(mobileNo, email, type)),
+					HttpStatus.OK);
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+	
+	}
+
+	@GetMapping("/getCustomersByIFSC/{ifscCode}")
+	public ResponseEntity<HttpResponseStatus> getCustomersByIFSC(@PathVariable("ifscCode") String ifscCode) {
+
+		logger.info("viewAllCustomer BY Ifsc Called in Controller.... ");
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, accountTypeSevice.getCustomersByIFSC(ifscCode)),
+					HttpStatus.OK);
+		}
+
+		catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
 
 	}
 
-	@GetMapping("getCustomersByIFSC/{ifscCode}")
-	public ResponseEntity<List<AccountType>> getCustomersByIFSC(@PathVariable("ifscCode") String ifscCode) {
-
-		return new ResponseEntity<>(accountTypeSevice.getCustomersByIFSC(ifscCode), HttpStatus.OK);
-	}
-
-	// exception for Duplication
-	@ExceptionHandler(DuplicateException.class)
-	public ResponseEntity<String> duplicateIdFound(DuplicateException e) {
-
-		System.out.println(e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
-	// exception for Id not Found
-	@ExceptionHandler(IdNotFoundException.class)
-	public ResponseEntity<String> userNotFound(IdNotFoundException e) {
-
-		System.out.println(e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-	}
-
-	// exception for invalid input
-	@ExceptionHandler(InvalidInputException.class)
-	public ResponseEntity<String> invalidInput(InvalidInputException e) {
-
-		System.out.println(e.getMessage());
-		return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-	}
 }

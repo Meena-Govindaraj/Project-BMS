@@ -33,6 +33,12 @@ public class TransactionController {
 	@Autowired
 	TransactionService transactionService;
 
+
+	/**
+	 * to view all transactions of all customers
+	 * 
+	 * @return list of transaction details that all customers
+	 */
 	@GetMapping
 	public ResponseEntity<HttpResponseStatus> viewAllTransacations() {
 
@@ -50,6 +56,13 @@ public class TransactionController {
 
 	}
 
+
+	/**
+	 * to add transaction details for every transaction that made by customer
+	 * 
+	 * @param transactionDetailsDto
+	 * @return string on successful creation of entry for fund transfer
+	 */
 	@PostMapping
 	public ResponseEntity<HttpResponseStatus> addTransacations(@RequestBody TransactionDetailsDto transactionDetailsDto) {
 
@@ -68,6 +81,12 @@ public class TransactionController {
 
 	}
 
+	/**
+	 * to view transaction of particular customer on particular account
+	 * 
+	 * @param accountId
+	 * @return list of transaction that customer made
+	 */
 	@GetMapping("/transactionById/{accountId}")
 	public ResponseEntity<HttpResponseStatus> viewTransacationsById(@PathVariable("accountId") Long accountId) {
 

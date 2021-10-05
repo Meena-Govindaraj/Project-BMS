@@ -26,6 +26,7 @@ public class AccountDAOImpl implements AccountDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 
+	
 	@Override
 	public String addAccount(Account account) {
 

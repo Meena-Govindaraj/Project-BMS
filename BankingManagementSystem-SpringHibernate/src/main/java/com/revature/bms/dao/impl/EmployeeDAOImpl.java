@@ -202,26 +202,6 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	}
 
 	@Override
-	public Employee validateEmployeeLogin(String mobileNo, String password) {
-
-		logger.info("Validate Employee Login Called in Dao.... ");
-
-		try (Session session = sessionFactory.openSession()) {
-
-			List<Employee> resultList = session
-					.createQuery("select e from Employee e where e.mobileNo=:mobileNo and password=:password")
-					.setParameter("mobileNo", mobileNo)
-					.setParameter("password", password).getResultList();
-
-			return (resultList.isEmpty() ? null : resultList.get(0));
-		
-		} catch (Exception e) {
-			throw new DatabaseException(ERROR_IN_FETCH);
-		}
-
-	}
-
-	@Override
 	public boolean isEmployeeExistsByEmail(String email) {
 
 		logger.info("Is Employee Exists By Email Called in Dao.... ");

@@ -33,6 +33,14 @@ public class AccountTypeController {
 	@Autowired
 	private AccountTypeSevice accountTypeSevice;
 
+	/**
+	 * to add account type of customer with auto generated account type a customer
+	 * can have two accounts SA AND CA for each account account will be generated
+	 * with same customer Id
+	 * 
+	 * @param accountTypeDto
+	 * @return string if account added successfully
+	 */
 	@PostMapping
 	public ResponseEntity<HttpResponseStatus> addAccountType(@RequestBody AccountTypeDto accountTypeDto) {
 
@@ -48,6 +56,12 @@ public class AccountTypeController {
 		}
 	}
 
+	/**
+	 * to delete particular account type of customers type id
+	 * 
+	 * @param typeId
+	 * @return string if account deleted successfully
+	 */
 	@DeleteMapping("/{typeId}")
 	public ResponseEntity<HttpResponseStatus> deleteAccountType(@PathVariable("typeId") Long typeId) {
 
@@ -64,6 +78,12 @@ public class AccountTypeController {
 		}
 	}
 
+	/**
+	 * to retrieve account details on account type
+	 * 
+	 * @param type
+	 * @return list of accounts on type
+	 */
 	@GetMapping("/getByAccountType/{accountType}")
 	public ResponseEntity<HttpResponseStatus> viewAccountByAccountType(
 			@PathVariable("accountType") String accountType) {
@@ -84,7 +104,13 @@ public class AccountTypeController {
 
 	}
 
-	
+	/**
+	 * to get account details on account no
+	 * 
+	 * @param accountNo
+	 * @return particular account on matched account no
+	 */
+
 	@GetMapping("/getByAccountNumber/{accountNo}")
 	public ResponseEntity<HttpResponseStatus> viewAccountByAccountNumber(@PathVariable("accountNo") String accountNo) {
 
@@ -101,8 +127,15 @@ public class AccountTypeController {
 					HttpStatus.NOT_FOUND);
 
 		}
-	
+
 	}
+
+	/**
+	 * to update account type
+	 * 
+	 * @param accountTypeDto
+	 * @return string if account updated successfully
+	 */
 
 	@PutMapping
 	public ResponseEntity<String> updateAccountType(@RequestBody AccountTypeDto accountTypeDto) {
@@ -111,24 +144,37 @@ public class AccountTypeController {
 		return new ResponseEntity<>(accountTypeSevice.updateAccountType(accountTypeDto), HttpStatus.OK);
 	}
 
+	/**
+	 * to update the status of account while creating account status will be no
+	 * after accepting by employee the status get updated to yes
+	 * 
+	 * @param accountStatus
+	 * @param accountNo
+	 * @return string on successful updation
+	 */
 	@PutMapping("/updateAccountStatus/{accountStatus}/{accountNo}")
-	public ResponseEntity<HttpResponseStatus> updateAccountType(@PathVariable("accountStatus") String accountStatus,
-			@PathVariable("accountNo") String accountNo) {
+	public ResponseEntity<HttpResponseStatus> updateAccountTypeStatus(
+			@PathVariable("accountStatus") String accountStatus, @PathVariable("accountNo") String accountNo) {
 
 		logger.info("Update Status of account Called in Controller.... ");
-	
+
 		try {
-			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(),accountTypeSevice.updateAccountStatus(accountStatus, accountNo)),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(),
+					accountTypeSevice.updateAccountStatus(accountStatus, accountNo)), HttpStatus.OK);
 		} catch (BussinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
 		}
-		
+
 	}
 
+	/**
+	 * get account on IFSC CODE to show the employees branch customer
+	 * 
+	 * @param ifscCode
+	 * @return list of customer on matched IFSC CODE
+	 */
 	@GetMapping("/getCustomerById/{customerId}")
 	public ResponseEntity<HttpResponseStatus> viewCustomerById(@PathVariable("customerId") Long customerId) {
 
@@ -146,19 +192,25 @@ public class AccountTypeController {
 
 		}
 
-	
 	}
 
+	/**
+	 * to check account already exists on this type with same mobile no
+	 * 
+	 * @param mobileNo
+	 * @param email
+	 * @param type
+	 * @return account if exists
+	 */
 	@GetMapping("/accountExists/{mobileNo}/{email}/{type}")
-	public ResponseEntity<HttpResponseStatus> isAccountTypeExists(@PathVariable("mobileNo") String mobileNo, String email,
-			String type) {
+	public ResponseEntity<HttpResponseStatus> isAccountTypeExists(@PathVariable("mobileNo") String mobileNo,
+			String email, String type) {
 
 		logger.info("Is AccountType Exists Called in Controller.... ");
 
 		try {
-			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, accountTypeSevice.isAccountTypeExists(mobileNo, email, type)),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					accountTypeSevice.isAccountTypeExists(mobileNo, email, type)), HttpStatus.OK);
 		}
 
 		catch (BussinessLogicException e) {
@@ -166,17 +218,22 @@ public class AccountTypeController {
 					HttpStatus.NOT_FOUND);
 
 		}
-	
+
 	}
 
+	/**
+	 * get account on IFSC CODE to show the employees branch customer
+	 * 
+	 * @param ifscCode
+	 * @return list of customer on matched IFSC CODE
+	 */
 	@GetMapping("/getCustomersByIFSC/{ifscCode}")
 	public ResponseEntity<HttpResponseStatus> getCustomersByIFSC(@PathVariable("ifscCode") String ifscCode) {
 
 		logger.info("viewAllCustomer BY Ifsc Called in Controller.... ");
 		try {
-			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, accountTypeSevice.getCustomersByIFSC(ifscCode)),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					accountTypeSevice.getCustomersByIFSC(ifscCode)), HttpStatus.OK);
 		}
 
 		catch (BussinessLogicException e) {

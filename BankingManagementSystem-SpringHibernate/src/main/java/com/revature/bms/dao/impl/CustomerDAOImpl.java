@@ -189,24 +189,6 @@ public class CustomerDAOImpl implements CustomerDAO {
 	}
 
 	@Override
-	public Customer validateCustomerLogin(String mobileNo, String password) {
-
-		logger.info("validate Customer Login called in customer dao");
-		
-		try (Session session = sessionFactory.openSession()) {
-
-			List<Customer> resultList = session
-					.createQuery("select c from Customer c where c.mobileNo=:mobileNo and password=:password")
-					.setParameter("mobileNo", mobileNo)
-					.setParameter("password", password).getResultList();
-
-			return (resultList.isEmpty() ? null : resultList.get(0));
-		} catch (Exception e) {
-			throw new DatabaseException(ERROR_IN_FETCH);
-		}
-	}
-
-	@Override
 	public Customer getCustomerByMobileNo(String mobileNo) {
 
 		logger.info("Get CustomerBy MobileNo called in customer dao");

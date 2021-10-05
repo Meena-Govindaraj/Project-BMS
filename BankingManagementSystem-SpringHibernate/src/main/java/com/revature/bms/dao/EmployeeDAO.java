@@ -104,12 +104,5 @@ public interface EmployeeDAO {
 	 */
 	String forgetPassword(String email, String password);
 
-	/**
-	 * to validate employee login on registered credentials
-	 * 
-	 * @param mobileNo
-	 * @param password
-	 * @return returns employee data if login credentails are matched
-	 */
-	Employee validateEmployeeLogin(String mobileNo, String password);
+	
 }

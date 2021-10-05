@@ -32,11 +32,17 @@ public class EmployeeController {
 	@Autowired
 	private EmployeeService employeeService;
 
+	/**
+	 * to add employee
+	 * 
+	 * @param employeeDto
+	 * @return string on successful creation
+	 */
 	@PostMapping
 	public ResponseEntity<HttpResponseStatus> addEmployee(@RequestBody EmployeeDto employeeDto) {
 
 		logger.info("Add Employee Called in Controller... ");
-		
+
 		try {
 			return new ResponseEntity<>(
 					new HttpResponseStatus(HttpStatus.OK.value(), employeeService.addEmployee(employeeDto)),
@@ -48,11 +54,17 @@ public class EmployeeController {
 
 	}
 
+	/**
+	 * to update employee details
+	 * 
+	 * @param employeeDto
+	 * @return string on successful updation
+	 */
 	@PutMapping
 	public ResponseEntity<HttpResponseStatus> updateEmployee(@RequestBody EmployeeDto employeeDto) {
 
 		logger.info("Update Employee Called in Controller... ");
-	
+
 		try {
 			return new ResponseEntity<>(
 					new HttpResponseStatus(HttpStatus.OK.value(), employeeService.updateEmployee(employeeDto)),
@@ -64,14 +76,19 @@ public class EmployeeController {
 		}
 
 	}
-	
+
+	/**
+	 * to retrieve all employees that created
+	 * 
+	 * @return list of employee details
+	 */
 	@GetMapping
 	public ResponseEntity<HttpResponseStatus> viewAllemployee() {
-		
+
 		logger.info("View All Employee Called in Controller... ");
 
 		try {
-		
+
 			return new ResponseEntity<>(
 					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, employeeService.viewAllemployee()),
 					HttpStatus.OK);
@@ -83,6 +100,12 @@ public class EmployeeController {
 
 	}
 
+	/**
+	 * to delete employee on Id
+	 * 
+	 * @param employeeId
+	 * @return string on successful deletion
+	 */
 	@DeleteMapping("/{employeeId}")
 	public ResponseEntity<HttpResponseStatus> deleteEmployee(@PathVariable("employeeId") Long employeeId) {
 
@@ -99,6 +122,14 @@ public class EmployeeController {
 
 	}
 
+	/**
+	 * to update employee login password
+	 * 
+	 * @param mobileNo
+	 * @param password
+	 * @param newPassword
+	 * @return string on successful updation
+	 */
 
 	@PutMapping("/updatePassword/{mobileNo}/{oldPassword}/{newPassaword}")
 	public ResponseEntity<HttpResponseStatus> updatePassword(@PathVariable("mobileNo") String mobileNo,
@@ -107,17 +138,23 @@ public class EmployeeController {
 		logger.info("Update Password of employee Called in Controller... ");
 
 		try {
-			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), employeeService.updatePassword(mobileNo, oldPassword, newPassaword)),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(),
+					employeeService.updatePassword(mobileNo, oldPassword, newPassaword)), HttpStatus.OK);
 		} catch (BussinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
 		}
-		
+
 	}
 
+	/**
+	 * to reset employee login password
+	 * 
+	 * @param email
+	 * @param password
+	 * @return string on successful updation on password
+	 */
 	@PutMapping("/forgetPassword/{email}")
 	public ResponseEntity<HttpResponseStatus> forgetPassword(@PathVariable("email") String email) {
 
@@ -135,7 +172,12 @@ public class EmployeeController {
 
 	}
 
-	
+	/**
+	 * to view employee on employeeId
+	 * 
+	 * @param employeeId
+	 * @return employee data in matched employee id
+	 */
 	@GetMapping("/{employeeId}")
 	public ResponseEntity<HttpResponseStatus> viewEmployeeById(@PathVariable("employeeId") Long employeeId) {
 
@@ -153,6 +195,12 @@ public class EmployeeController {
 		}
 	}
 
+	/**
+	 * to get employee details on unique mobile no
+	 * 
+	 * @param mobileNo
+	 * @return
+	 */
 	@GetMapping("/getEmployeeByMobileNo/{mobileNo}")
 	public ResponseEntity<HttpResponseStatus> getEmployeeByMobileNo(@PathVariable("mobileNo") String mobileNo) {
 
@@ -171,6 +219,12 @@ public class EmployeeController {
 
 	}
 
+	/**
+	 * to get employee details on unique email
+	 * 
+	 * @param email
+	 * @return employee details on given email
+	 */
 	@GetMapping("/getEmployeeByEmail/{email}")
 	public ResponseEntity<HttpResponseStatus> getEmployeeByEmail(@PathVariable("email") String email) {
 
@@ -186,25 +240,6 @@ public class EmployeeController {
 					HttpStatus.NOT_FOUND);
 
 		}
-	}
-
-	@GetMapping("/employeeLogin/{mobileNo}/{password}")
-	public ResponseEntity<HttpResponseStatus> validateEmployeeLogin(@PathVariable("mobileNo") String mobileNo,
-			@PathVariable("password") String password) {
-
-		logger.info("Validate Employee Login Called in Controller... ");
-
-		try {
-			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
-					employeeService.validateEmployeeLogin(mobileNo, password)), HttpStatus.OK);
-		}
-
-		catch (BussinessLogicException e) {
-			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
-					HttpStatus.NOT_FOUND);
-
-		}
-
 	}
 
 }

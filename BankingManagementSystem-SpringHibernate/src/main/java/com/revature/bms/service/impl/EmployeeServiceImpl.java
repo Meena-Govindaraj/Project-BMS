@@ -221,24 +221,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Employee validateEmployeeLogin(String mobileNo, String password) {
-
-		logger.info("Validate Employee Login Called in Service... ");
-
-		Employee employee = null;
-		try {
-			employee = employeeDAO.validateEmployeeLogin(mobileNo, password);
-			if (employee != null)
-				return employee;
-			else
-				throw new BussinessLogicException("No records found");
-
-		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
-		}
-	}
-
-	@Override
 	public String forgetPassword(String email) {
 
 		logger.info("Forget Password od employee Called in Service... ");

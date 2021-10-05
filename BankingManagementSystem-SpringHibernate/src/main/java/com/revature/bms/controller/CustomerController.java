@@ -37,6 +37,12 @@ public class CustomerController {
 	@Autowired
 	private CustomerService customerService;
 
+	/**
+	 * to add customer with given details
+	 * 
+	 * @param customer
+	 * @return string on successful creation
+	 */
 	@PostMapping
 	public ResponseEntity<HttpResponseStatus> addCustomer(@RequestBody CustomerDto customerDto) {
 
@@ -53,6 +59,12 @@ public class CustomerController {
 
 	}
 
+	/**
+	 * to delete customer
+	 * 
+	 * @param customerId
+	 * @return string on successful deletion
+	 */
 	@DeleteMapping("/{customerId}")
 	public ResponseEntity<HttpResponseStatus> deleteCustomer(@PathVariable("customerId") Long customerId) {
 
@@ -69,6 +81,13 @@ public class CustomerController {
 		}
 
 	}
+
+	/**
+	 * to get details of customer on customer ID
+	 * 
+	 * @param customerId
+	 * @return customer data on matched customer Id
+	 */
 
 	@GetMapping("/{customerId}")
 	public ResponseEntity<HttpResponseStatus> viewCustomerById(@PathVariable("customerId") Long customerId) {
@@ -89,6 +108,14 @@ public class CustomerController {
 
 	}
 
+	/**
+	 * to rest customer login password
+	 * 
+	 * @param email
+	 * @param password
+	 * @return string successful updation of password
+	 */
+
 	@PutMapping("/forgetPassword/{email}")
 	public ResponseEntity<HttpResponseStatus> forgetPassword(@PathVariable("email") String email) {
 
@@ -103,8 +130,14 @@ public class CustomerController {
 					HttpStatus.NOT_FOUND);
 
 		}
-		
+
 	}
+
+	/**
+	 * to view all customers
+	 * 
+	 * @return list of customer that created
+	 */
 
 	@GetMapping
 	public ResponseEntity<HttpResponseStatus> viewAllCustomer() {
@@ -112,9 +145,9 @@ public class CustomerController {
 		logger.info("viewAllCustomer Called in Controller.... ");
 
 		try {
-			
+
 			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(),RETRIVED , customerService.viewAllCustomer()),
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, customerService.viewAllCustomer()),
 					HttpStatus.OK);
 		} catch (BussinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
@@ -124,6 +157,12 @@ public class CustomerController {
 
 	}
 
+	/**
+	 * to update customer with given details
+	 * 
+	 * @param customer
+	 * @return string on successful updation
+	 */
 	@PutMapping
 	public ResponseEntity<HttpResponseStatus> updateCustomer(@RequestBody CustomerDto customerDto) {
 
@@ -141,11 +180,17 @@ public class CustomerController {
 
 	}
 
+	/**
+	 * to get customer details on unique mobile no
+	 * 
+	 * @param mobileNo
+	 * @return customer details on matched mobile no
+	 */
 	@GetMapping("/getCustomerByMobileNo/{mobileNo}")
 	public ResponseEntity<HttpResponseStatus> viewCustomerByMobileNo(@PathVariable("mobileNo") String mobileNo) {
 
 		logger.info("Get CustomerBy MobileNo called in customer Controller");
-		
+
 		try {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
 					customerService.getCustomerByMobileNo(mobileNo)), HttpStatus.OK);
@@ -157,17 +202,24 @@ public class CustomerController {
 					HttpStatus.NOT_FOUND);
 
 		}
-		
+
 	}
 
+	/**
+	 * to get customer details on email
+	 * 
+	 * @param email
+	 * @return customer details on matched email
+	 */
 	@GetMapping("/getCustomerByEmail/{email}")
 	public ResponseEntity<HttpResponseStatus> getCustomerByEmail(@PathVariable("email") String email) {
 
 		logger.info("Get CustomerBy email called in customer Controller");
 
 		try {
-			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
-					customerService.getCustomerByEmail(email)), HttpStatus.OK);
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, customerService.getCustomerByEmail(email)),
+					HttpStatus.OK);
 
 		}
 
@@ -176,9 +228,16 @@ public class CustomerController {
 					HttpStatus.NOT_FOUND);
 
 		}
-		
+
 	}
 
+	/**
+	 * to update the login password of customer
+	 * 
+	 * @param mobileNo
+	 * @param password
+	 * @return string on successful updation
+	 */
 	@PutMapping("/updatePassword/{mobileNo}/{newPassword}")
 	public ResponseEntity<HttpResponseStatus> updatePassword(@PathVariable("mobileNo") String mobileNo,
 			@PathVariable("newPassword") String newPassword) {
@@ -186,35 +245,22 @@ public class CustomerController {
 		logger.info("Update password called in customer Controller");
 
 		try {
-			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), customerService.updatePassword(mobileNo, newPassword)),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(),
+					customerService.updatePassword(mobileNo, newPassword)), HttpStatus.OK);
 		} catch (BussinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
 		}
-	
-	}
-
-	@GetMapping("/customerLogin/{mobileNo}/{password}")
-	public ResponseEntity<HttpResponseStatus> validateCustomerLogin(@PathVariable("mobileNo") String mobileNo,
-			@PathVariable("password") String password) {
-
-		logger.info("validate Customer Login called in customer Controller");
-
-		try {
-			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
-					customerService.validateCustomerLogin(mobileNo, password)), HttpStatus.OK);
-		}
-
-		catch (BussinessLogicException e) {
-			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
-					HttpStatus.NOT_FOUND);
-
-		}
 
 	}
+
+	/**
+	 * to get customer details based on IFSC Code
+	 * 
+	 * @param ifscCode
+	 * @return list of customers on given IFSC Code
+	 */
 
 	@GetMapping("/getCustomersByIFSC/{ifscCode}")
 	public ResponseEntity<HttpResponseStatus> getCustomersByIFSC(@PathVariable("ifscCode") String ifscCode) {
@@ -222,9 +268,8 @@ public class CustomerController {
 		logger.info("Get CustomerBy IFSC called in customer Controller");
 
 		try {
-			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, customerService.getCustomersByIFSC(ifscCode)),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					customerService.getCustomersByIFSC(ifscCode)), HttpStatus.OK);
 		}
 
 		catch (BussinessLogicException e) {

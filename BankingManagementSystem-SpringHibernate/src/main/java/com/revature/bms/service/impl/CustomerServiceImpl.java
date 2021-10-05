@@ -202,22 +202,6 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 	}
 
-	@Override
-	public Customer validateCustomerLogin(String mobileNo, String password) {
-
-		logger.info("validate Customer Login called in customer Service");
-	
-		Customer customer=null;
-		try {
-			customer= customerDAO.validateCustomerLogin(mobileNo, password);
-			if(customer!=null)
-				return customer;
-			throw new BussinessLogicException("No Records Found");
-		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
-		}
-		
-	}
 
 	@Override
 	public Customer getCustomerByMobileNo(String mobileNo) {

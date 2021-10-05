@@ -73,14 +73,6 @@ public interface CustomerDAO {
 	 */
 	String updatePassword(String mobileNo, String password);
 
-	/**
-	 * to validate customer login on registered mobile no and password
-	 * 
-	 * @param mobileNo
-	 * @param password
-	 * @return customer details on matched mobile no and password
-	 */
-	Customer validateCustomerLogin(String mobileNo, String password);
 
 	/**
 	 * to get customer details on unique mobile no

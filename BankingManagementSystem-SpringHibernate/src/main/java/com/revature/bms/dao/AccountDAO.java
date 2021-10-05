@@ -12,7 +12,7 @@ public interface AccountDAO {
 	 * @param accountType
 	 * @return string if account added successfully
 	 */
-	String addAccount(Account accountType);
+	String addAccount(Account account);
 
 	/**
 	 * to view all accounts

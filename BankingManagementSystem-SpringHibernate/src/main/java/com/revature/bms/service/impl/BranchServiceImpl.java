@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.revature.bms.dao.BranchDAO;
@@ -43,9 +44,11 @@ public class BranchServiceImpl implements BranchService {
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
+		} catch (ConstraintViolationException e) {
+			throw new BussinessLogicException("Branch IFSC Code already exists!");
 		}
 	}
-	
+
 	@Override
 	public String deleteBranch(Long branchId) {
 
@@ -66,20 +69,19 @@ public class BranchServiceImpl implements BranchService {
 
 		logger.info("View AllBranch Called in Service.... ");
 		try {
-			List<Branch> branches =null;
-			branches=branchDAO.viewAllBranch();
-			if(branches!=null)
+			List<Branch> branches = null;
+			branches = branchDAO.viewAllBranch();
+			if (branches != null)
 				return branches;
 			else
 				throw new BussinessLogicException("No records Found");
-		
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 
 		}
 	}
 
-	
 	@Override
 	public String updateBranch(BranchDto branchDto) {
 
@@ -109,15 +111,15 @@ public class BranchServiceImpl implements BranchService {
 	public Branch viewBranchById(Long branchId) {
 
 		logger.info("View BranchById Called in Service.... ");
-		
-		Branch branch=null;
+
+		Branch branch = null;
 		try {
-			branch= branchDAO.viewBranchById(branchId);
-			if(branch!=null)
+			branch = branchDAO.viewBranchById(branchId);
+			if (branch != null)
 				return branch;
-		    else
-		    	throw new BussinessLogicException("No records Found");
-			
+			else
+				throw new BussinessLogicException("No records Found");
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -127,10 +129,14 @@ public class BranchServiceImpl implements BranchService {
 	public Branch getBranchByIfscCode(String ifscCode) {
 
 		logger.info("View Branch By IFSC Called in Service.... ");
-	
+
+		Branch branch = null;
 		try {
-			return branchDAO.getBranchByIfscCode(ifscCode);
-						
+			branch = branchDAO.getBranchByIfscCode(ifscCode);
+			if (branch != null)
+				return branch;
+			throw new BussinessLogicException("No Record Found");
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -140,10 +146,10 @@ public class BranchServiceImpl implements BranchService {
 	public Branch viewBranchByName(String branchName) {
 
 		logger.info("View Branch By Name Called in Service.... ");
-		
-		Branch branch=null;
+
+		Branch branch = null;
 		try {
-		branch=branchDAO.viewBranchByName(branchName);
+			branch = branchDAO.viewBranchByName(branchName);
 			return branch;
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());

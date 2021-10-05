@@ -41,7 +41,7 @@ public class Branch {
 	@Column(name = "city")
 	private String city;
 	
-	@Column(name = "ifsc_code", nullable = false, unique = false)
+	@Column(name = "ifsc_code", nullable = false, unique = true)
 	private String ifscCode;
 
 	@Column(name = "created_date")

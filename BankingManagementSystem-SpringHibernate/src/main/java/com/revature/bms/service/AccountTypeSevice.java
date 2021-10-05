@@ -12,9 +12,6 @@ public interface AccountTypeSevice {
 
 	 String deleteAccountType(Long typeId);
 
-	 boolean isAccountExists(Long typeId);
-
-	 List<AccountType> viewAllAccount();
 
 	 List<AccountType> getAccountsByType(String type);
 

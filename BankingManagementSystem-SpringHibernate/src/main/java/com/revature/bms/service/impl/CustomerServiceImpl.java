@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import static com.revature.bms.util.BankingManagementConstants.*;
@@ -44,8 +45,7 @@ public class CustomerServiceImpl implements CustomerService {
 				else {
 
 					// to check customer Existence...
-					if (customerDAO.isCustomerExistsByMobileNo(customerDto.getMobileNo())
-							&& customerDAO.isCustomerExistsByEmail(customerDto.getEmail())) {
+					if (customerDAO.isCustomerExistsByMobileNo(customerDto.getMobileNo())) {
 
 						// getting branch details to set in customer..
 						Branch branch = branchDAO.viewBranchById(branchId);
@@ -54,9 +54,6 @@ public class CustomerServiceImpl implements CustomerService {
 						// dto to entity..
 						Customer customer = CustomerMapper.dtoToEntity(customerDto);
 						customer.setPassword(GeneratePassword.generatePassword());
-
-						MailSend.sendMail(customer.getEmail(), " Account Credentials", "Regsitered Phone No: "
-								+ customer.getMobileNo() + "\n Password: " + customer.getPassword());
 
 						return customerDAO.addCustomer(customer);
 
@@ -70,6 +67,9 @@ public class CustomerServiceImpl implements CustomerService {
 			}
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
+		}
+		catch (ConstraintViolationException e) {
+			throw new BussinessLogicException("Customer mobile no already found");
 		}
 	}
 
@@ -123,10 +123,13 @@ public class CustomerServiceImpl implements CustomerService {
 	public List<Customer> viewAllCustomer() {
 
 		logger.info("viewAllCustomer Called in Service.... ");
+		
+		List<Customer> customers=null;
 		try {
-			List<Customer> customers = customerDAO.viewAllCustomer();
-			return (customers != null) ? customers : null;
-
+			customers = customerDAO.viewAllCustomer();
+			if (customers != null)
+					return customers;
+			throw new BussinessLogicException("No records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -161,6 +164,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public Customer viewCustomerById(Long customerId) {
 
 		logger.info("Is Customer Exists By customerId Called in Service.... ");
+		
 		try {
 			if (customerDAO.isCustomerExistsById(customerId))
 				throw new BussinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
@@ -185,6 +189,7 @@ public class CustomerServiceImpl implements CustomerService {
 	public String updatePassword(String mobileNo, String password) {
 
 		logger.info("Update password called in customer Sevice");
+		
 		try {
 			if (customerDAO.isCustomerExistsByMobileNo(mobileNo))
 				throw new BussinessLogicException(
@@ -201,32 +206,47 @@ public class CustomerServiceImpl implements CustomerService {
 	public Customer validateCustomerLogin(String mobileNo, String password) {
 
 		logger.info("validate Customer Login called in customer Service");
+	
+		Customer customer=null;
 		try {
-			return customerDAO.validateCustomerLogin(mobileNo, password);
-
+			customer= customerDAO.validateCustomerLogin(mobileNo, password);
+			if(customer!=null)
+				return customer;
+			throw new BussinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
+		
 	}
 
 	@Override
 	public Customer getCustomerByMobileNo(String mobileNo) {
 
 		logger.info("Get CustomerBy MobileNo called in customer Service");
+		
+		Customer customer=null;
 		try {
-			return customerDAO.getCustomerByMobileNo(mobileNo);
-
+			customer=customerDAO.getCustomerByMobileNo(mobileNo);
+			if(customer!=null)
+				return customer;
+			throw new BussinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
+		
 	}
 
 	@Override
 	public Customer getCustomerByEmail(String email) {
 
 		logger.info("Get CustomerBy email called in customer Service");
+		
+		Customer customer=null;
 		try {
-			return customerDAO.getCustomerByEmail(email);
+			customer= customerDAO.getCustomerByEmail(email);
+			if(customer!=null)
+				return customer;
+			throw new BussinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -236,11 +256,18 @@ public class CustomerServiceImpl implements CustomerService {
 	public List<Customer> getCustomersByIFSC(String ifscCode) {
 
 		logger.info("Get CustomerBy IFSC called in customer Service");
+		
+		List<Customer> customers=null;
 		try {
-			return customerDAO.getCustomersByIFSC(ifscCode);
+			customers =customerDAO.getCustomersByIFSC(ifscCode);
+			if (customers != null)
+					return customers;
+			throw new BussinessLogicException("No records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
+		
+		
 	}
 
 	@Override

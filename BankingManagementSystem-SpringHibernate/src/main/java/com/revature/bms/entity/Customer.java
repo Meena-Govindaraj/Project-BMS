@@ -42,7 +42,7 @@ public class Customer {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "mobile_no", nullable = false, unique = false)
+	@Column(name = "mobile_no", nullable = false, unique = true)
 	private String mobileNo;
 
 	@Column(name = "password", nullable = false)
@@ -51,7 +51,7 @@ public class Customer {
 	@Column(name = "age", nullable = false)
 	private Integer age;
 
-	@Column(name = "email", nullable = false, unique = false)
+	@Column(name = "email", nullable = false)
 	private String email;
 
 	@Column(name = "state")

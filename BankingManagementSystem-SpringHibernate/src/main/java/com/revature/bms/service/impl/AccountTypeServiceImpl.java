@@ -7,6 +7,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.revature.bms.controller.MailSend;
 import com.revature.bms.dao.AccountTypeDAO;
 import com.revature.bms.dao.CustomerDAO;
 import com.revature.bms.dto.AccountTypeDto;
@@ -56,6 +58,9 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 				accountTypeDto.setCustomer(customer);
 
 				AccountType accountType = AccountTypeMapper.dtoToEntity(accountTypeDto);
+
+				MailSend.sendMail(customer.getEmail(), " Account Credentials",
+						"Regsitered Phone No: " + customer.getMobileNo() + "\n Password: " + customer.getPassword());
 
 				return accountTypeDAO.addAccountType(accountType);
 
@@ -112,35 +117,16 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 	}
 
 	@Override
-	public boolean isAccountExists(Long typeId) {
-
-		logger.info("Is Account Exists Called in Service.... ");
-		try {
-			return accountTypeDAO.isAccountExists(typeId);
-		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
-		}
-	}
-
-	@Override
-	public List<AccountType> viewAllAccount() {
-
-		logger.info("View All Account Types Called in Service.... ");
-		try {
-			List<AccountType> types = accountTypeDAO.viewAllAccount();
-			return (types != null) ? types : null;
-		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
-		}
-	}
-
-	@Override
 	public List<AccountType> getAccountsByType(String type) {
 
 		logger.info("Get AccountsBy Type Called in Service.... ");
+		List<AccountType> accountType = null;
+
 		try {
-			List<AccountType> types = accountTypeDAO.getAccountsByType(type);
-			return (types != null) ? types : null;
+			accountType = accountTypeDAO.getAccountsByType(type);
+			if (accountType != null)
+				return accountType;
+			throw new BussinessLogicException("No Record Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -164,20 +150,31 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 	public List<AccountType> viewCustomerById(Long customerId) {
 
 		logger.info("View CustomerBy Id Called in Service.... ");
-		try {
-			return accountTypeDAO.viewCustomerById(customerId);
 
+		List<AccountType> accountType = null;
+
+		try {
+			accountType = accountTypeDAO.viewCustomerById(customerId);
+			if (accountType != null)
+				return accountType;
+			throw new BussinessLogicException("No Record Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
+
 	}
 
 	@Override
 	public AccountType isAccountTypeExists(String mobileNo, String email, String type) {
 
 		logger.info("Is AccountType Exists Called in Service.... ");
+
+		AccountType accountType = null;
 		try {
-			return accountTypeDAO.isAccountTypeExists(mobileNo, email, type);
+			accountType = accountTypeDAO.isAccountTypeExists(mobileNo, email, type);
+			if (accountType != null)
+				return accountType;
+			throw new BussinessLogicException("No Record Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -202,13 +199,16 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 	public List<AccountType> getCustomersByIFSC(String ifscCode) {
 
 		logger.info("viewAllCustomer BY Ifsc Called in Service.... ");
+
+		List<AccountType> accountType = null;
 		try {
-			return accountTypeDAO.getCustomersByIFSC(ifscCode);
+			accountType = accountTypeDAO.getCustomersByIFSC(ifscCode);
+			if (accountType != null)
+				return accountType;
+			throw new BussinessLogicException("No Record Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
 	}
-	
-	
 
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +43,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 				if (branchDAO.isBranchExists(branchId))
 					throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
 
-				if (employeeDAO.isEmployeeExistsByMobileNo(employeeDto.getMobileNo())
-						&& employeeDAO.isEmployeeExistsByEmail(employeeDto.getEmail())) {
+				if (employeeDAO.isEmployeeExistsByMobileNo(employeeDto.getMobileNo())) {
 
 					// getting branch details to set in employee..
 					Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
@@ -70,6 +70,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
+		} catch (ConstraintViolationException e) {
+			throw new BussinessLogicException("Mobile No already exists");
 		}
 	}
 
@@ -126,9 +128,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public List<Employee> viewAllemployee() {
 
 		logger.info("View All Employee Called in Service... ");
+
+		List<Employee> employees = null;
 		try {
-			List<Employee> employees = employeeDAO.viewAllemployee();
-			return (employees != null) ? employees : null;
+			employees = employeeDAO.viewAllemployee();
+			if (employees != null)
+				return employees;
+			throw new BussinessLogicException("No records found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -205,8 +211,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		try {
 			employee = employeeDAO.getEmployeeByMobileNo(mobileNo);
-			return employee;
-
+			if (employee != null)
+				return employee;
+			throw new BussinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -218,14 +225,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		logger.info("Validate Employee Login Called in Service... ");
 
-		Employee employee=null;
+		Employee employee = null;
 		try {
-			employee=employeeDAO.validateEmployeeLogin(mobileNo, password);
-			if(employee!=null)
+			employee = employeeDAO.validateEmployeeLogin(mobileNo, password);
+			if (employee != null)
 				return employee;
 			else
 				throw new BussinessLogicException("No records found");
-			
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -252,11 +259,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public Employee getEmployeeByEmail(String email) {
 
 		logger.info("Is Employee Exists By Email Called in Service... ");
+
+		Employee employee = null;
 		try {
-			return employeeDAO.getEmployeeByEmail(email);
+			employee = employeeDAO.getEmployeeByEmail(email);
+			if (employee != null)
+				return employee;
+			throw new BussinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
+
 	}
 
 }

@@ -37,7 +37,7 @@ public class TransacationServiceImpl implements TransactionService {
 		try {
 			if (transactionDetailsDto != null && transactionDetailsDto.getAccount() != null) {
 				if (transactionDetailsDto.getAccount().getAccountType() == null)
-					throw new BussinessLogicException("Account details "+ID_NOT_FOUND);
+					throw new BussinessLogicException("Account details " + ID_NOT_FOUND);
 
 				String accountNo = transactionDetailsDto.getAccount().getAccountType().getAccountNo();
 				if (accountDAO.getAccountByAccountNo(accountNo) == null)
@@ -51,7 +51,7 @@ public class TransacationServiceImpl implements TransactionService {
 
 				return transactionDAO.addTransaction(details);
 			}
-			throw new BussinessLogicException("Transaction details "+INVALID_DETAILS );
+			throw new BussinessLogicException("Transaction details " + INVALID_DETAILS);
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -62,9 +62,15 @@ public class TransacationServiceImpl implements TransactionService {
 	public List<TransactionDetails> viewAllTransaction() {
 
 		logger.info("view All Transaction Called in Service ");
+		List<TransactionDetails> details = null;
+
 		try {
-			List<TransactionDetails> transactions = transactionDAO.viewAllTransaction();
-			return (transactions != null) ? transactions : null;
+			details = transactionDAO.viewAllTransaction();
+			if (details != null)
+				return details;
+			else
+				throw new BussinessLogicException("No record Found");
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -75,9 +81,14 @@ public class TransacationServiceImpl implements TransactionService {
 	public List<TransactionDetails> viewTransactionByAccount(Long accountId) {
 
 		logger.info("View A Transaction on account in Service ");
+
+		List<TransactionDetails> details = null;
 		try {
-			List<TransactionDetails> transactions = transactionDAO.viewTransactionByAccount(accountId);
-			return (transactions != null) ? transactions : null;
+			details = transactionDAO.viewTransactionByAccount(accountId);
+			if (details != null)
+				return details;
+			else
+				throw new BussinessLogicException("No record Found");
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());

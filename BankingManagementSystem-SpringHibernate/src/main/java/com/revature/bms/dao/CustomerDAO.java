@@ -6,32 +6,122 @@ import com.revature.bms.entity.Customer;
 
 public interface CustomerDAO {
 
-	 String addCustomer(Customer customer);
+	/**
+	 * to add customer with given details
+	 * 
+	 * @param customer
+	 * @return string on successful creation
+	 */
+	String addCustomer(Customer customer);
 
-	 String deleteCustomer(Long customerId);
+	/**
+	 * to delete customer
+	 * 
+	 * @param customerId
+	 * @return string on successful deletion
+	 */
 
-	 String updateCustomer(Customer customer);
+	String deleteCustomer(Long customerId);
 
-	 List<Customer> viewAllCustomer();
+	/**
+	 * to update customer with given details
+	 * 
+	 * @param customer
+	 * @return string on successful updation
+	 */
 
-	 Customer viewCustomerById(Long customerId);
+	String updateCustomer(Customer customer);
 
-	 boolean isCustomerExistsByMobileNo(String mobileNo);// to add account
+	/**
+	 * to view all customers
+	 * 
+	 * @return list of customer that created
+	 */
+	List<Customer> viewAllCustomer();
 
-	 boolean isCustomerExistsByEmail(String email);// to add account
+	/**
+	 * to get details of customer on customer ID
+	 * 
+	 * @param customerId
+	 * @return customer data on matched customer Id
+	 */
 
-	 String updatePassword(String mobileNo, String password);// updation of password
+	Customer viewCustomerById(Long customerId);
 
-	 Customer validateCustomerLogin(String mobileNo, String password);
+	/**
+	 * to check customer already exists on mobile no
+	 * 
+	 * @param mobileNo
+	 * @return boolean based on presence of customer mobile no
+	 */
+	boolean isCustomerExistsByMobileNo(String mobileNo);
 
-	 Customer getCustomerByMobileNo(String mobileNo);
+	/**
+	 * to check customer already exists on email
+	 * 
+	 * @param email
+	 * @return boolean based on presence of customer email
+	 */
+	boolean isCustomerExistsByEmail(String email);
 
-	 Customer getCustomerByEmail(String email);
+	/**
+	 * to update the login password of customer
+	 * 
+	 * @param mobileNo
+	 * @param password
+	 * @return string on successful updation
+	 */
+	String updatePassword(String mobileNo, String password);
 
-	 boolean isCustomerExistsById(Long customerId);// for deleting/updating
+	/**
+	 * to validate customer login on registered mobile no and password
+	 * 
+	 * @param mobileNo
+	 * @param password
+	 * @return customer details on matched mobile no and password
+	 */
+	Customer validateCustomerLogin(String mobileNo, String password);
 
-	 List<Customer> getCustomersByIFSC(String ifscCode);
+	/**
+	 * to get customer details on unique mobile no
+	 * 
+	 * @param mobileNo
+	 * @return customer details on matched mobile no
+	 */
+	Customer getCustomerByMobileNo(String mobileNo);
 
-	 String forgetPassword(String email, String password);
+	/**
+	 * to get customer details on email
+	 * 
+	 * @param email
+	 * @return customer details on matched email
+	 */
+	Customer getCustomerByEmail(String email);
+
+	/**
+	 * to check customer existence of customer id
+	 * 
+	 * @param customerId
+	 * @return boolean based on presence of customer id
+	 */
+
+	boolean isCustomerExistsById(Long customerId);
+
+	/**
+	 * to get customer details based on IFSC Code
+	 * 
+	 * @param ifscCode
+	 * @return list of customers on given IFSC Code
+	 */
+	List<Customer> getCustomersByIFSC(String ifscCode);
+
+	/**
+	 * to rest customer login password
+	 * 
+	 * @param email
+	 * @param password
+	 * @return string successful updation of password
+	 */
+	String forgetPassword(String email, String password);
 
 }

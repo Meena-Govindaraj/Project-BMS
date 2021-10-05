@@ -84,24 +84,7 @@ public class AccountTypeController {
 
 	}
 
-	@GetMapping
-	public ResponseEntity<HttpResponseStatus> viewAllAccount() {
-
-		logger.info("View All Account Types Called in Controller.... ");
-
-		try {
-
-			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, accountTypeSevice.viewAllAccount()),
-					HttpStatus.OK);
-		} catch (BussinessLogicException e) {
-			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
-					HttpStatus.NOT_FOUND);
-
-		}
-
-	}
-
+	
 	@GetMapping("/getByAccountNumber/{accountNo}")
 	public ResponseEntity<HttpResponseStatus> viewAccountByAccountNumber(@PathVariable("accountNo") String accountNo) {
 

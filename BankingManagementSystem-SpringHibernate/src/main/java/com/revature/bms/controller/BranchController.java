@@ -39,7 +39,7 @@ public class BranchController {
 	 * To add branch
 	 * 
 	 * @param branchDto
-	 * @return response as string with status code
+	 * @return HttpResponse with status code, message
 	 */
 
 	@PostMapping
@@ -60,7 +60,8 @@ public class BranchController {
 	/**
 	 * to get all branches that stored
 	 * 
-	 * @return list of branches as response entity with status code
+	 * // * @return list of branches as HttpResponse entity with status code,message
+	 * and branch details
 	 */
 
 	@GetMapping
@@ -84,7 +85,7 @@ public class BranchController {
 	 * to delete the branch by Id
 	 * 
 	 * @param branchId
-	 * @return response string entity with status code
+	 * @return HttpResponse with status code and string
 	 */
 
 	@DeleteMapping("/{branchId}")
@@ -105,7 +106,7 @@ public class BranchController {
 	 * to update branch details
 	 * 
 	 * @param branchDto
-	 * @return response entity as string status code
+	 * @return HttpResponse with status code and string
 	 */
 
 	@PutMapping
@@ -126,7 +127,7 @@ public class BranchController {
 	 * to view branch by BranchId
 	 * 
 	 * @param branchId
-	 * @return returns the data of particular branch
+	 * @return returns HttpResponse with status code, message and branch details
 	 */
 
 	@GetMapping("/{branchId}")
@@ -150,7 +151,8 @@ public class BranchController {
 	 * to get branches details on IFSC code
 	 * 
 	 * @param ifscCode
-	 * @return returns the data of particular branch on given IFSC CODE
+	 * @return returns HttpResponse with status code , message and data of
+	 *         particular branch on given IFSC CODE
 	 */
 
 	@GetMapping("/getBranchByIfscCode/{ifscCode}")
@@ -172,7 +174,8 @@ public class BranchController {
 	 * to view branch by branch name
 	 * 
 	 * @param branchName
-	 * @return returns the data of particular branch on name
+	 * @return returns HttpResponse with status code ,message and the data of
+	 *         particular branch on name
 	 */
 
 	@GetMapping("/getBranchByName/{branchName}")

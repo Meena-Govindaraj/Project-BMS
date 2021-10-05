@@ -66,7 +66,7 @@ public class AccountServiceImpl implements AccountService {
 				return accountDAO.addAccount(account);
 
 			} else
-				throw new BussinessLogicException("Account "+INVALID_DETAILS);
+				throw new BussinessLogicException("Account " + INVALID_DETAILS);
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -75,11 +75,16 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public List<Account> viewAllAccount() {
-		
+
 		logger.info("View All Account Called in service.... ");
+
+		List<Account> account = null;
 		try {
-			List<Account> types = accountDAO.viewAllAccount();
-			return (types != null) ? types : null;
+			account = accountDAO.viewAllAccount();
+			if (account != null)
+				return account;
+			else
+				throw new BussinessLogicException("No record Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -88,9 +93,14 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account getAccountByAccountNo(String accountNo) {
 
+		Account account = null;
 		logger.info("Get Account ByAccountNo Called in service.... ");
 		try {
-			return accountDAO.getAccountByAccountNo(accountNo);
+			account = accountDAO.getAccountByAccountNo(accountNo);
+			if (account != null)
+				return account;
+			else
+				throw new BussinessLogicException("No records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -100,8 +110,14 @@ public class AccountServiceImpl implements AccountService {
 	public List<Account> getCustomersByIFSC(String ifscCode) {
 
 		logger.info("Get Customers ByIFSC Called in service.... ");
+
+		List<Account> account = null;
 		try {
-			return accountDAO.getCustomersByIFSC(ifscCode);
+			account = accountDAO.getCustomersByIFSC(ifscCode);
+			if (account != null)
+				return account;
+			else
+				throw new BussinessLogicException("No records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -112,8 +128,13 @@ public class AccountServiceImpl implements AccountService {
 	public Account getAccountsByType(Long customerId, String type) {
 
 		logger.info("Get AccountsByType Called in service.... ");
+		Account account = null;
 		try {
-			return accountDAO.getAccountsByType(customerId, type);
+			account = accountDAO.getAccountsByType(customerId, type);
+			if (account != null)
+				return account;
+			else
+				throw new BussinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -123,19 +144,31 @@ public class AccountServiceImpl implements AccountService {
 	public List<Account> getCustomerByCustomerId(Long customerId) {
 
 		logger.info("Get Customer ByCustomerId Called in service.... ");
+		
+		List<Account> account = null;
 		try {
-			return accountDAO.getCustomerByCustomerId(customerId);
+			account = accountDAO.getCustomerByCustomerId(customerId);
+			if (account != null)
+				return account;
+			else
+				throw new BussinessLogicException("No records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
+		
 	}
 
 	@Override
 	public String bankTransfer(Long senderId, Long receiverId, Long amount) {
 
 		logger.info("Bank Transfer Called in service.... ");
+		
+		String transfer=null;
 		try {
-			return accountDAO.bankTransfer(senderId, receiverId, amount);
+			transfer=accountDAO.bankTransfer(senderId, receiverId, amount);
+			if(transfer==null)
+				throw new BussinessLogicException("Transfer failed");
+			return transfer;
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -146,11 +179,15 @@ public class AccountServiceImpl implements AccountService {
 
 		logger.info("Update TransactionPIN Called in service.... ");
 		
+		String transfer=null;
 		try {
-			return accountDAO.updateTransactionPIN(typeId, password);
+			transfer=accountDAO.updateTransactionPIN(typeId, password);
+			if(transfer==null)
+				throw new BussinessLogicException("Password Updation Falied");
+			return transfer;
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
-	}
+		}
 
 }

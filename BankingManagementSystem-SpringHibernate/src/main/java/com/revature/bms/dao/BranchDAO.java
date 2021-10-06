@@ -11,7 +11,7 @@ public interface BranchDAO {
 	 * @param branch
 	 * @return string
 	 */
-	 String addBranch(Branch branch);
+	String addBranch(Branch branch);
 
 	/**
 	 * to get all branches that stored
@@ -19,7 +19,7 @@ public interface BranchDAO {
 	 * @return list of branches
 	 */
 
-	 List<Branch> viewAllBranch();
+	List<Branch> viewAllBranch();
 
 	/**
 	 * to view branch by BranchId
@@ -28,7 +28,7 @@ public interface BranchDAO {
 	 * @return returns the data of particular branch
 	 */
 
-	 Branch viewBranchById(Long branchId);
+	Branch viewBranchById(Long branchId);
 
 	/**
 	 * to delete the branch by Id
@@ -37,7 +37,7 @@ public interface BranchDAO {
 	 * @return string
 	 */
 
-	 String deleteBranch(Long branchId);
+	String deleteBranch(Long branchId);
 
 	/**
 	 * to check branch existence
@@ -46,7 +46,7 @@ public interface BranchDAO {
 	 * @return boolean based on existence of branch
 	 */
 
-	 boolean isBranchExists(Long branchId);
+	boolean isBranchExists(Long branchId);
 
 	/**
 	 * to update branch details
@@ -55,7 +55,7 @@ public interface BranchDAO {
 	 * @return string
 	 */
 
-	 String updateBranch(Branch branch);
+	String updateBranch(Branch branch);
 
 	/**
 	 * to check IFSC code existence
@@ -64,7 +64,7 @@ public interface BranchDAO {
 	 * @return boolean ,based on existence of branch IFSC code
 	 */
 
-	 boolean isBranchExistsBYCode(String ifscCode);
+	boolean isBranchExistsBYCode(String ifscCode);
 
 	/**
 	 * to get branches details on IFSC code
@@ -73,7 +73,7 @@ public interface BranchDAO {
 	 * @return returns the data of particular branch on given IFSC CODE
 	 */
 
-	 Branch getBranchByIfscCode(String ifscCode);
+	Branch getBranchByIfscCode(String ifscCode);
 
 	/**
 	 * to view branch by branch name
@@ -82,6 +82,6 @@ public interface BranchDAO {
 	 * @return returns the data of particular branch on name
 	 */
 
-	 Branch viewBranchByName(String branchName);
+	Branch viewBranchByName(String branchName);
 
 }

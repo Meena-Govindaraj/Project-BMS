@@ -12,15 +12,14 @@ import lombok.NoArgsConstructor;
 public class BankDto {
 
 	private Long id;
-	
+
 	private String bankName;
-	
+
 	private String address;
-	
 
 	@Override
 	public String toString() {
 		return "BankDto [id=" + id + ", bankName=" + bankName + ", address=" + address + "]";
 	}
-	
+
 }

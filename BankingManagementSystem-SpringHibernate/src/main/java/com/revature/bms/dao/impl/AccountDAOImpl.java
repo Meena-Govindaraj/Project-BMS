@@ -1,6 +1,5 @@
 package com.revature.bms.dao.impl;
 
-
 import static com.revature.bms.util.BankingManagementConstants.*;
 
 import java.util.List;
@@ -26,21 +25,20 @@ public class AccountDAOImpl implements AccountDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	
 	@Override
 	public String addAccount(Account account) {
 
 		logger.info("Add Account Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-		  
+
 			session.beginTransaction();
 			session.save(account);
 			session.getTransaction().commit();
-		
+
 			logger.info(account);
-			
-			return "Account: "+account.getAccountType().getAccountNo() + SAVED;
+
+			return "Account: " + account.getAccountType().getAccountNo() + SAVED;
 
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_INSERT);
@@ -68,14 +66,13 @@ public class AccountDAOImpl implements AccountDAO {
 	public List<Account> getCustomersByIFSC(String ifscCode) {
 
 		logger.info("Get Customers ByIFSC Called in dao.... ");
-	
+
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Account> query = session
-					.createQuery(
-							"from com.revature.bms.entity.Account c where c.accountType.customer.branch.ifscCode=:ifscCode")
+			Query<Account> query = session.createQuery(
+					"from com.revature.bms.entity.Account c where c.accountType.customer.branch.ifscCode=:ifscCode")
 					.setParameter("ifscCode", ifscCode);
-			
+
 			List<Account> customers = query.list();
 
 			return (customers.isEmpty() ? null : customers);
@@ -88,10 +85,11 @@ public class AccountDAOImpl implements AccountDAO {
 	public List<Account> getCustomerByCustomerId(Long customerId) {
 
 		logger.info("Get Customer ByCustomerId Called in dao.... ");
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Account> query = session.createQuery("select a from Account a where a.accountType.customer.id=:customerId")
+			Query<Account> query = session
+					.createQuery("select a from Account a where a.accountType.customer.id=:customerId")
 					.setParameter("customerId", customerId);
 
 			List<Account> customers = query.list();
@@ -106,11 +104,11 @@ public class AccountDAOImpl implements AccountDAO {
 	@Override
 	public Account getAccountByAccountNo(String accountNo) {
 
-
 		logger.info("Get Account ByAccountNo Called in dao.... ");
 		try (Session session = sessionFactory.openSession()) {
 
-			List<Account> resultList = session.createQuery("select a from Account a where a.accountType.accountNo=:accountNo")
+			List<Account> resultList = session
+					.createQuery("select a from Account a where a.accountType.accountNo=:accountNo")
 					.setParameter("accountNo", accountNo).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -124,14 +122,12 @@ public class AccountDAOImpl implements AccountDAO {
 	@Override
 	public Account getAccountsByType(Long customerId, String type) {
 
-
 		logger.info("Get AccountsByType Called in dao.... ");
 		try (Session session = sessionFactory.openSession()) {
 
-			List<Account> resultList = session
-					.createQuery("select a from Account a where a.accountType.customer.id=:customerId and a.accountType.type=:type")
-					.setParameter("customerId", customerId)
-					.setParameter("type", type).getResultList();
+			List<Account> resultList = session.createQuery(
+					"select a from Account a where a.accountType.customer.id=:customerId and a.accountType.type=:type")
+					.setParameter("customerId", customerId).setParameter("type", type).getResultList();
 
 			logger.info(resultList);
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -145,27 +141,29 @@ public class AccountDAOImpl implements AccountDAO {
 	public String bankTransfer(Long senderId, Long receiverId, Long amount) {
 
 		logger.info("Bank Transfer Called in dao.... ");
-		
+
 		try (Session session = sessionFactory.openSession()) {
-			
+
 			session.beginTransaction();
 
-			Query<Account> query1 = session.createQuery("update Account set balance=balance-:amount where id=:senderId");
+			Query<Account> query1 = session
+					.createQuery("update Account set balance=balance-:amount where id=:senderId");
 			query1.setParameter("amount", amount);
 			query1.setParameter("senderId", senderId);
 
 			query1.executeUpdate();
 
-			Query<Account> query2 = session.createQuery("update Account set balance=balance+:amount where id=:receiverId");
+			Query<Account> query2 = session
+					.createQuery("update Account set balance=balance+:amount where id=:receiverId");
 			query2.setParameter("amount", amount);
 			query2.setParameter("receiverId", receiverId);
 
 			query2.executeUpdate();
 
 			session.getTransaction().commit();
-			
+
 			return "Transaction success";
-			
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
@@ -178,7 +176,7 @@ public class AccountDAOImpl implements AccountDAO {
 		logger.info("Update TransactionPIN Called in dao.... ");
 		try (Session session = sessionFactory.openSession()) {
 
-			 session.beginTransaction();
+			session.beginTransaction();
 
 			Query<Account> query = session
 					.createQuery("update Account a set a.transactionPIN=:password where a.accountType.id=:typeId");
@@ -189,7 +187,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 			session.getTransaction().commit();
 			return "Transacation PIN Updated successfully!";
-		
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}

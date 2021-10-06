@@ -14,18 +14,17 @@ import lombok.NoArgsConstructor;
 public class TransactionDetailsDto {
 
 	private Long id;
-	
+
 	private Date transactionDate;
-	
+
 	private String message;
 
 	private Double deposit;
-	
+
 	private Double withdraw;
-	
-	
+
 	private Double balance;
-	
+
 	private Account account;
-	
+
 }

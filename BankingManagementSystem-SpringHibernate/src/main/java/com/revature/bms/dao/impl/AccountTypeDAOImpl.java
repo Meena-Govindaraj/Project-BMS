@@ -26,7 +26,6 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	
 	@Transactional
 	@Override
 	public String addAccountType(AccountType accountType) {
@@ -34,14 +33,13 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 		logger.info("Add AccountType Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			
+
 			session.save(accountType);
-			
+
 			logger.info(accountType);
-			
-			return "Account:"+accountType.getAccountNo() + SAVED;
-		}
-		catch (Exception e) {
+
+			return "Account:" + accountType.getAccountNo() + SAVED;
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
 	}
@@ -52,16 +50,15 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 		logger.info("Update AccountType Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			
+
 			session.beginTransaction();
 			session.update(accountType);
 			session.getTransaction().commit();
-			
+
 			logger.info(accountType);
-			
-			return "Account: " + accountType.getAccountNo()+UPDATED;
-		}
-		catch (Exception e) {
+
+			return "Account: " + accountType.getAccountNo() + UPDATED;
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
 	}
@@ -78,11 +75,10 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 			session.delete(accountType);
 			session.getTransaction().commit();
 
-			return "Account: " + accountType.getAccountNo()+DELETED;
+			return "Account: " + accountType.getAccountNo() + DELETED;
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_DELETE);
 		}
-		 catch (Exception e) {
-				throw new DatabaseException(ERROR_IN_DELETE);
-			}
 	}
 
 	@Override
@@ -93,11 +89,10 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			Query<Customer> query = session.createQuery("from com.revature.bms.entity.AccountType where id=" + typeId);
-			
+
 			logger.info(query.list());
 			return query.list().isEmpty();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -113,8 +108,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 			List<AccountType> accountTypes = query.list();
 
 			return (accountTypes.isEmpty() ? null : accountTypes);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -132,8 +126,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 			List<AccountType> accountTypes = query.list();
 
 			return (accountTypes.isEmpty() ? null : accountTypes);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -141,20 +134,17 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 	@Override
 	public AccountType getAccountByAccountNo(String accountNo) {
 
-
 		logger.info("Get AccountBy AccountNo Called in Dao.... ");
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
 			List<AccountType> resultList = session
 					.createQuery("from com.revature.bms.entity.AccountType a where a.accountNo=:accountNo")
 					.setParameter("accountNo", accountNo).getResultList();
 
-			
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -163,86 +153,78 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 	public List<AccountType> viewCustomerById(Long customerId) {
 
 		logger.info("View CustomerBy Id Called in Dao.... ");
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
-			
-			Query<AccountType> query = session.createQuery("select a from AccountType a where a.customer.id=:customerId")
+			Query<AccountType> query = session
+					.createQuery("select a from AccountType a where a.customer.id=:customerId")
 					.setParameter("customerId", customerId);
 
 			List<AccountType> accountTypes = query.list();
 
-			
 			return (accountTypes.isEmpty() ? null : accountTypes);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
 
 	@Override
 	public AccountType isAccountTypeExists(String mobileNo, String email, String type) {
-	
+
 		logger.info("Is AccountType Exists Called in Dao.... ");
-		
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
-			List<AccountType> resultList = session
-					.createQuery("select a from AccountType  a where a.customer.mobileNo=:mobileNo and a.customer.email=:email and a.type=:type")
-					.setParameter("mobileNo", mobileNo)
-					.setParameter("email", email)
-					.setParameter("type", type)
+			List<AccountType> resultList = session.createQuery(
+					"select a from AccountType  a where a.customer.mobileNo=:mobileNo and a.customer.email=:email and a.type=:type")
+					.setParameter("mobileNo", mobileNo).setParameter("email", email).setParameter("type", type)
 					.getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
 
 	@Override
-	public String updateAccountStatus(String accountStatus,String accountNo) {
-		
+	public String updateAccountStatus(String accountStatus, String accountNo) {
+
 		logger.info("Update AccountStatus Called in Dao.... ");
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
 			session.beginTransaction();
-			AccountType account=getAccountByAccountNo(accountNo);
+			AccountType account = getAccountByAccountNo(accountNo);
 			account.setAccountStatus(accountStatus);
-			
+
 			session.update(account);
 			session.getTransaction().commit();
-		
-			return "Status of Customer Account :"+accountNo+UPDATED;
-	     }
-		catch (Exception e) {
+
+			return "Status of Customer Account :" + accountNo + UPDATED;
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
 
 	@Override
 	public List<AccountType> getCustomersByIFSC(String ifscCode) {
-		
+
 		logger.info("viewAllCustomer Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<AccountType> query = session.createQuery("from com.revature.bms.entity.AccountType c where c.customer.branch.ifscCode=:ifscCode")
-									 .setParameter("ifscCode", ifscCode);
+			Query<AccountType> query = session
+					.createQuery(
+							"from com.revature.bms.entity.AccountType c where c.customer.branch.ifscCode=:ifscCode")
+					.setParameter("ifscCode", ifscCode);
 			List<AccountType> customers = query.list();
 
 			return (customers.isEmpty() ? null : customers);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
-		
+
 	}
 
-	
-	
 }

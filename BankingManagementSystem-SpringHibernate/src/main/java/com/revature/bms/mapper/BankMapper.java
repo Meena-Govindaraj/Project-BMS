@@ -8,7 +8,7 @@ public class BankMapper {
 	private BankMapper() {
 	}
 
-	//dto to entity mapping
+	// dto to entity mapping
 	public static Bank dtoToEntity(BankDto b) {
 		Bank bk = new Bank();
 		bk.setId(b.getId());

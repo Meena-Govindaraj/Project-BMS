@@ -11,7 +11,7 @@ public class TransactionMapper {
 	// dto to entity mapping
 	public static TransactionDetails dtoToEntity(TransactionDetailsDto transactionDto) {
 
-		TransactionDetails transaction=new TransactionDetails();
+		TransactionDetails transaction = new TransactionDetails();
 		transaction.setId(transactionDto.getId());
 		transaction.setTransactionDate(transactionDto.getTransactionDate());
 		transaction.setMessage(transactionDto.getMessage());
@@ -19,7 +19,7 @@ public class TransactionMapper {
 		transaction.setWithdraw(transactionDto.getWithdraw());
 		transaction.setBalance(transactionDto.getBalance());
 		transaction.setAccount(transactionDto.getAccount());
-		
+
 		return transaction;
 	}
 

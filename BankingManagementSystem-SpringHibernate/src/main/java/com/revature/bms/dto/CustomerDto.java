@@ -26,8 +26,8 @@ public class CustomerDto {
 	private Date createdDate;
 
 	private Date updatedDate;
-	
+
 	private String state;
-	
+
 	private Branch branch;
 }

@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 public class AccountDto {
 
 	private Long id;
-	
+
 	private Long balance;
-	
+
 	private String transactionPIN;
 
 	private AccountType accountType;

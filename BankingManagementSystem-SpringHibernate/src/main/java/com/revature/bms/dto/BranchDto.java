@@ -17,7 +17,7 @@ public class BranchDto {
 	private String name;
 
 	private String city;
-	
+
 	private String ifscCode;
 
 	private Date createdDate;
@@ -27,7 +27,5 @@ public class BranchDto {
 		return "BranchDto [id=" + id + ", name=" + name + ", city=" + city + ", ifscCode=" + ifscCode + ", createdDate="
 				+ createdDate + "]";
 	}
-
-	
 
 }

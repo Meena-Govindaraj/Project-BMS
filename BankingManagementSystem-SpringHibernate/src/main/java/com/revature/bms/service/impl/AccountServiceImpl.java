@@ -144,7 +144,7 @@ public class AccountServiceImpl implements AccountService {
 	public List<Account> getCustomerByCustomerId(Long customerId) {
 
 		logger.info("Get Customer ByCustomerId Called in service.... ");
-		
+
 		List<Account> account = null;
 		try {
 			account = accountDAO.getCustomerByCustomerId(customerId);
@@ -155,18 +155,18 @@ public class AccountServiceImpl implements AccountService {
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
-		
+
 	}
 
 	@Override
 	public String bankTransfer(Long senderId, Long receiverId, Long amount) {
 
 		logger.info("Bank Transfer Called in service.... ");
-		
-		String transfer=null;
+
+		String transfer = null;
 		try {
-			transfer=accountDAO.bankTransfer(senderId, receiverId, amount);
-			if(transfer==null)
+			transfer = accountDAO.bankTransfer(senderId, receiverId, amount);
+			if (transfer == null)
 				throw new BussinessLogicException("Transfer failed");
 			return transfer;
 		} catch (DatabaseException e) {
@@ -178,16 +178,16 @@ public class AccountServiceImpl implements AccountService {
 	public String updateTransactionPIN(Long typeId, String password) {
 
 		logger.info("Update TransactionPIN Called in service.... ");
-		
-		String transfer=null;
+
+		String transfer = null;
 		try {
-			transfer=accountDAO.updateTransactionPIN(typeId, password);
-			if(transfer==null)
+			transfer = accountDAO.updateTransactionPIN(typeId, password);
+			if (transfer == null)
 				throw new BussinessLogicException("Password Updation Falied");
 			return transfer;
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
-		}
+	}
 
 }

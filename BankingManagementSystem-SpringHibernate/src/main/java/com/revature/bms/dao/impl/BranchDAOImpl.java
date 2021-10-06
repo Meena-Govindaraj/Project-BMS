@@ -37,7 +37,7 @@ public class BranchDAOImpl implements BranchDAO {
 			branch.setCreatedDate(new Date());
 			session.save(branch);
 			logger.info(branch);
-		
+
 			return "Branch :" + branch.getName() + SAVED;
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_INSERT);
@@ -103,7 +103,7 @@ public class BranchDAOImpl implements BranchDAO {
 		logger.info("Update Branch Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			
+
 			session.beginTransaction();
 			session.merge(branch);
 			session.getTransaction().commit();

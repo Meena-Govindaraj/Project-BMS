@@ -10,13 +10,13 @@ public class AccountMapper {
 
 	// dto to entity mapping
 	public static Account dtoToEntity(AccountDto accountDto) {
-		
-		Account account=new Account();
+
+		Account account = new Account();
 		account.setId(accountDto.getId());
 		account.setBalance(accountDto.getBalance());
 		account.setTransactionPIN(accountDto.getTransactionPIN());
 		account.setAccountType(accountDto.getAccountType());
-		
+
 		return account;
 	}
 

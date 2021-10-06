@@ -40,7 +40,7 @@ public class Branch {
 
 	@Column(name = "city")
 	private String city;
-	
+
 	@Column(name = "ifsc_code", nullable = false, unique = true)
 	private String ifscCode;
 

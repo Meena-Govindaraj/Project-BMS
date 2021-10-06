@@ -57,5 +57,4 @@ public class Account {
 		return "Account [id=" + id + ", balance=" + balance + ", transactionPIN=" + transactionPIN + "]";
 	}
 
-	
 }

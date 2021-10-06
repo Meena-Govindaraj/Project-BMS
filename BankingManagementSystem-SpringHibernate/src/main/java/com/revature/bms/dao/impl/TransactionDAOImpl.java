@@ -40,10 +40,9 @@ public class TransactionDAOImpl implements TransactionDAO {
 			session.getTransaction().commit();
 
 			logger.info(transactionDetails);
-			
+
 			return "Transacation of " + transactionDetails.getAccount().getAccountType().getAccountNo() + SAVED;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
 	}
@@ -59,15 +58,14 @@ public class TransactionDAOImpl implements TransactionDAO {
 			List<TransactionDetails> transactions = query.list();
 
 			return (transactions.isEmpty() ? null : transactions);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
 
 	@Override
 	public List<TransactionDetails> viewTransactionByAccount(Long accountId) {
-		
+
 		logger.info("View A Transaction on account in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
@@ -80,10 +78,9 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 			return (accounts.isEmpty() ? null : accounts);
 
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
 		}
-		 catch (Exception e) {
-				throw new DatabaseException(ERROR_IN_FETCH);
-			}
 
 	}
 

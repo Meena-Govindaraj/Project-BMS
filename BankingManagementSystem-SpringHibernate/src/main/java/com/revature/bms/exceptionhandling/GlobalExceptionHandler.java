@@ -21,14 +21,15 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<HttpResponseStatus> databaseException(DatabaseException e) {
 
 		logger.error(e.getMessage());
-		return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.BAD_REQUEST.value() ,e.getMessage()), HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage()),
+				HttpStatus.BAD_REQUEST);
 	}
-	
+
 	// EXCEPTION HANDLER FOR BUSSINESSLOGICEXCEPTION.
 	@ExceptionHandler(BussinessLogicException.class)
-	public ResponseEntity<HttpResponseStatus> bussinessException (BussinessLogicException e) {
-		return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.BAD_REQUEST.value() ,e.getMessage()), HttpStatus.BAD_REQUEST);
+	public ResponseEntity<HttpResponseStatus> bussinessException(BussinessLogicException e) {
+		return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage()),
+				HttpStatus.BAD_REQUEST);
 	}
-		
-	
+
 }

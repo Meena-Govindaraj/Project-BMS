@@ -1,6 +1,5 @@
 package com.revature.bms.dao.impl;
 
-
 import static com.revature.bms.util.BankingManagementConstants.*;
 
 import java.time.LocalDateTime;
@@ -37,16 +36,16 @@ public class CustomerDAOImpl implements CustomerDAO {
 		logger.info("Add Customer Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			
-		    session.beginTransaction();
+
+			session.beginTransaction();
 			customer.setCreatedDate(new Date());
 			customer.setUpdatedDate(new Date());
 			session.save(customer);
 			session.getTransaction().commit();
-			
+
 			logger.info(customer);
-			
-			return "Customer: "+customer.getName() + SAVED + " at " + localTime;
+
+			return "Customer: " + customer.getName() + SAVED + " at " + localTime;
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
@@ -65,7 +64,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 			session.flush();
 			session.getTransaction().commit();
 
-			return "Customer: "+customerId +DELETED;
+			return "Customer: " + customerId + DELETED;
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_DELETE);
 		}
@@ -77,15 +76,15 @@ public class CustomerDAOImpl implements CustomerDAO {
 		logger.info("update customer Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			
+
 			session.beginTransaction();
 			customer.setUpdatedDate(new Date());
 			session.update(customer);
 			session.getTransaction().commit();
-			
+
 			logger.info(customer);
-			
-			return "customer"+UPDATED;
+
+			return "customer" + UPDATED;
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
@@ -107,7 +106,6 @@ public class CustomerDAOImpl implements CustomerDAO {
 		}
 	}
 
-	
 	@Override
 	public Customer viewCustomerById(Long customerId) {
 
@@ -147,7 +145,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 			Query<Customer> query = session.createQuery("from com.revature.bms.entity.Customer where id=" + customerId);
 			return query.list().isEmpty();
-			
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
@@ -172,7 +170,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 	public String updatePassword(String mobileNo, String password) {
 
 		logger.info("Update password called in customer dao");
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
 			Transaction transaction = session.beginTransaction();
@@ -183,7 +181,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 			session.update(customer);
 			transaction.commit();
 
-			return "Customer"+PASSWORDUPDATED;
+			return "Customer" + PASSWORDUPDATED;
 		}
 
 	}
@@ -192,7 +190,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 	public Customer getCustomerByMobileNo(String mobileNo) {
 
 		logger.info("Get CustomerBy MobileNo called in customer dao");
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Customer> resultList = session
@@ -209,12 +207,12 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public Customer getCustomerByEmail(String email) {
 
-
 		logger.info("Get CustomerBy email called in customer dao");
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
-			List<Customer> resultList = session.createQuery("from com.revature.bms.entity.Customer c where c.email=:email")
+			List<Customer> resultList = session
+					.createQuery("from com.revature.bms.entity.Customer c where c.email=:email")
 					.setParameter("email", email).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -227,10 +225,8 @@ public class CustomerDAOImpl implements CustomerDAO {
 	@Override
 	public List<Customer> getCustomersByIFSC(String ifscCode) {
 
-
 		logger.info("Get CustomerBy IFSC called in customer dao");
-		
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
 			Query<Customer> query = session
@@ -246,13 +242,12 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 	@Override
 	public String forgetPassword(String email, String password) {
-		
+
 		logger.info("Forget Password called in customer dao");
-		
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
-		    session.beginTransaction();
+			session.beginTransaction();
 
 			Customer customer = getCustomerByEmail(email);
 			customer.setPassword(password);
@@ -260,8 +255,8 @@ public class CustomerDAOImpl implements CustomerDAO {
 			session.update(customer);
 			session.getTransaction().commit();
 
-			return "customer"+PASSWORDUPDATED;
-			
+			return "customer" + PASSWORDUPDATED;
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}

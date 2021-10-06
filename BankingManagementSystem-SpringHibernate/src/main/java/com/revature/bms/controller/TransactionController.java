@@ -33,7 +33,6 @@ public class TransactionController {
 	@Autowired
 	TransactionService transactionService;
 
-
 	/**
 	 * to view all transactions of all customers
 	 * 
@@ -46,7 +45,7 @@ public class TransactionController {
 		try {
 
 			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,transactionService.viewAllTransaction()),
+					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, transactionService.viewAllTransaction()),
 					HttpStatus.OK);
 		} catch (BussinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
@@ -56,7 +55,6 @@ public class TransactionController {
 
 	}
 
-
 	/**
 	 * to add transaction details for every transaction that made by customer
 	 * 
@@ -64,15 +62,15 @@ public class TransactionController {
 	 * @return string on successful creation of entry for fund transfer
 	 */
 	@PostMapping
-	public ResponseEntity<HttpResponseStatus> addTransacations(@RequestBody TransactionDetailsDto transactionDetailsDto) {
+	public ResponseEntity<HttpResponseStatus> addTransacations(
+			@RequestBody TransactionDetailsDto transactionDetailsDto) {
 
 		logger.info("Add Transaction details Called in Controller.. ");
 
 		try {
 
-			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, transactionService.addTransaction(transactionDetailsDto)),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					transactionService.addTransaction(transactionDetailsDto)), HttpStatus.OK);
 		} catch (BussinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
@@ -93,9 +91,8 @@ public class TransactionController {
 		logger.info("View A Transaction on account in Controller.. ");
 
 		try {
-			return new ResponseEntity<>(
-					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,transactionService.viewTransactionByAccount(accountId)),
-					HttpStatus.OK);
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
+					transactionService.viewTransactionByAccount(accountId)), HttpStatus.OK);
 		}
 
 		catch (BussinessLogicException e) {

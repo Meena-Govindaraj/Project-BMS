@@ -73,7 +73,6 @@ public interface CustomerDAO {
 	 */
 	String updatePassword(String mobileNo, String password);
 
-
 	/**
 	 * to get customer details on unique mobile no
 	 * 

@@ -4,7 +4,7 @@ import com.revature.bms.entity.Customer;
 import com.revature.bms.entity.Employee;
 
 public interface LoginService {
-	
+
 	/**
 	 * to validate customer login on registered mobile no and password
 	 * 

@@ -63,13 +63,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-		    session.beginTransaction();
-		    Employee employee = session.get(Employee.class, employeeId);
+			session.beginTransaction();
+			Employee employee = session.get(Employee.class, employeeId);
 			session.delete(employee);
 			session.getTransaction().commit();
 
 			return "Employee Id: " + employeeId + DELETED;
-		
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_DELETE);
 		}
@@ -90,7 +90,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 			logger.info(employee);
 			return "Employee :" + employee.getName() + UPDATED;
-		
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
@@ -107,7 +107,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			List<Employee> employees = query.list();
 
 			return (employees.isEmpty() ? null : employees);
-	
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
@@ -117,11 +117,11 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 	public Employee viewEmployeeById(Long employeeId) {
 
 		logger.info("View EmployeeById Called in Dao.... ");
-		
+
 		try (Session session = sessionFactory.openSession()) {
 
 			return session.get(Employee.class, employeeId);
-		
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
@@ -135,10 +135,10 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			Query<Employee> query = session.createQuery("from com.revature.bms.entity.Employee where id=" + employeeId);
-	
+
 			logger.info(query.list());
 			return query.list().isEmpty();
-		
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
@@ -173,7 +173,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 					.createQuery("from com.revature.bms.entity.Employee where mobileNo ='" + mobileNo + "'");
 
 			return query.list().isEmpty();
-		
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
@@ -192,13 +192,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			employee.setPassword(newPassword);
 			session.update(employee);
 			transaction.commit();
-			
+
 			return "Employee" + PASSWORDUPDATED;
-	
+
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
-		
+
 	}
 
 	@Override

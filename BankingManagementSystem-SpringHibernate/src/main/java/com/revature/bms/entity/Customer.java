@@ -56,7 +56,7 @@ public class Customer {
 
 	@Column(name = "state")
 	private String state;
-	
+
 	@Temporal(TemporalType.DATE)
 	@Column(name = "created_date")
 	private Date createdDate;
@@ -73,12 +73,11 @@ public class Customer {
 	@JsonIgnore
 	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<AccountType> accountType;
-	
+
 	@Override
 	public String toString() {
-		return "Customer [id=" + id + ", name=" + name + ", mobileNo=" + mobileNo + ", password=" + password
-				+ ", age=" + age + ", email=" + email + ", createdDate=" + createdDate
-				+ ", updatedDate=" + updatedDate + "]";
+		return "Customer [id=" + id + ", name=" + name + ", mobileNo=" + mobileNo + ", password=" + password + ", age="
+				+ age + ", email=" + email + ", createdDate=" + createdDate + ", updatedDate=" + updatedDate + "]";
 	}
 
 }

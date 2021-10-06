@@ -104,5 +104,4 @@ public interface EmployeeDAO {
 	 */
 	String forgetPassword(String email, String password);
 
-	
 }

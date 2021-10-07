@@ -1,5 +1,7 @@
 package com.revature.bms.dto;
 
+import javax.validation.constraints.NotNull;
+
 import com.revature.bms.entity.Customer;
 
 import lombok.AllArgsConstructor;
@@ -13,12 +15,14 @@ public class AccountTypeDto {
 
 	private Long id;
 
+	@NotNull(message = "Account Type cannot be null")
 	private String type;
 
 	private String accountNo;
 
 	private String accountStatus;
 
+	@NotNull(message = "customer details cannot be null")
 	private Customer customer;
 
 	@Override

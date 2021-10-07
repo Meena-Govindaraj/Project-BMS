@@ -37,36 +37,33 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		logger.info("Add Employee Called in Service... ");
 		try {
-			if (employeeDto != null && employeeDto.getBranch() != null) {
-				long branchId = employeeDto.getBranch().getId();
-
-				if (branchDAO.isBranchExists(branchId))
-					throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
-
-				if (employeeDAO.isEmployeeExistsByMobileNo(employeeDto.getMobileNo())) {
-
-					// getting branch details to set in employee..
-					Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
-					employeeDto.setBranch(branch);
-
-					// dto to entity..
-					Employee employee = EmployeeMapper.dtoToEntity(employeeDto);
-					employee.setPassword(GeneratePassword.generatePassword());
-
-					String password = employee.getPassword();
-
-					MailSend.sendMail(employee.getEmail(), "Employee Account",
-							"Welcome! " + employee.getName() + "\n Thanks For joining with us \n Registered Mobile No: "
-									+ employee.getMobileNo() + "Password: " + password
-									+ "You can Change Your password once Your logged in..Thank You ");
-
-					return employeeDAO.addEmployee(employee);
-
-				} else
-					throw new BussinessLogicException("Employee " + DUPLICATE_RECORD);
-
-			} else
+			if (employeeDto == null || employeeDto.getBranch() == null)
 				throw new BussinessLogicException("Employee " + INVALID_DETAILS);
+
+			long branchId = employeeDto.getBranch().getId();
+
+			if (branchDAO.isBranchExists(branchId))
+				throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
+
+			if (!employeeDAO.isEmployeeExistsByMobileNo(employeeDto.getMobileNo()))
+				throw new BussinessLogicException("Employee " + DUPLICATE_RECORD);
+
+			// getting branch details to set in employee..
+			Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
+			employeeDto.setBranch(branch);
+
+			// dto to entity..
+			Employee employee = EmployeeMapper.dtoToEntity(employeeDto);
+			employee.setPassword(GeneratePassword.generatePassword());
+
+			String password = employee.getPassword();
+
+			MailSend.sendMail(employee.getEmail(), "Employee Account",
+					"Welcome! " + employee.getName() + "\n Thanks For joining with us \n Registered Mobile No: "
+							+ employee.getMobileNo() + "Password: " + password
+							+ "You can Change Your password once Your logged in..Thank You ");
+
+			return employeeDAO.addEmployee(employee);
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -82,8 +79,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 		try {
 			if (employeeDAO.isEmployeeExistsById(employeeId))
 				throw new BussinessLogicException("Employee Id:" + employeeId + ID_NOT_FOUND);
-			else
-				return employeeDAO.deleteEmployee(employeeId);
+
+			return employeeDAO.deleteEmployee(employeeId);
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -95,29 +92,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 		logger.info("Update Employee Called in Service... ");
 
 		try {
-			if (employeeDto != null && employeeDto.getBranch() != null) {
-				if (!employeeDAO.isEmployeeExistsById(employeeDto.getId())) {
-					long branchId = employeeDto.getBranch().getId();
-
-					if (branchDAO.isBranchExists(branchId))
-						throw new BussinessLogicException("Branch Id:" + branchId + INVALID_DETAILS);
-
-					Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
-					employeeDto.setBranch(branch);
-
-					// dto to entity..
-					Employee employee = EmployeeMapper.dtoToEntity(employeeDto);
-					logger.info(employee);
-
-					return employeeDAO.updateEmployee(employee);
-
-				} else
-					throw new BussinessLogicException("EmployeeId:" + employeeDto.getId() + ID_NOT_FOUND);
-
-			}
-
-			else
+			if (employeeDto == null || employeeDto.getBranch() == null)
 				throw new BussinessLogicException("Employee " + INVALID_DETAILS);
+
+			if (employeeDAO.isEmployeeExistsById(employeeDto.getId()))
+				throw new BussinessLogicException("EmployeeId:" + employeeDto.getId() + ID_NOT_FOUND);
+
+			long branchId = employeeDto.getBranch().getId();
+
+			if (branchDAO.isBranchExists(branchId))
+				throw new BussinessLogicException("Branch Id:" + branchId + INVALID_DETAILS);
+
+			Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
+			employeeDto.setBranch(branch);
+
+			// dto to entity..
+			Employee employee = EmployeeMapper.dtoToEntity(employeeDto);
+			logger.info(employee);
+
+			return employeeDAO.updateEmployee(employee);
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -194,9 +187,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 		try {
 			if (employeeDAO.isEmployeeExistsByMobileNo(mobileNo))
 				throw new BussinessLogicException("Employee Phone Number:" + mobileNo + ID_NOT_FOUND);
-			else {
-				return employeeDAO.updatePassword(mobileNo, oldPassword, newPassword);
-			}
+
+			return employeeDAO.updatePassword(mobileNo, oldPassword, newPassword);
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}

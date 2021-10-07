@@ -39,7 +39,7 @@ public class AccountType {
 	@Column(name = "account_type", nullable = false)
 	private String type;
 
-	@Column(name = "account_no", nullable = false)
+	@Column(name = "account_no", nullable = false,unique=true)
 	private String accountNo;
 
 	@Column(name = "account_status", nullable = false)

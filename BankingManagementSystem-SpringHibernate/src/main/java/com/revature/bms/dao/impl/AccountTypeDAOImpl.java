@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import static com.revature.bms.util.BankingManagementConstants.*;
 import com.revature.bms.dao.AccountTypeDAO;
 import com.revature.bms.entity.AccountType;
+import com.revature.bms.entity.Branch;
 import com.revature.bms.entity.Customer;
 import com.revature.bms.exception.DatabaseException;
 
@@ -88,7 +89,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Customer> query = session.createQuery("from com.revature.bms.entity.AccountType where id=" + typeId);
+			Query<AccountType> query = session.createQuery("select a from AccountType a where a.id=" + typeId);
 
 			logger.info(query.list());
 			return query.list().isEmpty();
@@ -104,7 +105,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<AccountType> query = session.createQuery("from com.revature.bms.entity.AccountType");
+			Query<AccountType> query = session.createQuery("select a AccountType a");
 			List<AccountType> accountTypes = query.list();
 
 			return (accountTypes.isEmpty() ? null : accountTypes);
@@ -139,7 +140,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<AccountType> resultList = session
-					.createQuery("from com.revature.bms.entity.AccountType a where a.accountNo=:accountNo")
+					.createQuery("select a from AccountType a where a.accountNo=:accountNo")
 					.setParameter("accountNo", accountNo).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -216,7 +217,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 			Query<AccountType> query = session
 					.createQuery(
-							"from com.revature.bms.entity.AccountType c where c.customer.branch.ifscCode=:ifscCode")
+							"select a from AccountType a where a.customer.branch.ifscCode=:ifscCode")
 					.setParameter("ifscCode", ifscCode);
 			List<AccountType> customers = query.list();
 
@@ -225,6 +226,20 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
+	}
+
+	@Override
+	public AccountType viewAccountByTypeId(Long typeId) {
+	
+		logger.info("View Account Type By Id Called in Dao.... ");
+
+		try (Session session = sessionFactory.openSession()) {
+
+			return session.get(AccountType.class, typeId);
+		} 
+		catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
+		}
 	}
 
 }

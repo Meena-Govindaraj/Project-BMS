@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import static com.revature.bms.util.BankingManagementConstants.*;
 
 import com.revature.bms.dao.AccountDAO;
+import com.revature.bms.dao.AccountTypeDAO;
 import com.revature.bms.dao.TransactionDAO;
 import com.revature.bms.dto.TransactionDetailsDto;
 import com.revature.bms.entity.Account;
+import com.revature.bms.entity.AccountType;
 import com.revature.bms.entity.TransactionDetails;
 import com.revature.bms.exception.BussinessLogicException;
 import com.revature.bms.exception.DatabaseException;
@@ -30,28 +32,38 @@ public class TransacationServiceImpl implements TransactionService {
 	@Autowired
 	AccountDAO accountDAO;
 
+	@Autowired
+	private AccountTypeDAO accountTypeDAO;
+
 	@Override
 	public String addTransaction(TransactionDetailsDto transactionDetailsDto) {
 
 		logger.info("Add Transaction details Called in Service ");
 		try {
-			if (transactionDetailsDto != null && transactionDetailsDto.getAccount() != null) {
-				if (transactionDetailsDto.getAccount().getAccountType() == null)
-					throw new BussinessLogicException("Account details " + ID_NOT_FOUND);
 
-				String accountNo = transactionDetailsDto.getAccount().getAccountType().getAccountNo();
-				if (accountDAO.getAccountByAccountNo(accountNo) == null)
-					throw new BussinessLogicException("accountNo:" + accountNo + ID_NOT_FOUND);
+			if (transactionDetailsDto == null || transactionDetailsDto.getAccount() == null)
+				throw new BussinessLogicException("Transaction details " + INVALID_DETAILS);
 
-				Account account = accountDAO.getAccountByAccountNo(accountNo);
-				transactionDetailsDto.setAccount(account);
+			Account account = accountDAO.getAccountByAccountId(transactionDetailsDto.getAccount().getId());
 
-				TransactionDetails details = TransactionMapper.dtoToEntity(transactionDetailsDto);
-				details.setTransactionDate(new Date());
+			if (account == null)
+				throw new BussinessLogicException("Account Id " + ID_NOT_FOUND);
 
-				return transactionDAO.addTransaction(details);
-			}
-			throw new BussinessLogicException("Transaction details " + INVALID_DETAILS);
+			AccountType accountType = accountTypeDAO.viewAccountByTypeId(account.getAccountType().getId());
+
+			String accountNo = accountType.getAccountNo();
+
+			if (accountDAO.getAccountByAccountNo(accountNo) == null)
+				throw new BussinessLogicException("accountNo:" + accountNo + ID_NOT_FOUND);
+
+			account = accountDAO.getAccountByAccountNo(accountNo);
+
+			transactionDetailsDto.setAccount(account);
+
+			TransactionDetails details = TransactionMapper.dtoToEntity(transactionDetailsDto);
+			details.setTransactionDate(new Date());
+
+			return transactionDAO.addTransaction(details);
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -66,10 +78,9 @@ public class TransacationServiceImpl implements TransactionService {
 
 		try {
 			details = transactionDAO.viewAllTransaction();
-			if (details != null)
-				return details;
-			else
+			if (details == null)
 				throw new BussinessLogicException("No record Found");
+			return details;
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -85,10 +96,10 @@ public class TransacationServiceImpl implements TransactionService {
 		List<TransactionDetails> details = null;
 		try {
 			details = transactionDAO.viewTransactionByAccount(accountId);
-			if (details != null)
-				return details;
-			else
+			if (details == null)
 				throw new BussinessLogicException("No record Found");
+
+			return details;
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());

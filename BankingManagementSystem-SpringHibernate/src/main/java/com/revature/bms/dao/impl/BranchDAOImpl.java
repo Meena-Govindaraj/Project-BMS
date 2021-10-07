@@ -1,22 +1,29 @@
 package com.revature.bms.dao.impl;
 
-import org.hibernate.Transaction;
-import static com.revature.bms.util.BankingManagementConstants.*;
-import org.hibernate.query.Query;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import com.revature.bms.dao.BranchDAO;
-import com.revature.bms.entity.Branch;
-import com.revature.bms.exception.DatabaseException;
+import static com.revature.bms.util.BankingManagementConstants.DELETED;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_DELETE;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_FETCH;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_INSERT;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_UPDATE;
+import static com.revature.bms.util.BankingManagementConstants.SAVED;
+import static com.revature.bms.util.BankingManagementConstants.UPDATED;
 
-import org.hibernate.SessionFactory;
 import java.util.Date;
 import java.util.List;
+
+import javax.transaction.Transactional;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-import javax.transaction.Transactional;
+import com.revature.bms.dao.BranchDAO;
+import com.revature.bms.entity.Branch;
+import com.revature.bms.exception.DatabaseException;
 
 @SuppressWarnings("unchecked")
 @Repository
@@ -52,7 +59,7 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Branch> query = session.createQuery("from com.revature.bms.entity.Branch");
+			Query<Branch> query = session.createQuery("select b from Branch b");
 			List<Branch> branches = query.list();
 
 			return (branches.isEmpty() ? null : branches);
@@ -89,7 +96,7 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Branch> query = session.createQuery("from com.revature.bms.entity.Branch where id=" + branchId);
+			Query<Branch> query = session.createQuery("from Branch b where b.id=" + branchId);
 
 			return query.list().isEmpty();
 		} catch (Exception e) {
@@ -136,7 +143,7 @@ public class BranchDAOImpl implements BranchDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			Query<Branch> query = session
-					.createQuery("from com.revature.bms.entity.Branch where ifscCode='" + ifscCode + "'");
+					.createQuery("from Branch b where b.ifscCode='" + ifscCode + "'");
 
 			return query.list().isEmpty();
 
@@ -179,4 +186,6 @@ public class BranchDAOImpl implements BranchDAO {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
+
+	
 }

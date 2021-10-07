@@ -103,7 +103,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Employee> query = session.createQuery("from com.revature.bms.entity.Employee");
+			Query<Employee> query = session.createQuery("select e from Employee e");
 			List<Employee> employees = query.list();
 
 			return (employees.isEmpty() ? null : employees);
@@ -134,7 +134,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Employee> query = session.createQuery("from com.revature.bms.entity.Employee where id=" + employeeId);
+			Query<Employee> query = session.createQuery("select e from Employee e where e.id=" + employeeId);
 
 			logger.info(query.list());
 			return query.list().isEmpty();
@@ -170,7 +170,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 			Query<Employee> query = session
-					.createQuery("from com.revature.bms.entity.Employee where mobileNo ='" + mobileNo + "'");
+					.createQuery("from Employee e where e.mobileNo ='" + mobileNo + "'");
 
 			return query.list().isEmpty();
 
@@ -208,7 +208,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 			Query<Employee> query = session
-					.createQuery("from com.revature.bms.entity.Employee where email ='" + email + "'");
+					.createQuery("from Employee e where e.email ='" + email + "'");
 
 			return query.list().isEmpty();
 		} catch (Exception e) {

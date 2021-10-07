@@ -36,35 +36,28 @@ public class CustomerServiceImpl implements CustomerService {
 
 		logger.info("Add Customer Called in Service.... ");
 		try {
-			if (customerDto != null && customerDto.getBranch() != null) {
-
-				long branchId = customerDto.getBranch().getId();
-
-				if (branchDAO.isBranchExists(branchId))
-					throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
-				else {
-
-					// to check customer Existence...
-					if (customerDAO.isCustomerExistsByMobileNo(customerDto.getMobileNo())) {
-
-						// getting branch details to set in customer..
-						Branch branch = branchDAO.viewBranchById(branchId);
-						customerDto.setBranch(branch);
-
-						// dto to entity..
-						Customer customer = CustomerMapper.dtoToEntity(customerDto);
-						customer.setPassword(GeneratePassword.generatePassword());
-
-						return customerDAO.addCustomer(customer);
-
-					} else
-						throw new BussinessLogicException("Customer !" + DUPLICATE_RECORD);
-
-				}
-			} else {
+			if (customerDto == null || customerDto.getBranch() == null)
 				throw new BussinessLogicException("Customer " + INVALID_DETAILS);
 
-			}
+			long branchId = customerDto.getBranch().getId();
+
+			if (branchDAO.isBranchExists(branchId))
+				throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
+
+			// to check customer Existence...
+			if (!customerDAO.isCustomerExistsByMobileNo(customerDto.getMobileNo()))
+				throw new BussinessLogicException("Customer !" + DUPLICATE_RECORD);
+
+			// getting branch details to set in customer..
+			Branch branch = branchDAO.viewBranchById(branchId);
+			customerDto.setBranch(branch);
+
+			// dto to entity..
+			Customer customer = CustomerMapper.dtoToEntity(customerDto);
+			customer.setPassword(GeneratePassword.generatePassword());
+
+			return customerDAO.addCustomer(customer);
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		} catch (ConstraintViolationException e) {
@@ -79,8 +72,7 @@ public class CustomerServiceImpl implements CustomerService {
 		try {
 			if (customerDAO.isCustomerExistsById(customerId))
 				throw new BussinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
-			else
-				return customerDAO.deleteCustomer(customerId);
+			return customerDAO.deleteCustomer(customerId);
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -91,14 +83,14 @@ public class CustomerServiceImpl implements CustomerService {
 
 		logger.info("update customer Called in Service.... ");
 		try {
-			if (customerDto != null && customerDto.getBranch() != null) {
-
+			if (customerDto== null || customerDto.getBranch() == null) 
+				throw new BussinessLogicException("Customer " + INVALID_DETAILS);
+				
 				long branchId = customerDto.getBranch().getId();
 
 				if (branchDAO.isBranchExists(branchId))
 					throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
-				else {
-
+				
 					// getting branch details to set in customer..
 					Branch branch = branchDAO.viewBranchById(branchId);
 					customerDto.setBranch(branch);
@@ -108,12 +100,8 @@ public class CustomerServiceImpl implements CustomerService {
 
 					return customerDAO.updateCustomer(customer);
 
-				}
-			} else {
-				throw new BussinessLogicException("Customer " + INVALID_DETAILS);
-
-			}
-		} catch (DatabaseException e) {
+		}catch(DatabaseException e)
+		{
 			throw new BussinessLogicException(e.getMessage());
 		}
 	}
@@ -141,7 +129,7 @@ public class CustomerServiceImpl implements CustomerService {
 		try {
 			if (customerDAO.isCustomerExistsById(customerId))
 				throw new BussinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
-			else
+		
 				return customerDAO.viewCustomerById(customerId);
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -193,7 +181,7 @@ public class CustomerServiceImpl implements CustomerService {
 			if (customerDAO.isCustomerExistsByMobileNo(mobileNo))
 				throw new BussinessLogicException(
 						"Customer Phone Number:" + mobileNo + " Not Found to Update Password!");
-			else
+			
 				return customerDAO.updatePassword(mobileNo, password);
 
 		} catch (DatabaseException e) {

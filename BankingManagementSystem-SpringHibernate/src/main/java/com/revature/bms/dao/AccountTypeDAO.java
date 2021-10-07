@@ -105,4 +105,11 @@ public interface AccountTypeDAO {
 
 	List<AccountType> getCustomersByIFSC(String ifscCode);
 
+	/**
+	 * get accounttype by type id
+	 * @param typeId
+	 * @return account type on type id
+	 */
+	AccountType viewAccountByTypeId(Long typeId);
+	
 }

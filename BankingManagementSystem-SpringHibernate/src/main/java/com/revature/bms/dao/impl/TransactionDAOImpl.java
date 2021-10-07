@@ -54,7 +54,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<TransactionDetails> query = session.createQuery("from com.revature.bms.entity.TransactionDetails");
+			Query<TransactionDetails> query = session.createQuery("select t from TransactionDetails t");
 			List<TransactionDetails> transactions = query.list();
 
 			return (transactions.isEmpty() ? null : transactions);
@@ -71,7 +71,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			Query<TransactionDetails> query = session
-					.createQuery("from com.revature.bms.entity.TransactionDetails a where a.account.id=:accountId")
+					.createQuery("from TransactionDetails a where a.account.id=:accountId")
 					.setParameter("accountId", accountId);
 
 			List<TransactionDetails> accounts = query.list();

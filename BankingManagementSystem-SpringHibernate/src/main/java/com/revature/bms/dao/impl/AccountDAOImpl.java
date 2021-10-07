@@ -14,9 +14,9 @@ import org.springframework.stereotype.Repository;
 
 import com.revature.bms.dao.AccountDAO;
 import com.revature.bms.entity.Account;
+import com.revature.bms.entity.AccountType;
 import com.revature.bms.exception.DatabaseException;
 
-@SuppressWarnings("unchecked")
 @Repository
 public class AccountDAOImpl implements AccountDAO {
 
@@ -41,6 +41,7 @@ public class AccountDAOImpl implements AccountDAO {
 			return "Account: " + account.getAccountType().getAccountNo() + SAVED;
 
 		} catch (Exception e) {
+			logger.error("Error in Adding Account" + account);
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
 	}
@@ -52,7 +53,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Account> query = session.createQuery("from com.revature.bms.entity.Account");
+			Query<Account> query = session.createQuery("select a from Account a");
 			List<Account> account = query.list();
 
 			return (account.isEmpty() ? null : account);
@@ -69,8 +70,8 @@ public class AccountDAOImpl implements AccountDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Account> query = session.createQuery(
-					"from com.revature.bms.entity.Account c where c.accountType.customer.branch.ifscCode=:ifscCode")
+			Query query = null;
+			query = session.createQuery("from Account c where c.accountType.customer.branch.ifscCode=:ifscCode")
 					.setParameter("ifscCode", ifscCode);
 
 			List<Account> customers = query.list();
@@ -188,6 +189,20 @@ public class AccountDAOImpl implements AccountDAO {
 			session.getTransaction().commit();
 			return "Transacation PIN Updated successfully!";
 
+		} catch (Exception e) {
+			throw new DatabaseException(ERROR_IN_FETCH);
+		}
+
+	}
+
+	@Override
+	public Account getAccountByAccountId(Long accountId) {
+		
+		logger.info("Get Account By AccountId Called in Dao.... ");
+
+		try (Session session = sessionFactory.openSession()) {
+
+			return session.get(Account.class, accountId);
 		} catch (Exception e) {
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}

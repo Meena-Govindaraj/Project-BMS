@@ -1,12 +1,15 @@
 package com.revature.bms.service.impl;
 
+import static com.revature.bms.util.BankingManagementConstants.ID_NOT_FOUND;
+import static com.revature.bms.util.BankingManagementConstants.INVALID_DETAILS;
+
 import java.util.List;
-import static com.revature.bms.util.BankingManagementConstants.*;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.stringtemplate.v4.ST;
 import com.revature.bms.controller.MailSend;
 import com.revature.bms.dao.AccountDAO;
 import com.revature.bms.dao.AccountTypeDAO;
@@ -36,38 +39,56 @@ public class AccountServiceImpl implements AccountService {
 
 		logger.info("Add Account Called in service.... ");
 		try {
-			if (accountDto != null && accountDto.getAccountType() != null) {
 
-				String accountNo = accountDto.getAccountType().getAccountNo();
-				if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
-					throw new BussinessLogicException("accountNo:" + accountNo + ID_NOT_FOUND);
-
-				AccountType accountType = accountTypeDAO.getAccountByAccountNo(accountNo);
-
-				accountDto.setAccountType(accountType);
-				accountDto.setTransactionPIN(GeneratePassword.generatePassword());
-
-				logger.info(accountDto);
-
-				Account account = AccountMapper.dtoToEntity(accountDto);
-
-				String email = account.getAccountType().getCustomer().getEmail();
-				String name = account.getAccountType().getCustomer().getName();
-
-				String message = "Mrs./Mr. " + name + ", \n Account Created in our bank " + "\n Account Number: "
-						+ account.getAccountType().getAccountNo() + "\n Mobile Number: "
-						+ account.getAccountType().getCustomer().getMobileNo() + "\n IFSC Code: "
-						+ account.getAccountType().getCustomer().getBranch().getIfscCode() + "\n Branch Name: "
-						+ account.getAccountType().getCustomer().getBranch().getName() + "\n Transaction PIN: "
-						+ account.getTransactionPIN() + "\n Account Type: " + account.getAccountType().getType();
-
-				MailSend.sendMail(email, "Account Created Successfully", message);
-
-				return accountDAO.addAccount(account);
-
-			} else
+			if (accountDto == null || accountDto.getAccountType() == null)
 				throw new BussinessLogicException("Account " + INVALID_DETAILS);
 
+			AccountType accountType = null;
+
+			if (accountTypeDAO.viewAccountByTypeId(accountDto.getAccountType().getId()) == null)
+				throw new BussinessLogicException("Type Id not found to add account");
+
+			accountType = accountTypeDAO.viewAccountByTypeId(accountDto.getAccountType().getId());
+
+			String accountNo = accountType.getAccountNo();
+			if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
+				throw new BussinessLogicException("accountNo:" + accountNo + ID_NOT_FOUND);
+
+			accountType = accountTypeDAO.getAccountByAccountNo(accountNo);
+
+			accountDto.setAccountType(accountType);
+			accountDto.setTransactionPIN(GeneratePassword.generatePassword());
+
+			logger.info(accountDto);
+
+			Account account = AccountMapper.dtoToEntity(accountDto);
+
+			String email = account.getAccountType().getCustomer().getEmail();
+			String name = account.getAccountType().getCustomer().getName();
+
+			String message = "Mrs./Mr. " + name + ", \n Account Created in our bank " + "\n Account Number: "
+					+ account.getAccountType().getAccountNo() + "\n Mobile Number: "
+					+ account.getAccountType().getCustomer().getMobileNo() + "\n IFSC Code: "
+					+ account.getAccountType().getCustomer().getBranch().getIfscCode() + "\n Branch Name: "
+					+ account.getAccountType().getCustomer().getBranch().getName() + "\n Transaction PIN: "
+					+ account.getTransactionPIN() + "\n Account Type: " + account.getAccountType().getType();
+
+//				ST hello = new ST("Hello, <name>! \n <welcome> \n Account NO: <accountNo> \n Mobile Number:<mobileNo> \n  IFSC Code: <ifscCode> \n Branch Name: <branchName> \n Transaction PIN: <transacationPin> \n Account Type: <accountType>");
+//				hello.add("name", name);
+//				hello.add("welcome", "Account Created in our bank");
+//				hello.add("accountNo", account.getAccountType().getAccountNo());
+//				hello.add("accountNo", account.getAccountType().getAccountNo());
+//				hello.add("mobileNo", account.getAccountType().getCustomer().getMobileNo());
+//				hello.add("branchName",account.getAccountType().getCustomer().getBranch().getIfscCode());
+//				hello.add("transacationPin",account.getTransactionPIN() );
+//				hello.add("accountType", account.getAccountType().getType());
+//
+//				String output = hello.render();
+//				System.out.println(output);
+
+			MailSend.sendMail(email, "Account Created Successfully", message);
+
+			return accountDAO.addAccount(account);
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -81,10 +102,10 @@ public class AccountServiceImpl implements AccountService {
 		List<Account> account = null;
 		try {
 			account = accountDAO.viewAllAccount();
-			if (account != null)
-				return account;
-			else
+			if (account == null)
 				throw new BussinessLogicException("No record Found");
+			return account;
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -97,10 +118,10 @@ public class AccountServiceImpl implements AccountService {
 		logger.info("Get Account ByAccountNo Called in service.... ");
 		try {
 			account = accountDAO.getAccountByAccountNo(accountNo);
-			if (account != null)
-				return account;
-			else
+			if (account == null)
 				throw new BussinessLogicException("No records Found");
+			return account;
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -114,10 +135,10 @@ public class AccountServiceImpl implements AccountService {
 		List<Account> account = null;
 		try {
 			account = accountDAO.getCustomersByIFSC(ifscCode);
-			if (account != null)
-				return account;
-			else
+			if (account == null)
 				throw new BussinessLogicException("No records Found");
+			return account;
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -131,10 +152,10 @@ public class AccountServiceImpl implements AccountService {
 		Account account = null;
 		try {
 			account = accountDAO.getAccountsByType(customerId, type);
-			if (account != null)
-				return account;
-			else
+			if (account == null)
 				throw new BussinessLogicException("No Records Found");
+			return account;
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -148,10 +169,11 @@ public class AccountServiceImpl implements AccountService {
 		List<Account> account = null;
 		try {
 			account = accountDAO.getCustomerByCustomerId(customerId);
-			if (account != null)
-				return account;
-			else
+			if (account == null)
 				throw new BussinessLogicException("No records Found");
+
+			return account;
+
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}

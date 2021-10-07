@@ -46,8 +46,7 @@ public class LoginServiceImpl implements LoginService {
 			employee = loginDAO.validateEmployeeLogin(mobileNo, password);
 			if (employee != null)
 				return employee;
-			else
-				throw new BussinessLogicException("No records found");
+			throw new BussinessLogicException("No records found");
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());

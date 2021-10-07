@@ -48,7 +48,7 @@ public class Customer {
 	@Column(name = "password", nullable = false)
 	private String password;
 
-	@Column(name = "age", nullable = false)
+	@Column(name = "age")
 	private Integer age;
 
 	@Column(name = "email", nullable = false)
@@ -56,12 +56,10 @@ public class Customer {
 
 	@Column(name = "state")
 	private String state;
-
-	@Temporal(TemporalType.DATE)
+	
 	@Column(name = "created_date")
 	private Date createdDate;
 
-	@Temporal(TemporalType.DATE)
 	@Column(name = "updated_date")
 	private Date updatedDate;
 

@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,7 +47,6 @@ public class Branch {
 	private String ifscCode;
 
 	@Column(name = "created_date")
-	@Temporal(TemporalType.DATE)
 	private Date createdDate;
 
 	// for cascade delete
@@ -62,6 +63,15 @@ public class Branch {
 	public String toString() {
 		return "BranchDto [id=" + id + ", name=" + name + ", city=" + city + ", ifscCode=" + ifscCode + ", createdDate="
 				+ createdDate + "]";
+	}
+
+	public Branch(Long id, String name, String city, String ifscCode, Date createdDate) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.city = city;
+		this.ifscCode = ifscCode;
+		this.createdDate = createdDate;
 	}
 
 }

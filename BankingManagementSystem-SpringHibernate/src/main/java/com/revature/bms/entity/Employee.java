@@ -51,11 +51,9 @@ public class Employee {
 	@Column(name = "salary")
 	private Integer salary;
 
-	@Temporal(TemporalType.DATE)
 	@Column(name = "created_date")
 	private Date createdDate;
-
-	@Temporal(TemporalType.DATE)
+	
 	@Column(name = "updated_date")
 	private Date updatedDate;
 

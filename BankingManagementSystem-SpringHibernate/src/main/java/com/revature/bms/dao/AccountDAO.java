@@ -81,4 +81,10 @@ public interface AccountDAO {
 	 */
 	String updateTransactionPIN(Long typeId, String password);
 
+	/**
+	 * to get account by account id
+	 * @param accountId
+	 * @return account details
+	 */
+	Account getAccountByAccountId(Long accountId);
 }

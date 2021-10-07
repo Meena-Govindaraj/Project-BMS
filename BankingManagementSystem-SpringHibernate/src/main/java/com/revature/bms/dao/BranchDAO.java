@@ -21,6 +21,7 @@ public interface BranchDAO {
 
 	List<Branch> viewAllBranch();
 
+
 	/**
 	 * to view branch by BranchId
 	 * 

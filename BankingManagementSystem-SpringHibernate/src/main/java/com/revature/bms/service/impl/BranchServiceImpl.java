@@ -1,6 +1,8 @@
 package com.revature.bms.service.impl;
 
-import static com.revature.bms.util.BankingManagementConstants.*;
+import static com.revature.bms.util.BankingManagementConstants.DUPLICATE_RECORD;
+import static com.revature.bms.util.BankingManagementConstants.ID_NOT_FOUND;
+import static com.revature.bms.util.BankingManagementConstants.INVALID_DETAILS;
 
 import java.util.List;
 
@@ -9,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.revature.bms.dao.BranchDAO;
 import com.revature.bms.dto.BranchDto;
 import com.revature.bms.entity.Branch;
@@ -30,22 +33,20 @@ public class BranchServiceImpl implements BranchService {
 
 		logger.info(" Add Branch called in Service");
 		try {
-			if (branchDto != null) {
-
-				if (!branchDAO.isBranchExistsBYCode(branchDto.getIfscCode()))
-					throw new BussinessLogicException("Branch IFSC Code:" + branchDto.getIfscCode() + DUPLICATE_RECORD);
-				else {
-					// dto to entity
-					Branch branch = BranchMapper.dtoToEntity(branchDto);
-					return branchDAO.addBranch(branch);
-				}
-			} else
+			if (branchDto == null)
 				throw new BussinessLogicException("Branch " + INVALID_DETAILS);
+
+			if (!branchDAO.isBranchExistsBYCode(branchDto.getIfscCode()))
+				throw new BussinessLogicException("Branch IFSC Code: " + branchDto.getIfscCode() + DUPLICATE_RECORD);
+
+			// dto to entity
+			Branch branch = BranchMapper.dtoToEntity(branchDto);
+			return branchDAO.addBranch(branch);
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		} catch (ConstraintViolationException e) {
-			throw new BussinessLogicException("Branch IFSC Code already exists!");
+			throw new BussinessLogicException(" Branch Already exists");
 		}
 	}
 
@@ -71,10 +72,10 @@ public class BranchServiceImpl implements BranchService {
 		try {
 			List<Branch> branches = null;
 			branches = branchDAO.viewAllBranch();
-			if (branches != null)
-				return branches;
-			else
+			if (branches == null)
 				throw new BussinessLogicException("No records Found");
+
+			return branches;
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -88,18 +89,15 @@ public class BranchServiceImpl implements BranchService {
 		logger.info("Update Branch Called in Service.... ");
 
 		try {
-			if (branchDto != null) {
-
-				if (branchDAO.isBranchExists(branchDto.getId()))
-					throw new BussinessLogicException("Branch Id:" + branchDto.getId() + ID_NOT_FOUND);
-
-				else {
-					// dto to entity
-					Branch branch = BranchMapper.dtoToEntity(branchDto);
-					return branchDAO.updateBranch(branch);
-				}
-			} else
+			if (branchDto == null)
 				throw new BussinessLogicException("Branch " + INVALID_DETAILS);
+
+			if (branchDAO.isBranchExists(branchDto.getId()))
+				throw new BussinessLogicException("Branch Id:" + branchDto.getId() + ID_NOT_FOUND);
+
+			// dto to entity
+			Branch branch = BranchMapper.dtoToEntity(branchDto);
+			return branchDAO.updateBranch(branch);
 		}
 
 		catch (DatabaseException e) {
@@ -115,10 +113,10 @@ public class BranchServiceImpl implements BranchService {
 		Branch branch = null;
 		try {
 			branch = branchDAO.viewBranchById(branchId);
-			if (branch != null)
-				return branch;
-			else
+			if (branch == null)
 				throw new BussinessLogicException("No records Found");
+
+			return branch;
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -133,9 +131,10 @@ public class BranchServiceImpl implements BranchService {
 		Branch branch = null;
 		try {
 			branch = branchDAO.getBranchByIfscCode(ifscCode);
-			if (branch != null)
-				return branch;
-			throw new BussinessLogicException("No Record Found");
+			if (branch == null)
+				throw new BussinessLogicException("No Record Found");
+
+			return branch;
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -149,7 +148,11 @@ public class BranchServiceImpl implements BranchService {
 
 		Branch branch = null;
 		try {
+
 			branch = branchDAO.viewBranchByName(branchName);
+			if (branch == null)
+				throw new BussinessLogicException("No Record Found");
+
 			return branch;
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());

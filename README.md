@@ -26,7 +26,7 @@ For Every transacations and to view balance, PIN is required.
 <li>Hibernate</li>
 <h5>Database<h5>
 <li>Postgresql</li>
-You can find scripts for SQL in BankingManagementSystemSpringHibernateApplication
+<i>You can find scripts for SQL in BankingManagementSystemSpringHibernateApplication</i>
 
 <h4>USAGE</h4>
 <h4>Step1:</h4>

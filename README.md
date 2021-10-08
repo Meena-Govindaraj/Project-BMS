@@ -18,4 +18,9 @@ For Every transacations and to view balance, PIN is required.
 <li>Transacation</li>
 
 <h4>TECHNOLOGIES USED</h4>
+<li>SpringBoot 2.5.4</li>
+<li>Java 8</li>
+<li>Hibernate</li>
+<p>Database<p>
+<li>Postgresql</li>
 

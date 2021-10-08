@@ -1,5 +1,5 @@
-<h1> Project-BMS </h1>
-<h3>BACK END</h3>
+<h1> Banking Mangement System </h1>
+<h3 style="color:cyan">BACK END</h3>
 <h5>Description</h5>
 <i>Admin can manage bank employee details (CRUD) and branch details.
 User can transfer the fund based to the other users on the unique ID.

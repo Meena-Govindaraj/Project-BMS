@@ -79,7 +79,7 @@ public interface AccountDAO {
 	 * @param password
 	 * @return string on successful updation of Transaction PIN
 	 */
-	String updateTransactionPIN(Long typeId, String password);
+	String updateTransactionPIN(Long accountId, String password);
 
 	/**
 	 * to get account by account id

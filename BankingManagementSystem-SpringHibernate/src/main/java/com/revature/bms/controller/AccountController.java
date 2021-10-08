@@ -218,15 +218,15 @@ public class AccountController {
 	 * @param newPassaword
 	 * @return response as status code,message
 	 */
-	@PutMapping("/updatePassword/{typeId}/{oldPassword}/{newPassword}")
-	public ResponseEntity<HttpResponseStatus> updatePassword(@PathVariable("typeId") Long typeId,
-			@PathVariable("oldPassword") String oldPassword,@PathVariable("newPassword") String newPassaword) {
+	@PutMapping("/updatePassword/{accountId}/{oldPassword}/{newPassword}")
+	public ResponseEntity<HttpResponseStatus> updatePassword(@PathVariable("accountId") Long accountId,
+			@PathVariable("oldPassword") String oldPassword,@PathVariable("newPassword") String newPassword) {
 
 		logger.info("Update TransactionPIN Called in Controller.... ");
 
 		try {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED,
-					accountService.updateTransactionPIN(typeId,oldPassword, newPassaword)), HttpStatus.OK);
+					accountService.updateTransactionPIN(accountId,oldPassword, newPassword)), HttpStatus.OK);
 		}
 
 		catch (BussinessLogicException e) {

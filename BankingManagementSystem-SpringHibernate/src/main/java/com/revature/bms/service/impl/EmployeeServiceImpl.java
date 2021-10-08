@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.revature.bms.controller.MailSend;
@@ -25,6 +26,9 @@ import static com.revature.bms.util.BankingManagementConstants.*;
 public class EmployeeServiceImpl implements EmployeeService {
 
 	private static final Logger logger = LogManager.getLogger(EmployeeServiceImpl.class.getName());
+
+	@Autowired
+	private PasswordEncoder encoder;
 
 	@Autowired
 	private EmployeeDAO employeeDAO;
@@ -63,6 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 							+ employee.getMobileNo() + "Password: " + password
 							+ "You can Change Your password once Your logged in..Thank You ");
 
+			employee.setPassword(encoder.encode(employee.getPassword()));
 			return employeeDAO.addEmployee(employee);
 
 		} catch (DatabaseException e) {
@@ -188,8 +193,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 			if (employeeDAO.isEmployeeExistsByMobileNo(mobileNo))
 				throw new BussinessLogicException("Employee Phone Number:" + mobileNo + ID_NOT_FOUND);
 
-			return employeeDAO.updatePassword(mobileNo, oldPassword, newPassword);
+			Employee employee = employeeDAO.getEmployeeByMobileNo(mobileNo);
+		
+			if (encoder.matches(oldPassword, employee.getPassword())) {
+				newPassword = encoder.encode(newPassword);
+				return employeeDAO.updatePassword(mobileNo, oldPassword, newPassword);
+			}
 
+			throw new BussinessLogicException("Incorrect Old Password");
+
+		
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -223,6 +236,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 			String password = GeneratePassword.generatePassword();
 			MailSend.sendMail(email, "Reset Password", "Mail: " + email + "\nPassword:" + password);
+
+			password = encoder.encode(password);
 
 			return employeeDAO.forgetPassword(email, password);
 		} catch (DatabaseException e) {

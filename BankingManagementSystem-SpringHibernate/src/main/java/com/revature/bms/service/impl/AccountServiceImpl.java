@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.revature.bms.controller.MailSend;
@@ -27,6 +28,9 @@ import com.revature.bms.util.GeneratePassword;
 public class AccountServiceImpl implements AccountService {
 
 	private static final Logger logger = LogManager.getLogger(AccountServiceImpl.class.getName());
+
+	@Autowired
+	private PasswordEncoder encoder;
 
 	@Autowired
 	private AccountDAO accountDAO;
@@ -197,15 +201,16 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public String updateTransactionPIN(Long typeId, String password) {
+	public String updateTransactionPIN(Long typeId, String oldPassword,String newPassword) {
 
 		logger.info("Update TransactionPIN Called in service.... ");
 
 		String transfer = null;
 		try {
-			transfer = accountDAO.updateTransactionPIN(typeId, password);
+			transfer = accountDAO.updateTransactionPIN(typeId, newPassword);
 			if (transfer == null)
 				throw new BussinessLogicException("Password Updation Falied");
+			
 			return transfer;
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -213,3 +218,15 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 }
+/*
+ * Account account = accountDAO.getAccountByAccountId(accountId);
+ * 
+ * if (oldPassword.equals(account.getTransactionPIN())) {
+ * 
+ * transfer = accountDAO.updateTransactionPIN(accountId, newPassword);
+ * 
+ * if (transfer != null) return transfer;
+ * 
+ * throw new BussinessLogicException("Password Updation Falied"); } else { throw
+ * new BussinessLogicException("Wrong Old password");
+ */

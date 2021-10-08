@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.revature.bms.controller.MailSend;
@@ -28,6 +29,9 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 
 	private static final Logger logger = LogManager.getLogger(AccountTypeServiceImpl.class.getName());
 
+	@Autowired
+	private PasswordEncoder encoder;
+	
 	@Autowired
 	private AccountTypeDAO accountTypeDAO;
 
@@ -56,12 +60,16 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 
 				accountTypeDto.setAccountNo(GeneratePassword.generateAccountNo());
 				accountTypeDto.setAccountStatus("No");
-				accountTypeDto.setCustomer(customer);
-
-				AccountType accountType = AccountTypeMapper.dtoToEntity(accountTypeDto);
-
+			
 				MailSend.sendMail(customer.getEmail(), " Account Credentials",
 						"Regsitered Phone No: " + customer.getMobileNo() + "\n Password: " + customer.getPassword());
+
+				customer.setPassword(encoder.encode(customer.getPassword()));
+				customerDAO.updatePassword(customer.getMobileNo(), customer.getPassword());
+				
+				accountTypeDto.setCustomer(customer);
+				
+				AccountType accountType = AccountTypeMapper.dtoToEntity(accountTypeDto);
 
 				return accountTypeDAO.addAccountType(accountType);
 

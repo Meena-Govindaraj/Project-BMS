@@ -33,8 +33,8 @@ public class LoginDAOImpl implements LoginDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Customer> resultList = session
-					.createQuery("select c from Customer c where c.mobileNo=:mobileNo and password=:password")
-					.setParameter("mobileNo", mobileNo).setParameter("password", password).getResultList();
+					.createQuery("select c from Customer c where c.mobileNo=:mobileNo")
+					.setParameter("mobileNo", mobileNo).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 		} catch (Exception e) {
@@ -51,8 +51,8 @@ public class LoginDAOImpl implements LoginDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Employee> resultList = session
-					.createQuery("select e from Employee e where e.mobileNo=:mobileNo and password=:password")
-					.setParameter("mobileNo", mobileNo).setParameter("password", password).getResultList();
+					.createQuery("select e from Employee e where e.mobileNo=:mobileNo")
+					.setParameter("mobileNo", mobileNo).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 

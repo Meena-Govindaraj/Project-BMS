@@ -242,15 +242,15 @@ public class CustomerController {
 	 * @param password
 	 * @return string on successful updation
 	 */
-	@PutMapping("/updatePassword/{mobileNo}/{newPassword}")
+	@PutMapping("/updatePassword/{mobileNo}/{oldPassword}/{newPassword}")
 	public ResponseEntity<HttpResponseStatus> updatePassword(@PathVariable("mobileNo") String mobileNo,
-			@PathVariable("newPassword") String newPassword) {
+			@PathVariable("oldPassword") String oldPassword,@PathVariable("newPassword") String newPassword) {
 
 		logger.info("Update password called in customer Controller");
 
 		try {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(),
-					customerService.updatePassword(mobileNo, newPassword)), HttpStatus.OK);
+					customerService.updatePassword(mobileNo,oldPassword,newPassword)), HttpStatus.OK);
 		} catch (BussinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
@@ -282,6 +282,23 @@ public class CustomerController {
 
 		}
 	}
+	
+	@PostMapping("sendAlertMail/{email}")
+	public ResponseEntity<HttpResponseStatus> sendAlertMail(@PathVariable("email") String email) {
+
+		logger.info("Alert Customer Called in Controller.... ");
+
+		try {
+			return new ResponseEntity<>(
+					new HttpResponseStatus(HttpStatus.OK.value(), customerService.sendAlertMail(email)),
+					HttpStatus.OK);
+		} catch (BussinessLogicException e) {
+			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
+					HttpStatus.NOT_FOUND);
+
+		}
+
+	}
 
 	//NOT NUL AND MIN MAX VALIDATION EXCEPTION
 	
@@ -300,4 +317,6 @@ public class CustomerController {
 		    return errors;
 		 
 		}
+		
+		
 }

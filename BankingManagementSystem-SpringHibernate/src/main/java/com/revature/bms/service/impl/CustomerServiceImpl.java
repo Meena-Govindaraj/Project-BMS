@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import static com.revature.bms.util.BankingManagementConstants.*;
 import com.revature.bms.controller.MailSend;
@@ -24,6 +25,9 @@ import com.revature.bms.util.GeneratePassword;
 public class CustomerServiceImpl implements CustomerService {
 
 	private static final Logger logger = LogManager.getLogger(CustomerServiceImpl.class.getName());
+
+	@Autowired
+	private PasswordEncoder encoder;
 
 	@Autowired
 	private CustomerDAO customerDAO;
@@ -83,25 +87,24 @@ public class CustomerServiceImpl implements CustomerService {
 
 		logger.info("update customer Called in Service.... ");
 		try {
-			if (customerDto== null || customerDto.getBranch() == null) 
+			if (customerDto == null || customerDto.getBranch() == null)
 				throw new BussinessLogicException("Customer " + INVALID_DETAILS);
-				
-				long branchId = customerDto.getBranch().getId();
 
-				if (branchDAO.isBranchExists(branchId))
-					throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
-				
-					// getting branch details to set in customer..
-					Branch branch = branchDAO.viewBranchById(branchId);
-					customerDto.setBranch(branch);
+			long branchId = customerDto.getBranch().getId();
 
-					// dto to entity..
-					Customer customer = CustomerMapper.dtoToEntity(customerDto);
+			if (branchDAO.isBranchExists(branchId))
+				throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
 
-					return customerDAO.updateCustomer(customer);
+			// getting branch details to set in customer..
+			Branch branch = branchDAO.viewBranchById(branchId);
+			customerDto.setBranch(branch);
 
-		}catch(DatabaseException e)
-		{
+			// dto to entity..
+			Customer customer = CustomerMapper.dtoToEntity(customerDto);
+
+			return customerDAO.updateCustomer(customer);
+
+		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
 	}
@@ -129,8 +132,8 @@ public class CustomerServiceImpl implements CustomerService {
 		try {
 			if (customerDAO.isCustomerExistsById(customerId))
 				throw new BussinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
-		
-				return customerDAO.viewCustomerById(customerId);
+
+			return customerDAO.viewCustomerById(customerId);
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -173,7 +176,7 @@ public class CustomerServiceImpl implements CustomerService {
 	}
 
 	@Override
-	public String updatePassword(String mobileNo, String password) {
+	public String updatePassword(String mobileNo, String oldPassword,String newPassword) {
 
 		logger.info("Update password called in customer Sevice");
 
@@ -182,8 +185,16 @@ public class CustomerServiceImpl implements CustomerService {
 				throw new BussinessLogicException(
 						"Customer Phone Number:" + mobileNo + " Not Found to Update Password!");
 			
-				return customerDAO.updatePassword(mobileNo, password);
-
+			Customer customer = customerDAO.getCustomerByMobileNo(mobileNo);
+			
+			if(encoder.matches(oldPassword, customer.getPassword()))
+			{
+			newPassword = encoder.encode(newPassword);
+			return customerDAO.updatePassword(mobileNo, newPassword);
+			}
+			
+			throw new BussinessLogicException("Incorrect Old Password");
+			
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
@@ -248,13 +259,35 @@ public class CustomerServiceImpl implements CustomerService {
 				throw new BussinessLogicException("Customer email:" + email + " Not Found to reset Password!");
 
 			String password = GeneratePassword.generatePassword();
+			
 			MailSend.sendMail(email, "Reset Password", "Mail: " + email + "\nPassword:" + password);
-
+			
+			password = encoder.encode(password);
 			return customerDAO.forgetPassword(email, password);
 
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
 		}
+	}
+
+	@Override
+	public String sendAlertMail(String email) {
+		
+		Customer customer=null;
+		try
+		{
+			customer=customerDAO.getCustomerByEmail(email);
+			if(customer==null)
+				throw new BussinessLogicException("Error in sending email");
+			
+			MailSend.sendMail(customer.getEmail(),"Check Balance","Please Check your Balance !!\n Your balance is less than 5000 \n Deposit As soon as possible");
+
+			return "Mail sent successfully!";
+		}
+		catch (DatabaseException e) {
+			throw new BussinessLogicException(e.getMessage());
+		}
+		
 	}
 
 }

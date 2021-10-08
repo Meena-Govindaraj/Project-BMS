@@ -79,6 +79,6 @@ public interface AccountService {
 	 * @param password
 	 * @return string on successful updation of Transaction PIN
 	 */
-	String updateTransactionPIN(Long typeId, String password);
+	String updateTransactionPIN(Long typeId, String oldPassword,String newPassword);
 
 }

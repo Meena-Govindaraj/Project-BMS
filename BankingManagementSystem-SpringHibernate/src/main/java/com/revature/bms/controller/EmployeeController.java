@@ -251,7 +251,7 @@ public class EmployeeController {
 		}
 	}
 
-	//NOT NUL AND MIN MAX VALIDATION EXCEPTION
+	//NOT NULL AND MIN MAX VALIDATION EXCEPTION
 	
 			@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
 			@ExceptionHandler(MethodArgumentNotValidException.class)

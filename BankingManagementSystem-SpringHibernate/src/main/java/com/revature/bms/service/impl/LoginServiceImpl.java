@@ -3,6 +3,7 @@ package com.revature.bms.service.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.revature.bms.dao.LoginDAO;
@@ -18,6 +19,9 @@ public class LoginServiceImpl implements LoginService {
 	private static final Logger logger = LogManager.getLogger(LoginServiceImpl.class.getName());
 
 	@Autowired
+	private PasswordEncoder encoder;
+
+	@Autowired
 	private LoginDAO loginDAO;
 
 	@Override
@@ -26,10 +30,13 @@ public class LoginServiceImpl implements LoginService {
 		logger.info("validate Customer Login called in customer Service");
 
 		Customer customer = null;
+
 		try {
 			customer = loginDAO.validateCustomerLogin(mobileNo, password);
-			if (customer != null)
+
+			if (encoder.matches(password, customer.getPassword())) {
 				return customer;
+			}
 			throw new BussinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
 			throw new BussinessLogicException(e.getMessage());
@@ -44,7 +51,8 @@ public class LoginServiceImpl implements LoginService {
 		Employee employee = null;
 		try {
 			employee = loginDAO.validateEmployeeLogin(mobileNo, password);
-			if (employee != null)
+			System.out.println(employee);
+			if (encoder.matches(password, employee.getPassword()))
 				return employee;
 			throw new BussinessLogicException("No records found");
 

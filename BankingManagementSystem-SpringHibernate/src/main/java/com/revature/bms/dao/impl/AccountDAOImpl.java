@@ -180,7 +180,7 @@ public class AccountDAOImpl implements AccountDAO {
 	}
 
 	@Override
-	public String updateTransactionPIN(Long typeId, String password) {
+	public String updateTransactionPIN(Long accountId, String password) {
 
 		logger.info("Update TransactionPIN Called in dao.... ");
 		try (Session session = sessionFactory.openSession()) {
@@ -188,9 +188,9 @@ public class AccountDAOImpl implements AccountDAO {
 			session.beginTransaction();
 
 			Query query = session
-					.createQuery("update Account a set a.transactionPIN=:password where a.accountType.id=:typeId");
+					.createQuery("update Account a set a.transactionPIN=:password where a.id=:accountId");
 			query.setParameter("password", password);
-			query.setParameter("typeId", typeId);
+			query.setParameter("accountId", accountId);
 
 			query.executeUpdate();
 

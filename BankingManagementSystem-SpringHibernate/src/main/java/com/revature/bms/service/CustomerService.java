@@ -78,7 +78,7 @@ public interface CustomerService {
 	 * @param password
 	 * @return string on successful updation
 	 */
-	String updatePassword(String mobileNo, String password);// updation of password
+	String updatePassword(String mobileNo,  String oldPassword,String newPassword);// updation of password
 
 	/**
 	 * to get customer details on unique mobile no
@@ -113,5 +113,7 @@ public interface CustomerService {
 	 */
 
 	String forgetPassword(String email);
+
+	String sendAlertMail(String email);
 
 }

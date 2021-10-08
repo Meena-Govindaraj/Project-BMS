@@ -35,8 +35,8 @@ You can find scripts for SQL in BankingManagementSystemSpringHibernateApplicatio
 <p>Import the Angular project (find <a href="https://github.com/Meena-Govindaraj/Project-BMS-Angular/tree/BMS-Angular_feet">here</a>)  by downloading the Zip file, after importing extract it and open the project folder in visual studio</p>
 <h4>Step3:</h4>
 <h6>To run Spring Boot project: </h6>
-com.revature.package->BankingManagementSystemSpringHibernateApplication->right click->Run as ->Spring Boot App</p>
-<h6>To run Angular project:</h6> - In Terminal - npm install then npm start</p>
+BankingManagementSystemSpringHibernateApplication->right click->Run as ->Spring Boot App</p>
+<h6>To run Angular project:</h6> In Terminal - npm install(For ng modules) then npm start</p>
 <p>Note: Make sure your angular project is running on correct port which was given in spring boot</p>
 
 

@@ -1,10 +1,5 @@
 package com.revature.bms.response;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.validation.FieldError;import com.sun.xml.bind.v2.util.QNameMap.Entry;
-
 import lombok.Data;
 
 @Data

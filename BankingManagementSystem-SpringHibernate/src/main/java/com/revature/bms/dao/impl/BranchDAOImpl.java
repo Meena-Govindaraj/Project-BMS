@@ -25,7 +25,6 @@ import com.revature.bms.dao.BranchDAO;
 import com.revature.bms.entity.Branch;
 import com.revature.bms.exception.DatabaseException;
 
-@SuppressWarnings("unchecked")
 @Repository
 public class BranchDAOImpl implements BranchDAO {
 
@@ -47,6 +46,8 @@ public class BranchDAOImpl implements BranchDAO {
 
 			return "Branch :" + branch.getName() + SAVED;
 		} catch (Exception e) {
+			logger.error("Error in adding Branch " + branch);
+
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
 
@@ -59,11 +60,13 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Branch> query = session.createQuery("select b from Branch b");
+			Query query = session.createQuery("select b from Branch b");
 			List<Branch> branches = query.list();
 
 			return (branches.isEmpty() ? null : branches);
 		} catch (Exception e) {
+			logger.error("Error in Fectching all branches");
+
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -82,6 +85,8 @@ public class BranchDAOImpl implements BranchDAO {
 			logger.info(branchId);
 
 		} catch (Exception e) {
+			logger.error("Error in Deleting branch Id: " + branchId);
+
 			throw new DatabaseException(ERROR_IN_DELETE);
 		}
 
@@ -96,10 +101,12 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Branch> query = session.createQuery("from Branch b where b.id=" + branchId);
+			Query query = session.createQuery("from Branch b where b.id=" + branchId);
 
 			return query.list().isEmpty();
 		} catch (Exception e) {
+			logger.error("Error in Fetching branch Id: " + branchId);
+
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -117,6 +124,8 @@ public class BranchDAOImpl implements BranchDAO {
 			return "Branch " + UPDATED;
 
 		} catch (Exception e) {
+			logger.error("Error in Updating Branch " + branch);
+
 			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
 
@@ -131,6 +140,8 @@ public class BranchDAOImpl implements BranchDAO {
 
 			return session.get(Branch.class, branchId);
 		} catch (Exception e) {
+			logger.error("Error in Fetching of Id: " + branchId);
+
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -142,32 +153,16 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Branch> query = session
-					.createQuery("from Branch b where b.ifscCode='" + ifscCode + "'");
+			Query query = session.createQuery("from Branch b where b.ifscCode='" + ifscCode + "'");
 
 			return query.list().isEmpty();
 
 		} catch (Exception e) {
+			logger.error("Error in Fetching branch of IfscCode " + ifscCode);
+
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
-	}
-
-	@Override
-	public Branch getBranchByIfscCode(String ifscCode) {
-
-		logger.info("View Branch By IFSC Called in Dao.... ");
-
-		try (Session session = sessionFactory.openSession()) {
-
-			List<Branch> resultList = session.createQuery("select b from Branch b where b.ifscCode=:ifscCode")
-					.setParameter("ifscCode", ifscCode).getResultList();
-
-			return (resultList.isEmpty() ? null : resultList.get(0));
-
-		} catch (Exception e) {
-			throw new DatabaseException(ERROR_IN_FETCH);
-		}
 	}
 
 	@Override
@@ -183,9 +178,29 @@ public class BranchDAOImpl implements BranchDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			logger.error("Error in Fetching branch of name " + branchName);
+
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
 
-	
+	@Override
+	public Branch getBranchByIfscCode(String ifscCode) {
+
+		logger.info("View Branch By IFSC Called in Dao.... ");
+
+		try (Session session = sessionFactory.openSession()) {
+
+			List<Branch> resultList = session.createQuery("select b from Branch b where b.ifscCode=:ifscCode")
+					.setParameter("ifscCode", ifscCode).getResultList();
+
+			return (resultList.isEmpty() ? null : resultList.get(0));
+
+		} catch (Exception e) {
+			logger.error("Error in Fetching branch of IfscCode " + ifscCode);
+
+			throw new DatabaseException(ERROR_IN_FETCH);
+		}
+	}
+
 }

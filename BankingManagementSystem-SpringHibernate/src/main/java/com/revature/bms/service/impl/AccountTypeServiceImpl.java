@@ -1,7 +1,10 @@
 package com.revature.bms.service.impl;
 
+import static com.revature.bms.util.BankingManagementConstants.DUPLICATE_RECORD;
+import static com.revature.bms.util.BankingManagementConstants.ID_NOT_FOUND;
+import static com.revature.bms.util.BankingManagementConstants.INVALID_DETAILS;
+
 import java.util.List;
-import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,8 +22,6 @@ import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.mapper.AccountTypeMapper;
 import com.revature.bms.service.AccountTypeSevice;
 import com.revature.bms.util.GeneratePassword;
-
-import static com.revature.bms.util.BankingManagementConstants.*;
 
 @Service
 public class AccountTypeServiceImpl implements AccountTypeSevice {

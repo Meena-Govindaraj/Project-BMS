@@ -10,8 +10,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
-import com.revature.bms.service.impl.BranchServiceImpl;
-
 @Component
 public class MailSend {
 

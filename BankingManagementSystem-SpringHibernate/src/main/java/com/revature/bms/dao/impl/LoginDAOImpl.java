@@ -16,7 +16,7 @@ import com.revature.bms.entity.Customer;
 import com.revature.bms.entity.Employee;
 import com.revature.bms.exception.DatabaseException;
 
-@SuppressWarnings("unchecked")
+
 @Repository
 public class LoginDAOImpl implements LoginDAO {
 
@@ -38,6 +38,7 @@ public class LoginDAOImpl implements LoginDAO {
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 		} catch (Exception e) {
+			logger.error("Error in Customer Login "+mobileNo );
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -56,6 +57,8 @@ public class LoginDAOImpl implements LoginDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			logger.error("Error in Employee Login "+mobileNo );
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 

@@ -1,5 +1,13 @@
 package com.revature.bms.dao.impl;
 
+import static com.revature.bms.util.BankingManagementConstants.DELETED;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_DELETE;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_FETCH;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_INSERT;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_UPDATE;
+import static com.revature.bms.util.BankingManagementConstants.SAVED;
+import static com.revature.bms.util.BankingManagementConstants.UPDATED;
+
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -11,14 +19,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import static com.revature.bms.util.BankingManagementConstants.*;
+
 import com.revature.bms.dao.AccountTypeDAO;
 import com.revature.bms.entity.AccountType;
-import com.revature.bms.entity.Branch;
-import com.revature.bms.entity.Customer;
 import com.revature.bms.exception.DatabaseException;
 
-@SuppressWarnings("unchecked")
 @Repository
 public class AccountTypeDAOImpl implements AccountTypeDAO {
 
@@ -41,6 +46,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 			return "Account:" + accountType.getAccountNo() + SAVED;
 		} catch (Exception e) {
+			logger.error("Error in Adding Account  " + accountType);
+			
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
 	}
@@ -60,6 +67,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 			return "Account: " + accountType.getAccountNo() + UPDATED;
 		} catch (Exception e) {
+			logger.error("Error in Updating Account  " + accountType);
 			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
 	}
@@ -78,6 +86,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 			return "Account: " + accountType.getAccountNo() + DELETED;
 		} catch (Exception e) {
+			logger.error("Error in Deleting Account of type: " + typeId);
+			
 			throw new DatabaseException(ERROR_IN_DELETE);
 		}
 	}
@@ -89,11 +99,13 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<AccountType> query = session.createQuery("select a from AccountType a where a.id=" + typeId);
+			Query query = session.createQuery("select a from AccountType a where a.id=" + typeId);
 
 			logger.info(query.list());
 			return query.list().isEmpty();
 		} catch (Exception e) {
+			logger.error("Error in fetching Account of type Id " + typeId);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -110,6 +122,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 			return (accountTypes.isEmpty() ? null : accountTypes);
 		} catch (Exception e) {
+			logger.error("Error in Fetching Accounts ");
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -121,13 +135,15 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<AccountType> query = session.createQuery("select a from AccountType a where a.type:type")
+			Query query = session.createQuery("select a from AccountType a where a.type:type")
 					.setParameter("type", type);
 
 			List<AccountType> accountTypes = query.list();
 
 			return (accountTypes.isEmpty() ? null : accountTypes);
 		} catch (Exception e) {
+			logger.error("Error in Fetching Accounts of type " + type);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -146,6 +162,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			logger.error("Error in Fetching Account of accountNo " + accountNo);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -157,7 +175,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<AccountType> query = session
+			Query query = session
 					.createQuery("select a from AccountType a where a.customer.id=:customerId")
 					.setParameter("customerId", customerId);
 
@@ -165,6 +183,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 			return (accountTypes.isEmpty() ? null : accountTypes);
 		} catch (Exception e) {
+			logger.error("Error in Fetching Account of customer: " + customerId);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -184,6 +204,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			logger.error("Error in Fetching Account of Mobile No: " + mobileNo);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -204,6 +226,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 			return "Status of Customer Account :" + accountNo + UPDATED;
 		} catch (Exception e) {
+			logger.error("Error in updating status of accountNo " + accountNo);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -215,7 +239,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<AccountType> query = session
+			Query query = session
 					.createQuery(
 							"select a from AccountType a where a.customer.branch.ifscCode=:ifscCode")
 					.setParameter("ifscCode", ifscCode);
@@ -223,6 +247,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 			return (customers.isEmpty() ? null : customers);
 		} catch (Exception e) {
+			logger.error("Error in Fetching Account of customer on Ifsc: " + ifscCode);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -238,6 +264,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 			return session.get(AccountType.class, typeId);
 		} 
 		catch (Exception e) {
+			logger.error("Error in Fetching Account of typeId: " + typeId);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}

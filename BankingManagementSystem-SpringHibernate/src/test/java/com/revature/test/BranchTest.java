@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.revature.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;

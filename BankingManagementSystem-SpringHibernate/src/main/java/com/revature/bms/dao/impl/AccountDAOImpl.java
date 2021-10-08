@@ -1,6 +1,8 @@
 package com.revature.bms.dao.impl;
 
-import static com.revature.bms.util.BankingManagementConstants.*;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_FETCH;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_INSERT;
+import static com.revature.bms.util.BankingManagementConstants.SAVED;
 
 import java.util.List;
 
@@ -14,7 +16,6 @@ import org.springframework.stereotype.Repository;
 
 import com.revature.bms.dao.AccountDAO;
 import com.revature.bms.entity.Account;
-import com.revature.bms.entity.AccountType;
 import com.revature.bms.exception.DatabaseException;
 
 @Repository
@@ -58,6 +59,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 			return (account.isEmpty() ? null : account);
 		} catch (Exception e) {
+			logger.error("Error in Fetching Accounts");
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -78,6 +80,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 			return (customers.isEmpty() ? null : customers);
 		} catch (Exception e) {
+			logger.error("Error in Feteching Account on IFSC" + ifscCode);
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -89,7 +92,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Account> query = session
+			Query query = session
 					.createQuery("select a from Account a where a.accountType.customer.id=:customerId")
 					.setParameter("customerId", customerId);
 
@@ -98,6 +101,7 @@ public class AccountDAOImpl implements AccountDAO {
 			return (customers.isEmpty() ? null : customers);
 
 		} catch (Exception e) {
+			logger.error("Error in Fetching Account of customer " + customerId);
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -115,6 +119,7 @@ public class AccountDAOImpl implements AccountDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			logger.error("Error in Fetching Account of account No: " + accountNo);
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -134,6 +139,7 @@ public class AccountDAOImpl implements AccountDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			logger.error("Error in Fetching Account of customer " + customerId);
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -147,14 +153,14 @@ public class AccountDAOImpl implements AccountDAO {
 
 			session.beginTransaction();
 
-			Query<Account> query1 = session
+			Query query1 = session
 					.createQuery("update Account set balance=balance-:amount where id=:senderId");
 			query1.setParameter("amount", amount);
 			query1.setParameter("senderId", senderId);
 
 			query1.executeUpdate();
 
-			Query<Account> query2 = session
+			Query query2 = session
 					.createQuery("update Account set balance=balance+:amount where id=:receiverId");
 			query2.setParameter("amount", amount);
 			query2.setParameter("receiverId", receiverId);
@@ -166,6 +172,8 @@ public class AccountDAOImpl implements AccountDAO {
 			return "Transaction success";
 
 		} catch (Exception e) {
+			logger.error("Error in Transfering fund ");
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -179,7 +187,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 			session.beginTransaction();
 
-			Query<Account> query = session
+			Query query = session
 					.createQuery("update Account a set a.transactionPIN=:password where a.accountType.id=:typeId");
 			query.setParameter("password", password);
 			query.setParameter("typeId", typeId);
@@ -190,6 +198,8 @@ public class AccountDAOImpl implements AccountDAO {
 			return "Transacation PIN Updated successfully!";
 
 		} catch (Exception e) {
+			logger.error("Error in Updating Transaction PIN");
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -204,6 +214,8 @@ public class AccountDAOImpl implements AccountDAO {
 
 			return session.get(Account.class, accountId);
 		} catch (Exception e) {
+			logger.error("Error in Fetching Account of accountId: " + accountId);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 

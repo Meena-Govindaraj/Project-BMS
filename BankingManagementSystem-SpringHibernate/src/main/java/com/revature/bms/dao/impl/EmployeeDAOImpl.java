@@ -1,5 +1,14 @@
 package com.revature.bms.dao.impl;
 
+import static com.revature.bms.util.BankingManagementConstants.DELETED;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_DELETE;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_FETCH;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_INSERT;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_UPDATE;
+import static com.revature.bms.util.BankingManagementConstants.PASSWORDUPDATED;
+import static com.revature.bms.util.BankingManagementConstants.SAVED;
+import static com.revature.bms.util.BankingManagementConstants.UPDATED;
+
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -19,9 +28,6 @@ import com.revature.bms.dao.EmployeeDAO;
 import com.revature.bms.entity.Employee;
 import com.revature.bms.exception.DatabaseException;
 
-import static com.revature.bms.util.BankingManagementConstants.*;
-
-@SuppressWarnings("unchecked")
 @Repository
 public class EmployeeDAOImpl implements EmployeeDAO {
 
@@ -51,6 +57,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		}
 
 		catch (Exception e) {
+			logger.error("Error in inserting employee "+employee );
+			
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
 
@@ -71,6 +79,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			return "Employee Id: " + employeeId + DELETED;
 
 		} catch (Exception e) {
+			logger.error("Error in deleting employee "+employeeId );
 			throw new DatabaseException(ERROR_IN_DELETE);
 		}
 
@@ -92,6 +101,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			return "Employee :" + employee.getName() + UPDATED;
 
 		} catch (Exception e) {
+			logger.error("Error in updating employee "+employee );
 			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
 	}
@@ -103,12 +113,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Employee> query = session.createQuery("select e from Employee e");
+			Query query = session.createQuery("select e from Employee e");
 			List<Employee> employees = query.list();
 
 			return (employees.isEmpty() ? null : employees);
 
 		} catch (Exception e) {
+			logger.error("Error in getting all employees");
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -123,6 +134,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			return session.get(Employee.class, employeeId);
 
 		} catch (Exception e) {
+			logger.error("Error in fetching employee "+employeeId );
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -134,12 +146,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Employee> query = session.createQuery("select e from Employee e where e.id=" + employeeId);
+			Query query = session.createQuery("select e from Employee e where e.id=" + employeeId);
 
 			logger.info(query.list());
 			return query.list().isEmpty();
 
 		} catch (Exception e) {
+			logger.error("Error in Employee "+employeeId );
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -158,6 +171,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			logger.error("Error in Fectching employee "+mobileNo );
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -169,12 +183,13 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		logger.info("Is Employee Exists ByMobileNo Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			Query<Employee> query = session
+			Query query = session
 					.createQuery("from Employee e where e.mobileNo ='" + mobileNo + "'");
 
 			return query.list().isEmpty();
 
 		} catch (Exception e) {
+			logger.error("Error in fetcching employee "+mobileNo );
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -196,6 +211,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			return "Employee" + PASSWORDUPDATED;
 
 		} catch (Exception e) {
+			logger.error("Error in updating employee password" );
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -207,11 +223,12 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		logger.info("Is Employee Exists By Email Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			Query<Employee> query = session
+			Query query = session
 					.createQuery("from Employee e where e.email ='" + email + "'");
 
 			return query.list().isEmpty();
 		} catch (Exception e) {
+			logger.error("Error in fetching employee "+email );
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -232,7 +249,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 			session.getTransaction().commit();
 		} catch (Exception e) {
-			throw new DatabaseException(ERROR_IN_FETCH);
+			logger.error("Error in reset employee password" );
+			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
 		return "Employee " + PASSWORDUPDATED;
 	}
@@ -250,6 +268,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			logger.error("Error in fetching employee "+email );
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}

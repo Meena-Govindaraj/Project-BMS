@@ -2,7 +2,6 @@ package com.revature.bms.dto;
 
 import java.util.Date;
 
-import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

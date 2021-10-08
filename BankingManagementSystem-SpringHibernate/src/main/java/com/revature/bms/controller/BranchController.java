@@ -3,7 +3,6 @@ package com.revature.bms.controller;
 import static com.revature.bms.util.BankingManagementConstants.RETRIVED;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -28,9 +27,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.bms.dto.BranchDto;
-import com.revature.bms.entity.Branch;
 import com.revature.bms.exception.BussinessLogicException;
-import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.response.HttpResponseStatus;
 import com.revature.bms.service.BranchService;
 

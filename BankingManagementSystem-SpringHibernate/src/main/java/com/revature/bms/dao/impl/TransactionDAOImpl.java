@@ -17,7 +17,6 @@ import com.revature.bms.dao.TransactionDAO;
 import com.revature.bms.entity.TransactionDetails;
 import com.revature.bms.exception.DatabaseException;
 
-@SuppressWarnings("unchecked")
 @Repository
 public class TransactionDAOImpl implements TransactionDAO {
 
@@ -43,6 +42,8 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 			return "Transacation of " + transactionDetails.getAccount().getAccountType().getAccountNo() + SAVED;
 		} catch (Exception e) {
+			logger.error("Error in adding transactions "+transactionDetails );
+			
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
 	}
@@ -54,11 +55,13 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<TransactionDetails> query = session.createQuery("select t from TransactionDetails t");
+			Query query = session.createQuery("select t from TransactionDetails t");
 			List<TransactionDetails> transactions = query.list();
 
 			return (transactions.isEmpty() ? null : transactions);
 		} catch (Exception e) {
+			logger.error("Error Fetching all transactions" );
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -70,7 +73,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<TransactionDetails> query = session
+			Query query = session
 					.createQuery("from TransactionDetails a where a.account.id=:accountId")
 					.setParameter("accountId", accountId);
 
@@ -79,6 +82,8 @@ public class TransactionDAOImpl implements TransactionDAO {
 			return (accounts.isEmpty() ? null : accounts);
 
 		} catch (Exception e) {
+			logger.error("Error in Fetching transactions of account "+accountId);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 

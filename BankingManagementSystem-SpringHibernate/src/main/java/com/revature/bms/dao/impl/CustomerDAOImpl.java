@@ -1,6 +1,13 @@
 package com.revature.bms.dao.impl;
 
-import static com.revature.bms.util.BankingManagementConstants.*;
+import static com.revature.bms.util.BankingManagementConstants.DELETED;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_DELETE;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_FETCH;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_INSERT;
+import static com.revature.bms.util.BankingManagementConstants.ERROR_IN_UPDATE;
+import static com.revature.bms.util.BankingManagementConstants.PASSWORDUPDATED;
+import static com.revature.bms.util.BankingManagementConstants.SAVED;
+import static com.revature.bms.util.BankingManagementConstants.UPDATED;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -19,7 +26,6 @@ import com.revature.bms.dao.CustomerDAO;
 import com.revature.bms.entity.Customer;
 import com.revature.bms.exception.DatabaseException;
 
-@SuppressWarnings("unchecked")
 @Repository
 public class CustomerDAOImpl implements CustomerDAO {
 
@@ -47,6 +53,9 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 			return "Customer: " + customer.getName() + SAVED + " at " + localTime;
 		} catch (Exception e) {
+			logger.error("Error in inserting customer " + customer);
+			
+			
 			throw new DatabaseException(ERROR_IN_INSERT);
 		}
 	}
@@ -66,6 +75,8 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 			return "Customer: " + customerId + DELETED;
 		} catch (Exception e) {
+			logger.error("Error in deleting customer " + customerId);
+			
 			throw new DatabaseException(ERROR_IN_DELETE);
 		}
 	}
@@ -86,6 +97,8 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 			return "customer" + UPDATED;
 		} catch (Exception e) {
+			logger.error("Error in updating customer " + customer);
+			
 			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
 	}
@@ -97,11 +110,13 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Customer> query = session.createQuery("select c from Customer c");
+			Query query = session.createQuery("select c from Customer c");
 			List<Customer> customers = query.list();
 
 			return (customers.isEmpty() ? null : customers);
 		} catch (Exception e) {
+			logger.error("Error in Fetching all customers");
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -115,6 +130,8 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 			return session.get(Customer.class, customerId);
 		} catch (Exception e) {
+			logger.error("Error in Fetching customer " + customerId);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 
@@ -127,11 +144,13 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Customer> query = session
+			Query query = session
 					.createQuery("from Customer c where c.mobileNo ='" + mobileNo + "'");
 
 			return query.list().isEmpty();
 		} catch (Exception e) {
+			logger.error("Error in fetching customer of mobile No" + mobileNo);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -143,10 +162,12 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Customer> query = session.createQuery("from Customer c where c.id=" + customerId);
+			Query query = session.createQuery("from Customer c where c.id=" + customerId);
 			return query.list().isEmpty();
 
 		} catch (Exception e) {
+			logger.error("Error in fetching customer " + customerId);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -157,11 +178,13 @@ public class CustomerDAOImpl implements CustomerDAO {
 		logger.info("Is Customer Exists By email Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			Query<Customer> query = session
+			Query query = session
 					.createQuery("from Customer c where c.email ='" + email + "'");
 
 			return query.list().isEmpty();
 		} catch (Exception e) {
+			logger.error("Error in fetching customer on email " + email);
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -182,6 +205,10 @@ public class CustomerDAOImpl implements CustomerDAO {
 			transaction.commit();
 
 			return "Customer" + PASSWORDUPDATED;
+		}catch (Exception e) {
+			logger.error("Error in Updating customer password" );
+			
+			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
 
 	}
@@ -200,6 +227,9 @@ public class CustomerDAOImpl implements CustomerDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			
+			logger.error("Error in Fecting customer "+mobileNo );
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -218,6 +248,8 @@ public class CustomerDAOImpl implements CustomerDAO {
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
+			logger.error("Error in Fetching customer "+email );
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -229,13 +261,15 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Customer> query = session
+			Query query = session
 					.createQuery("from Customer c where c.branch.ifscCode=:ifscCode")
 					.setParameter("ifscCode", ifscCode);
 			List<Customer> customers = query.list();
 
 			return (customers.isEmpty() ? null : customers);
 		} catch (Exception e) {
+			logger.error("Error in fetching customers on ifsc "+ifscCode );
+			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
@@ -258,7 +292,9 @@ public class CustomerDAOImpl implements CustomerDAO {
 			return "customer" + PASSWORDUPDATED;
 
 		} catch (Exception e) {
-			throw new DatabaseException(ERROR_IN_FETCH);
+			logger.error("Error in rest password in customer" );
+			
+			throw new DatabaseException(ERROR_IN_UPDATE);
 		}
 	}
 

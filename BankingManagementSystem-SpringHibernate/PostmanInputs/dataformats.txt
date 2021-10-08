@@ -1,0 +1,73 @@
+
+//postman inputs for all api
+branch:
+
+{   "name":"chrompet",
+    "city":"chennai",
+    "ifscCode":"IDIB8989089",
+    "createdDate":"2021-11-10"
+   
+}
+
+accounttype:
+
+ {
+    "balance":5000,
+    "transactionPIN":"223232",
+    "accountType":{
+        "id":62666
+    }
+ }
+
+account:
+
+{
+    "type":"Current",
+    "accountNo":"6029119496359391",
+    "customer":{
+        "id":60
+        }
+}
+
+cutsomer:
+{
+        "id":3,
+        "name": "Siva Priya",
+        "mobileNo": "9876543234",
+        "age":20,
+        "password": "Hairni@123",
+        "dateOfBirth":"2000-07-05",
+        "email": "Siva@gmail.com",
+        "createdDate": "2021-09-19",
+        "updatedDate": "2021-09-19",
+        "branch": {
+            "id": 6
+    }
+ }
+
+employee:
+{
+        "name": "Siva",
+        "password": "ks99asad",
+        "mobileNo": "9765456787",
+        "email": "siva1234@gmal.com",
+        "address": "chennai",
+        "salary": 10000,
+        "createdDate": "2021-10-05",
+        "updatedDate": "2021-10-05",
+        "branch": {
+            "id": 5
+        }
+}
+
+transactions:
+
+{
+            "message": null,
+            "deposit": 100,
+            "withdraw":0,
+            "balance": 5000,
+            "account": {
+                "id": 51
+            }
+}

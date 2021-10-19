@@ -60,7 +60,7 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("select b from Branch b");
+			Query<Branch> query = session.createQuery("from Branch b order by name",Branch.class);
 			List<Branch> branches = query.list();
 
 			return (branches.isEmpty() ? null : branches);
@@ -101,7 +101,7 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("from Branch b where b.id=" + branchId);
+			Query<Branch> query = session.createQuery("from Branch b where b.id=" + branchId,Branch.class);
 
 			return query.list().isEmpty();
 		} catch (Exception e) {
@@ -119,7 +119,7 @@ public class BranchDAOImpl implements BranchDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			session.beginTransaction();
-			session.merge(branch);
+			session.update(branch);
 			session.getTransaction().commit();
 			return "Branch " + UPDATED;
 
@@ -153,7 +153,7 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("from Branch b where b.ifscCode='" + ifscCode + "'");
+			Query<Branch> query = session.createQuery("from Branch b where b.ifscCode='" + ifscCode + "'",Branch.class);
 
 			return query.list().isEmpty();
 
@@ -172,7 +172,7 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			List<Branch> resultList = session.createQuery("select b from Branch b where b.name=:branchName")
+			List<Branch> resultList = session.createQuery("select b from Branch b where b.name=:branchName",Branch.class)
 					.setParameter("branchName", branchName).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -191,7 +191,7 @@ public class BranchDAOImpl implements BranchDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			List<Branch> resultList = session.createQuery("select b from Branch b where b.ifscCode=:ifscCode")
+			List<Branch> resultList = session.createQuery("select b from Branch b where b.ifscCode=:ifscCode",Branch.class)
 					.setParameter("ifscCode", ifscCode).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));

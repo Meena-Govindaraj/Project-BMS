@@ -15,7 +15,7 @@ import com.revature.bms.dao.CustomerDAO;
 import com.revature.bms.dto.CustomerDto;
 import com.revature.bms.entity.Branch;
 import com.revature.bms.entity.Customer;
-import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.BusinessLogicException;
 import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.mapper.CustomerMapper;
 import com.revature.bms.service.CustomerService;
@@ -41,16 +41,16 @@ public class CustomerServiceImpl implements CustomerService {
 		logger.info("Add Customer Called in Service.... ");
 		try {
 			if (customerDto == null || customerDto.getBranch() == null)
-				throw new BussinessLogicException("Customer " + INVALID_DETAILS);
+				throw new BusinessLogicException("Customer " + INVALID_DETAILS);
 
 			long branchId = customerDto.getBranch().getId();
 
 			if (branchDAO.isBranchExists(branchId))
-				throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
+				throw new BusinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
 
 			// to check customer Existence...
 			if (!customerDAO.isCustomerExistsByMobileNo(customerDto.getMobileNo()))
-				throw new BussinessLogicException("Customer !" + DUPLICATE_RECORD);
+				throw new BusinessLogicException("Customer !" + DUPLICATE_RECORD);
 
 			// getting branch details to set in customer..
 			Branch branch = branchDAO.viewBranchById(branchId);
@@ -60,12 +60,15 @@ public class CustomerServiceImpl implements CustomerService {
 			Customer customer = CustomerMapper.dtoToEntity(customerDto);
 			customer.setPassword(GeneratePassword.generatePassword());
 
+			MailSend.sendMail(customer.getEmail(), " Account Credentials",
+					"Regsitered Phone No: " + customer.getMobileNo() + "\n Password: " + customer.getPassword());
+
 			return customerDAO.addCustomer(customer);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		} catch (ConstraintViolationException e) {
-			throw new BussinessLogicException("Customer mobile no already found");
+			throw new BusinessLogicException("Customer already found with this mobileNo/email");
 		}
 	}
 
@@ -75,10 +78,10 @@ public class CustomerServiceImpl implements CustomerService {
 		logger.info("Delete Customer Called in Service.... ");
 		try {
 			if (customerDAO.isCustomerExistsById(customerId))
-				throw new BussinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
+				throw new BusinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
 			return customerDAO.deleteCustomer(customerId);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -88,12 +91,12 @@ public class CustomerServiceImpl implements CustomerService {
 		logger.info("update customer Called in Service.... ");
 		try {
 			if (customerDto == null || customerDto.getBranch() == null)
-				throw new BussinessLogicException("Customer " + INVALID_DETAILS);
+				throw new BusinessLogicException("Customer " + INVALID_DETAILS);
 
 			long branchId = customerDto.getBranch().getId();
 
 			if (branchDAO.isBranchExists(branchId))
-				throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
+				throw new BusinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
 
 			// getting branch details to set in customer..
 			Branch branch = branchDAO.viewBranchById(branchId);
@@ -105,7 +108,9 @@ public class CustomerServiceImpl implements CustomerService {
 			return customerDAO.updateCustomer(customer);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
+		}catch (ConstraintViolationException e) {
+			throw new BusinessLogicException("Customer already found with this mobileNo/email");
 		}
 	}
 
@@ -119,9 +124,9 @@ public class CustomerServiceImpl implements CustomerService {
 			customers = customerDAO.viewAllCustomer();
 			if (customers != null)
 				return customers;
-			throw new BussinessLogicException("No records Found");
+			throw new BusinessLogicException("No records Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -131,11 +136,11 @@ public class CustomerServiceImpl implements CustomerService {
 		logger.info("View CustomerById Called in Service.... ");
 		try {
 			if (customerDAO.isCustomerExistsById(customerId))
-				throw new BussinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
+				throw new BusinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
 
 			return customerDAO.viewCustomerById(customerId);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -146,7 +151,7 @@ public class CustomerServiceImpl implements CustomerService {
 		try {
 			return customerDAO.isCustomerExistsByMobileNo(mobileNo);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -157,10 +162,10 @@ public class CustomerServiceImpl implements CustomerService {
 
 		try {
 			if (customerDAO.isCustomerExistsById(customerId))
-				throw new BussinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
+				throw new BusinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
 			return customerDAO.viewCustomerById(customerId);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -171,7 +176,7 @@ public class CustomerServiceImpl implements CustomerService {
 		try {
 			return customerDAO.isCustomerExistsByEmail(email);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -182,7 +187,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 		try {
 			if (customerDAO.isCustomerExistsByMobileNo(mobileNo))
-				throw new BussinessLogicException(
+				throw new BusinessLogicException(
 						"Customer Phone Number:" + mobileNo + " Not Found to Update Password!");
 			
 			Customer customer = customerDAO.getCustomerByMobileNo(mobileNo);
@@ -193,10 +198,10 @@ public class CustomerServiceImpl implements CustomerService {
 			return customerDAO.updatePassword(mobileNo, newPassword);
 			}
 			
-			throw new BussinessLogicException("Incorrect Old Password");
+			throw new BusinessLogicException("Incorrect Old Password");
 			
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -210,9 +215,9 @@ public class CustomerServiceImpl implements CustomerService {
 			customer = customerDAO.getCustomerByMobileNo(mobileNo);
 			if (customer != null)
 				return customer;
-			throw new BussinessLogicException("No Records Found");
+			throw new BusinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 
 	}
@@ -227,9 +232,9 @@ public class CustomerServiceImpl implements CustomerService {
 			customer = customerDAO.getCustomerByEmail(email);
 			if (customer != null)
 				return customer;
-			throw new BussinessLogicException("No Records Found");
+			throw new BusinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -243,9 +248,9 @@ public class CustomerServiceImpl implements CustomerService {
 			customers = customerDAO.getCustomersByIFSC(ifscCode);
 			if (customers != null)
 				return customers;
-			throw new BussinessLogicException("No records Found");
+			throw new BusinessLogicException("No records Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 
 	}
@@ -256,7 +261,7 @@ public class CustomerServiceImpl implements CustomerService {
 		logger.info("Forget Password called in customer Service");
 		try {
 			if (customerDAO.isCustomerExistsByEmail(email))
-				throw new BussinessLogicException("Customer email:" + email + " Not Found to reset Password!");
+				throw new BusinessLogicException("Customer email:" + email + " Not Found to reset Password!");
 
 			String password = GeneratePassword.generatePassword();
 			
@@ -266,7 +271,7 @@ public class CustomerServiceImpl implements CustomerService {
 			return customerDAO.forgetPassword(email, password);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -278,14 +283,14 @@ public class CustomerServiceImpl implements CustomerService {
 		{
 			customer=customerDAO.getCustomerByEmail(email);
 			if(customer==null)
-				throw new BussinessLogicException("Error in sending email");
+				throw new BusinessLogicException("Error in sending email");
 			
 			MailSend.sendMail(customer.getEmail(),"Check Balance","Please Check your Balance !!\n Your balance is less than 5000 \n Deposit As soon as possible");
 
 			return "Mail sent successfully!";
 		}
 		catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 		
 	}

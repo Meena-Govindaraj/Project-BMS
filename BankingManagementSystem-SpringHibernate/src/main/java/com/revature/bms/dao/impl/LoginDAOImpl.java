@@ -26,38 +26,38 @@ public class LoginDAOImpl implements LoginDAO {
 	private SessionFactory sessionFactory;
 
 	@Override
-	public Customer validateCustomerLogin(String mobileNo, String password) {
+	public Customer validateCustomerLogin(String email, String password) {
 
 		logger.info("validate Customer Login called in customer dao");
 
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Customer> resultList = session
-					.createQuery("select c from Customer c where c.mobileNo=:mobileNo")
-					.setParameter("mobileNo", mobileNo).getResultList();
+					.createQuery("select c from Customer c where c.email=:email",Customer.class)
+					.setParameter("email", email).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 		} catch (Exception e) {
-			logger.error("Error in Customer Login "+mobileNo );
+			logger.error("Error in Customer Login "+email );
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}
 	}
 
 	@Override
-	public Employee validateEmployeeLogin(String mobileNo, String password) {
+	public Employee validateEmployeeLogin(String email, String password) {
 
 		logger.info("Validate Employee Login Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Employee> resultList = session
-					.createQuery("select e from Employee e where e.mobileNo=:mobileNo")
-					.setParameter("mobileNo", mobileNo).getResultList();
+					.createQuery("select e from Employee e where e.email=:email",Employee.class)
+					.setParameter("email", email).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
 
 		} catch (Exception e) {
-			logger.error("Error in Employee Login "+mobileNo );
+			logger.error("Error in Employee Login "+email );
 			
 			throw new DatabaseException(ERROR_IN_FETCH);
 		}

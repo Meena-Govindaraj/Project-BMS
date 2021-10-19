@@ -110,7 +110,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("select c from Customer c");
+			Query<Customer> query = session.createQuery("select c from Customer c order by name",Customer.class);
 			List<Customer> customers = query.list();
 
 			return (customers.isEmpty() ? null : customers);
@@ -144,8 +144,8 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session
-					.createQuery("from Customer c where c.mobileNo ='" + mobileNo + "'");
+			Query<Customer> query = session
+					.createQuery("from Customer c where c.mobileNo ='" + mobileNo + "'",Customer.class);
 
 			return query.list().isEmpty();
 		} catch (Exception e) {
@@ -162,7 +162,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("from Customer c where c.id=" + customerId);
+			Query<Customer> query = session.createQuery("from Customer c where c.id=" + customerId,Customer.class);
 			return query.list().isEmpty();
 
 		} catch (Exception e) {
@@ -178,8 +178,8 @@ public class CustomerDAOImpl implements CustomerDAO {
 		logger.info("Is Customer Exists By email Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			Query query = session
-					.createQuery("from Customer c where c.email ='" + email + "'");
+			Query<Customer> query = session
+					.createQuery("from Customer c where c.email ='" + email + "'",Customer.class);
 
 			return query.list().isEmpty();
 		} catch (Exception e) {
@@ -221,7 +221,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Customer> resultList = session
-					.createQuery("from Customer c where c.mobileNo=:mobileNo")
+					.createQuery("from Customer c where c.mobileNo=:mobileNo",Customer.class)
 					.setParameter("mobileNo", mobileNo).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -242,7 +242,7 @@ public class CustomerDAOImpl implements CustomerDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Customer> resultList = session
-					.createQuery("from Customer c where c.email=:email")
+					.createQuery("from Customer c where c.email=:email",Customer.class)
 					.setParameter("email", email).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -261,8 +261,8 @@ public class CustomerDAOImpl implements CustomerDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session
-					.createQuery("from Customer c where c.branch.ifscCode=:ifscCode")
+			Query<Customer> query = session
+					.createQuery("from Customer c where c.branch.ifscCode=:ifscCode",Customer.class)
 					.setParameter("ifscCode", ifscCode);
 			List<Customer> customers = query.list();
 

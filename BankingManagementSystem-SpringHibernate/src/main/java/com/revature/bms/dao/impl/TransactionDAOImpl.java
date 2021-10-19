@@ -55,7 +55,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("select t from TransactionDetails t");
+			Query<TransactionDetails> query = session.createQuery("select t from TransactionDetails t",TransactionDetails.class);
 			List<TransactionDetails> transactions = query.list();
 
 			return (transactions.isEmpty() ? null : transactions);
@@ -73,8 +73,8 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session
-					.createQuery("from TransactionDetails a where a.account.id=:accountId")
+			Query<TransactionDetails> query = session
+					.createQuery("from TransactionDetails a where a.account.id=:accountId order by transactionDate desc",TransactionDetails.class)
 					.setParameter("accountId", accountId);
 
 			List<TransactionDetails> accounts = query.list();

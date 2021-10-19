@@ -49,7 +49,7 @@ public class Customer {
 	@Column(name = "age")
 	private Integer age;
 
-	@Column(name = "email", nullable = false)
+	@Column(name = "email", nullable = false,unique = true)
 	private String email;
 
 	@Column(name = "state")
@@ -57,7 +57,7 @@ public class Customer {
 	
 	@Column(name = "created_date")
 	private Date createdDate;
-
+	
 	@Column(name = "updated_date")
 	private Date updatedDate;
 

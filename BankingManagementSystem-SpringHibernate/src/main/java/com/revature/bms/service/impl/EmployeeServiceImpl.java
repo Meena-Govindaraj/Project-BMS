@@ -1,5 +1,10 @@
 package com.revature.bms.service.impl;
 
+import static com.revature.bms.util.BankingManagementConstants.DUPLICATE_RECORD;
+import static com.revature.bms.util.BankingManagementConstants.ID_NOT_FOUND;
+import static com.revature.bms.util.BankingManagementConstants.INVALID_DETAILS;
+
+import java.util.InputMismatchException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,12 +20,11 @@ import com.revature.bms.dao.EmployeeDAO;
 import com.revature.bms.dto.EmployeeDto;
 import com.revature.bms.entity.Branch;
 import com.revature.bms.entity.Employee;
-import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.BusinessLogicException;
 import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.mapper.EmployeeMapper;
 import com.revature.bms.service.EmployeeService;
 import com.revature.bms.util.GeneratePassword;
-import static com.revature.bms.util.BankingManagementConstants.*;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -42,15 +46,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 		logger.info("Add Employee Called in Service... ");
 		try {
 			if (employeeDto == null || employeeDto.getBranch() == null)
-				throw new BussinessLogicException("Employee " + INVALID_DETAILS);
+				throw new BusinessLogicException("Employee " + INVALID_DETAILS);
 
 			long branchId = employeeDto.getBranch().getId();
 
 			if (branchDAO.isBranchExists(branchId))
-				throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
+				throw new BusinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
 
 			if (!employeeDAO.isEmployeeExistsByMobileNo(employeeDto.getMobileNo()))
-				throw new BussinessLogicException("Employee " + DUPLICATE_RECORD);
+				throw new BusinessLogicException("Employee " + DUPLICATE_RECORD);
 
 			// getting branch details to set in employee..
 			Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
@@ -71,23 +75,26 @@ public class EmployeeServiceImpl implements EmployeeService {
 			return employeeDAO.addEmployee(employee);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		} catch (ConstraintViolationException e) {
-			throw new BussinessLogicException("Mobile No already exists");
+			throw new BusinessLogicException("Employee already exists with mobileNo/email");
+		} catch (InputMismatchException e) {
+			throw new BusinessLogicException("Wrong Input!!");
 		}
-	}
 
+	}
+	
 	@Override
 	public String deleteEmployee(Long employeeId) {
 
 		logger.info("Delete Employee Called in Service... ");
 		try {
 			if (employeeDAO.isEmployeeExistsById(employeeId))
-				throw new BussinessLogicException("Employee Id:" + employeeId + ID_NOT_FOUND);
+				throw new BusinessLogicException("Employee Id:" + employeeId + ID_NOT_FOUND);
 
 			return employeeDAO.deleteEmployee(employeeId);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -98,15 +105,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 		try {
 			if (employeeDto == null || employeeDto.getBranch() == null)
-				throw new BussinessLogicException("Employee " + INVALID_DETAILS);
+				throw new BusinessLogicException("Employee " + INVALID_DETAILS);
 
 			if (employeeDAO.isEmployeeExistsById(employeeDto.getId()))
-				throw new BussinessLogicException("EmployeeId:" + employeeDto.getId() + ID_NOT_FOUND);
+				throw new BusinessLogicException("EmployeeId:" + employeeDto.getId() + ID_NOT_FOUND);
 
 			long branchId = employeeDto.getBranch().getId();
 
 			if (branchDAO.isBranchExists(branchId))
-				throw new BussinessLogicException("Branch Id:" + branchId + INVALID_DETAILS);
+				throw new BusinessLogicException("Branch Id:" + branchId + INVALID_DETAILS);
 
 			Branch branch = branchDAO.viewBranchById(employeeDto.getBranch().getId());
 			employeeDto.setBranch(branch);
@@ -118,8 +125,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 			return employeeDAO.updateEmployee(employee);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
-		}
+			throw new BusinessLogicException(e.getMessage());
+		}catch (ConstraintViolationException e) {
+			throw new BusinessLogicException("Employee already exists with mobileNo/email");
+		} 
 	}
 
 	@Override
@@ -132,9 +141,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 			employees = employeeDAO.viewAllemployee();
 			if (employees != null)
 				return employees;
-			throw new BussinessLogicException("No records found");
+			throw new BusinessLogicException("No records found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -144,10 +153,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 		logger.info("View EmployeeById Called in Service... ");
 		try {
 			if (employeeDAO.isEmployeeExistsById(employeeId))
-				throw new BussinessLogicException("Employee Id:" + employeeId + ID_NOT_FOUND);
+				throw new BusinessLogicException("Employee Id:" + employeeId + ID_NOT_FOUND);
 			return employeeDAO.viewEmployeeById(employeeId);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -158,7 +167,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		try {
 			return employeeDAO.isEmployeeExistsById(employeeId);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -170,7 +179,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		try {
 			return employeeDAO.isEmployeeExistsByMobileNo(mobileNo);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -181,7 +190,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		try {
 			return employeeDAO.isEmployeeExistsByEmail(email);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -191,20 +200,19 @@ public class EmployeeServiceImpl implements EmployeeService {
 		logger.info("Update Password of employee Called in Service... ");
 		try {
 			if (employeeDAO.isEmployeeExistsByMobileNo(mobileNo))
-				throw new BussinessLogicException("Employee Phone Number:" + mobileNo + ID_NOT_FOUND);
+				throw new BusinessLogicException("Employee Phone Number:" + mobileNo + ID_NOT_FOUND);
 
 			Employee employee = employeeDAO.getEmployeeByMobileNo(mobileNo);
-		
+
 			if (encoder.matches(oldPassword, employee.getPassword())) {
 				newPassword = encoder.encode(newPassword);
 				return employeeDAO.updatePassword(mobileNo, oldPassword, newPassword);
 			}
 
-			throw new BussinessLogicException("Incorrect Old Password");
+			throw new BusinessLogicException("Incorrect Old Password");
 
-		
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -219,9 +227,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 			employee = employeeDAO.getEmployeeByMobileNo(mobileNo);
 			if (employee != null)
 				return employee;
-			throw new BussinessLogicException("No Records Found");
+			throw new BusinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 
 	}
@@ -232,7 +240,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		logger.info("Forget Password od employee Called in Service... ");
 		try {
 			if (employeeDAO.isEmployeeExistsByEmail(email))
-				throw new BussinessLogicException("Employee email:" + email + ID_NOT_FOUND);
+				throw new BusinessLogicException("Employee email:" + email + ID_NOT_FOUND);
 
 			String password = GeneratePassword.generatePassword();
 			MailSend.sendMail(email, "Reset Password", "Mail: " + email + "\nPassword:" + password);
@@ -241,7 +249,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 			return employeeDAO.forgetPassword(email, password);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -255,9 +263,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 			employee = employeeDAO.getEmployeeByEmail(email);
 			if (employee != null)
 				return employee;
-			throw new BussinessLogicException("No Records Found");
+			throw new BusinessLogicException("No Records Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 
 	}

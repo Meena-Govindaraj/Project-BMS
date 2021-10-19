@@ -18,7 +18,7 @@ import com.revature.bms.dao.CustomerDAO;
 import com.revature.bms.dto.AccountTypeDto;
 import com.revature.bms.entity.AccountType;
 import com.revature.bms.entity.Customer;
-import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.BusinessLogicException;
 import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.mapper.AccountTypeMapper;
 import com.revature.bms.service.AccountTypeSevice;
@@ -48,21 +48,19 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 
 				Long customerId = accountTypeDto.getCustomer().getId();
 				if (customerDAO.isCustomerExistsById(customerId))
-					throw new BussinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
+					throw new BusinessLogicException("Customer Id:" + customerId + ID_NOT_FOUND);
 
 				Customer customer = customerDAO.viewCustomerById(customerId);
 
 				// to check account type already exists or not
 				if (accountTypeDAO.isAccountTypeExists(customer.getMobileNo(), customer.getEmail(),
 						accountTypeDto.getType()) != null)
-					throw new BussinessLogicException("Account Type: " + accountTypeDto.getType() + DUPLICATE_RECORD
+					throw new BusinessLogicException("Account Type: " + accountTypeDto.getType() + DUPLICATE_RECORD
 							+ " customerID: " + customer.getId());
 
 				accountTypeDto.setAccountNo(GeneratePassword.generateAccountNo());
 				accountTypeDto.setAccountStatus("No");
 			
-				MailSend.sendMail(customer.getEmail(), " Account Credentials",
-						"Regsitered Phone No: " + customer.getMobileNo() + "\n Password: " + customer.getPassword());
 
 				customer.setPassword(encoder.encode(customer.getPassword()));
 				customerDAO.updatePassword(customer.getMobileNo(), customer.getPassword());
@@ -74,10 +72,10 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 				return accountTypeDAO.addAccountType(accountType);
 
 			} else
-				throw new BussinessLogicException("Account " + INVALID_DETAILS);
+				throw new BusinessLogicException("Account " + INVALID_DETAILS);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -89,9 +87,9 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 			if (accountTypeDto != null && accountTypeDto.getCustomer() != null) {
 
 				if (accountTypeDAO.getAccountByAccountNo(accountTypeDto.getAccountNo()) == null)
-					throw new BussinessLogicException("Account NO:" + accountTypeDto.getAccountNo() + ID_NOT_FOUND);
+					throw new BusinessLogicException("Account NO:" + accountTypeDto.getAccountNo() + ID_NOT_FOUND);
 				if (accountTypeDAO.isAccountExists(accountTypeDto.getId()))
-					throw new BussinessLogicException("Type Id:" + accountTypeDto.getId() + ID_NOT_FOUND);
+					throw new BusinessLogicException("Type Id:" + accountTypeDto.getId() + ID_NOT_FOUND);
 
 				Customer customer = accountTypeDto.getCustomer();
 
@@ -104,10 +102,10 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 			}
 
 			else
-				throw new BussinessLogicException("Account " + INVALID_DETAILS);
+				throw new BusinessLogicException("Account " + INVALID_DETAILS);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -117,11 +115,23 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 		logger.info("Delete AccountType Called in Service.... ");
 		try {
 			if (accountTypeDAO.isAccountExists(typeId))
-				throw new BussinessLogicException("AccountType Id: " + typeId + ID_NOT_FOUND);
-
+				throw new BusinessLogicException("AccountType Id: " + typeId + ID_NOT_FOUND);
+			
+			AccountType accountType=accountTypeDAO.viewAccountByTypeId(typeId);
+			
+			if(accountType.getAccountStatus().equals("No")) {
+		
+				MailSend.sendMail(accountType.getCustomer().getEmail(), "Account Rejected","Mr/Mrs: "+accountType.getCustomer().getName()+"\n Sorry request for account type: "+accountType.getType()+" get Rejected!!");
+			}
+			else
+			{
+				
+				MailSend.sendMail(accountType.getCustomer().getEmail(), "Account Deleted","Mr/Mrs: "+accountType.getCustomer().getName() +"\n Sorry your Account Type: "+accountType.getType()+" deleted by bank!! \n For Queries Contact Bank");
+			}
+			
 			return accountTypeDAO.deleteAccountType(typeId);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -135,9 +145,9 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 			accountType = accountTypeDAO.getAccountsByType(type);
 			if (accountType != null)
 				return accountType;
-			throw new BussinessLogicException("No Record Found");
+			throw new BusinessLogicException("No Record Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -147,11 +157,11 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 		logger.info("Get AccountBy AccountNo Called in Service.... ");
 		try {
 			if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
-				throw new BussinessLogicException("Account  No:" + accountNo + ID_NOT_FOUND);
+				throw new BusinessLogicException("Account  No:" + accountNo + ID_NOT_FOUND);
 			return accountTypeDAO.getAccountByAccountNo(accountNo);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -166,9 +176,9 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 			accountType = accountTypeDAO.viewCustomerById(customerId);
 			if (accountType != null)
 				return accountType;
-			throw new BussinessLogicException("No Record Found");
+			throw new BusinessLogicException("No Record Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 
 	}
@@ -183,9 +193,9 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 			accountType = accountTypeDAO.isAccountTypeExists(mobileNo, email, type);
 			if (accountType != null)
 				return accountType;
-			throw new BussinessLogicException("No Record Found");
+			throw new BusinessLogicException("No Record Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -195,12 +205,12 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 		logger.info("Update AccountStatus Called in Service.... ");
 		try {
 			if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
-				throw new BussinessLogicException("Account No:" + accountNo + ID_NOT_FOUND);
+				throw new BusinessLogicException("Account No:" + accountNo + ID_NOT_FOUND);
 
 			return accountTypeDAO.updateAccountStatus(accountStatus, accountNo);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -214,9 +224,9 @@ public class AccountTypeServiceImpl implements AccountTypeSevice {
 			accountType = accountTypeDAO.getCustomersByIFSC(ifscCode);
 			if (accountType != null)
 				return accountType;
-			throw new BussinessLogicException("No Record Found");
+			throw new BusinessLogicException("No Record Found");
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 

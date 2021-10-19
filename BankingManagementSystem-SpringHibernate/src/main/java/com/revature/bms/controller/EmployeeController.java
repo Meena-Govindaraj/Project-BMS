@@ -2,9 +2,6 @@ package com.revature.bms.controller;
 
 import static com.revature.bms.util.BankingManagementConstants.RETRIVED;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,22 +9,18 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.revature.bms.dto.EmployeeDto;
-import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.BusinessLogicException;
 import com.revature.bms.response.HttpResponseStatus;
 import com.revature.bms.service.EmployeeService;
 
@@ -56,7 +49,7 @@ public class EmployeeController {
 			return new ResponseEntity<>(
 					new HttpResponseStatus(HttpStatus.OK.value(), employeeService.addEmployee(employeeDto)),
 					HttpStatus.OK);
-		} catch (BussinessLogicException e) {
+		} catch (BusinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.BAD_REQUEST.value(), e.getMessage()),
 					HttpStatus.BAD_REQUEST);
 		}
@@ -78,7 +71,7 @@ public class EmployeeController {
 			return new ResponseEntity<>(
 					new HttpResponseStatus(HttpStatus.OK.value(), employeeService.updateEmployee(employeeDto)),
 					HttpStatus.OK);
-		} catch (BussinessLogicException e) {
+		} catch (BusinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
@@ -101,7 +94,7 @@ public class EmployeeController {
 			return new ResponseEntity<>(
 					new HttpResponseStatus(HttpStatus.OK.value(), RETRIVED, employeeService.viewAllemployee()),
 					HttpStatus.OK);
-		} catch (BussinessLogicException e) {
+		} catch (BusinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
@@ -123,7 +116,7 @@ public class EmployeeController {
 			return new ResponseEntity<>(
 					new HttpResponseStatus(HttpStatus.OK.value(), employeeService.deleteEmployee(employeeId)),
 					HttpStatus.OK);
-		} catch (BussinessLogicException e) {
+		} catch (BusinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
@@ -149,7 +142,7 @@ public class EmployeeController {
 		try {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.OK.value(),
 					employeeService.updatePassword(mobileNo, oldPassword, newPassaword)), HttpStatus.OK);
-		} catch (BussinessLogicException e) {
+		} catch (BusinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
@@ -173,7 +166,7 @@ public class EmployeeController {
 			return new ResponseEntity<>(
 					new HttpResponseStatus(HttpStatus.OK.value(), employeeService.forgetPassword(email)),
 					HttpStatus.OK);
-		} catch (BussinessLogicException e) {
+		} catch (BusinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
@@ -197,7 +190,7 @@ public class EmployeeController {
 
 		}
 
-		catch (BussinessLogicException e) {
+		catch (BusinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
@@ -220,7 +213,7 @@ public class EmployeeController {
 					employeeService.getEmployeeByMobileNo(mobileNo)), HttpStatus.OK);
 		}
 
-		catch (BussinessLogicException e) {
+		catch (BusinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
@@ -244,28 +237,11 @@ public class EmployeeController {
 					HttpStatus.OK);
 		}
 
-		catch (BussinessLogicException e) {
+		catch (BusinessLogicException e) {
 			return new ResponseEntity<>(new HttpResponseStatus(HttpStatus.NOT_FOUND.value(), e.getMessage()),
 					HttpStatus.NOT_FOUND);
 
 		}
 	}
 
-	//NOT NULL AND MIN MAX VALIDATION EXCEPTION
-	
-			@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-			@ExceptionHandler(MethodArgumentNotValidException.class)
-			public Map<String, String> handleValidationExceptions(
-			  MethodArgumentNotValidException ex) {
-			  
-				logger.error("######Validation error");
-				Map<String, String> errors = new HashMap<>();
-			    ex.getBindingResult().getAllErrors().forEach((error) -> {
-			        String fieldName = ((FieldError) error).getField();
-			        String errorMessage = error.getDefaultMessage();
-			        errors.put(fieldName, errorMessage);
-			    });
-			    return errors;
-			 
-			}
 }

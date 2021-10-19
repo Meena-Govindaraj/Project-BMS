@@ -8,18 +8,15 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.revature.bms.controller.MailSend;
 import com.revature.bms.dao.AccountDAO;
 import com.revature.bms.dao.AccountTypeDAO;
-import com.revature.bms.dao.CustomerDAO;
 import com.revature.bms.dto.AccountDto;
 import com.revature.bms.entity.Account;
 import com.revature.bms.entity.AccountType;
-import com.revature.bms.entity.Customer;
-import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.BusinessLogicException;
 import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.mapper.AccountMapper;
 import com.revature.bms.service.AccountService;
@@ -32,16 +29,11 @@ public class AccountServiceImpl implements AccountService {
 	private static final Logger logger = LogManager.getLogger(AccountServiceImpl.class.getName());
 
 	@Autowired
-	private PasswordEncoder encoder;
-
-	@Autowired
 	private AccountDAO accountDAO;
 
 	@Autowired
 	private AccountTypeDAO accountTypeDAO;
 
-	@Autowired
-	private CustomerDAO customerDAO;
 	
 	@Override
 	public String addAccount(AccountDto accountDto) {
@@ -50,18 +42,18 @@ public class AccountServiceImpl implements AccountService {
 		try {
 
 			if (accountDto == null || accountDto.getAccountType() == null)
-				throw new BussinessLogicException("Account " + INVALID_DETAILS);
+				throw new BusinessLogicException("Account " + INVALID_DETAILS);
 
 			AccountType accountType = null;
 
 			if (accountTypeDAO.viewAccountByTypeId(accountDto.getAccountType().getId()) == null)
-				throw new BussinessLogicException("Type Id not found to add account");
+				throw new BusinessLogicException("Type Id not found to add account");
 
 			accountType = accountTypeDAO.viewAccountByTypeId(accountDto.getAccountType().getId());
 
 			String accountNo = accountType.getAccountNo();
 			if (accountTypeDAO.getAccountByAccountNo(accountNo) == null)
-				throw new BussinessLogicException("accountNo:" + accountNo + ID_NOT_FOUND);
+				throw new BusinessLogicException("accountNo:" + accountNo + ID_NOT_FOUND);
 
 			accountType = accountTypeDAO.getAccountByAccountNo(accountNo);
 
@@ -85,17 +77,10 @@ public class AccountServiceImpl implements AccountService {
 
 			MailSend.sendMail(email, "Account Created Successfully", message);
 
-		//	account.setTransactionPIN(encoder.encode(account.getTransactionPIN()));
-		
-			/*
-			 * Customer customer=account.getAccountType().getCustomer();
-			 * customer.setPassword(encoder.encode(customer.getPassword()));
-			 * customerDAO.updatePassword(customer.getMobileNo(), customer.getPassword());
-			 */
 			return accountDAO.addAccount(account);
 			
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -108,11 +93,11 @@ public class AccountServiceImpl implements AccountService {
 		try {
 			account = accountDAO.viewAllAccount();
 			if (account == null)
-				throw new BussinessLogicException("No record Found");
+				throw new BusinessLogicException("No record Found");
 			return account;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -124,11 +109,11 @@ public class AccountServiceImpl implements AccountService {
 		try {
 			account = accountDAO.getAccountByAccountNo(accountNo);
 			if (account == null)
-				throw new BussinessLogicException("No records Found");
+				throw new BusinessLogicException("No records Found");
 			return account;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -141,11 +126,11 @@ public class AccountServiceImpl implements AccountService {
 		try {
 			account = accountDAO.getCustomersByIFSC(ifscCode);
 			if (account == null)
-				throw new BussinessLogicException("No records Found");
+				throw new BusinessLogicException("No records Found");
 			return account;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 
 	}
@@ -158,11 +143,11 @@ public class AccountServiceImpl implements AccountService {
 		try {
 			account = accountDAO.getAccountsByType(customerId, type);
 			if (account == null)
-				throw new BussinessLogicException("No Records Found");
+				throw new BusinessLogicException("No Records Found");
 			return account;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -175,12 +160,12 @@ public class AccountServiceImpl implements AccountService {
 		try {
 			account = accountDAO.getCustomerByCustomerId(customerId);
 			if (account == null)
-				throw new BussinessLogicException("No records Found");
+				throw new BusinessLogicException("No records Found");
 
 			return account;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 
 	}
@@ -194,10 +179,10 @@ public class AccountServiceImpl implements AccountService {
 		try {
 			transfer = accountDAO.bankTransfer(senderId, receiverId, amount);
 			if (transfer == null)
-				throw new BussinessLogicException("Transfer failed");
+				throw new BusinessLogicException("Transfer failed");
 			return transfer;
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -218,11 +203,11 @@ public class AccountServiceImpl implements AccountService {
 			  return transfer;
 			  }
 			
-			 throw new BussinessLogicException("Old Password not matched");
+			 throw new BusinessLogicException("Old Password not matched");
 			
 		
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 }

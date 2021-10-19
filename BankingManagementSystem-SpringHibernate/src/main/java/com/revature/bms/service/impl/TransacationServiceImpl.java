@@ -16,7 +16,7 @@ import com.revature.bms.dto.TransactionDetailsDto;
 import com.revature.bms.entity.Account;
 import com.revature.bms.entity.AccountType;
 import com.revature.bms.entity.TransactionDetails;
-import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.BusinessLogicException;
 import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.mapper.TransactionMapper;
 import com.revature.bms.service.TransactionService;
@@ -42,19 +42,19 @@ public class TransacationServiceImpl implements TransactionService {
 		try {
 
 			if (transactionDetailsDto == null || transactionDetailsDto.getAccount() == null)
-				throw new BussinessLogicException("Transaction details " + INVALID_DETAILS);
+				throw new BusinessLogicException("Transaction details " + INVALID_DETAILS);
 
 			Account account = accountDAO.getAccountByAccountId(transactionDetailsDto.getAccount().getId());
 
 			if (account == null)
-				throw new BussinessLogicException("Account Id " + ID_NOT_FOUND);
+				throw new BusinessLogicException("Account Id " + ID_NOT_FOUND);
 
 			AccountType accountType = accountTypeDAO.viewAccountByTypeId(account.getAccountType().getId());
 
 			String accountNo = accountType.getAccountNo();
 
 			if (accountDAO.getAccountByAccountNo(accountNo) == null)
-				throw new BussinessLogicException("accountNo:" + accountNo + ID_NOT_FOUND);
+				throw new BusinessLogicException("accountNo:" + accountNo + ID_NOT_FOUND);
 
 			account = accountDAO.getAccountByAccountNo(accountNo);
 
@@ -66,7 +66,7 @@ public class TransacationServiceImpl implements TransactionService {
 			return transactionDAO.addTransaction(details);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -79,11 +79,11 @@ public class TransacationServiceImpl implements TransactionService {
 		try {
 			details = transactionDAO.viewAllTransaction();
 			if (details == null)
-				throw new BussinessLogicException("No record Found");
+				throw new BusinessLogicException("No record Found");
 			return details;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 
 	}
@@ -97,12 +97,12 @@ public class TransacationServiceImpl implements TransactionService {
 		try {
 			details = transactionDAO.viewTransactionByAccount(accountId);
 			if (details == null)
-				throw new BussinessLogicException("No record Found");
+				throw new BusinessLogicException("No record Found");
 
 			return details;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 

@@ -113,7 +113,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("select e from Employee e");
+			Query<Employee> query = session.createQuery("select e from Employee e order by name",Employee.class);
 			List<Employee> employees = query.list();
 
 			return (employees.isEmpty() ? null : employees);
@@ -146,7 +146,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("select e from Employee e where e.id=" + employeeId);
+			Query<Employee> query = session.createQuery("select e from Employee e where e.id=" + employeeId,Employee.class);
 
 			logger.info(query.list());
 			return query.list().isEmpty();
@@ -165,7 +165,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			List<Employee> resultList = session.createQuery("select e from Employee e where e.mobileNo=:mobileNo")
+			List<Employee> resultList = session.createQuery("select e from Employee e where e.mobileNo=:mobileNo",Employee.class)
 					.setParameter("mobileNo", mobileNo).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -183,8 +183,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		logger.info("Is Employee Exists ByMobileNo Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			Query query = session
-					.createQuery("from Employee e where e.mobileNo ='" + mobileNo + "'");
+			Query<Employee> query = session
+					.createQuery("from Employee e where e.mobileNo ='" + mobileNo + "'",Employee.class);
 
 			return query.list().isEmpty();
 
@@ -223,8 +223,8 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 		logger.info("Is Employee Exists By Email Called in Dao.... ");
 
 		try (Session session = sessionFactory.openSession()) {
-			Query query = session
-					.createQuery("from Employee e where e.email ='" + email + "'");
+			Query<Employee> query = session
+					.createQuery("from Employee e where e.email ='" + email + "'",Employee.class);
 
 			return query.list().isEmpty();
 		} catch (Exception e) {
@@ -262,7 +262,7 @@ public class EmployeeDAOImpl implements EmployeeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			List<Employee> resultList = session.createQuery("select e from Employee e where e.email=:email")
+			List<Employee> resultList = session.createQuery("select e from Employee e where e.email=:email",Employee.class)
 					.setParameter("email", email).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));

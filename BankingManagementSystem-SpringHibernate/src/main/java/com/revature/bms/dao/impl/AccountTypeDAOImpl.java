@@ -99,7 +99,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("select a from AccountType a where a.id=" + typeId);
+			Query<AccountType> query = session.createQuery("select a from AccountType a where a.id=" + typeId,AccountType.class);
 
 			logger.info(query.list());
 			return query.list().isEmpty();
@@ -117,7 +117,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<AccountType> query = session.createQuery("select a AccountType a");
+			Query<AccountType> query = session.createQuery("select a AccountType a",AccountType.class);
 			List<AccountType> accountTypes = query.list();
 
 			return (accountTypes.isEmpty() ? null : accountTypes);
@@ -135,7 +135,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session.createQuery("select a from AccountType a where a.type:type")
+			Query<AccountType> query = session.createQuery("select a from AccountType a where a.type:type",AccountType.class)
 					.setParameter("type", type);
 
 			List<AccountType> accountTypes = query.list();
@@ -156,7 +156,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<AccountType> resultList = session
-					.createQuery("select a from AccountType a where a.accountNo=:accountNo")
+					.createQuery("select a from AccountType a where a.accountNo=:accountNo",AccountType.class)
 					.setParameter("accountNo", accountNo).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -175,8 +175,8 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session
-					.createQuery("select a from AccountType a where a.customer.id=:customerId")
+			Query<AccountType> query = session
+					.createQuery("select a from AccountType a where a.customer.id=:customerId",AccountType.class)
 					.setParameter("customerId", customerId);
 
 			List<AccountType> accountTypes = query.list();
@@ -197,7 +197,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<AccountType> resultList = session.createQuery(
-					"select a from AccountType  a where a.customer.mobileNo=:mobileNo and a.customer.email=:email and a.type=:type")
+					"select a from AccountType  a where a.customer.mobileNo=:mobileNo and a.customer.email=:email and a.type=:type",AccountType.class)
 					.setParameter("mobileNo", mobileNo).setParameter("email", email).setParameter("type", type)
 					.getResultList();
 
@@ -239,9 +239,9 @@ public class AccountTypeDAOImpl implements AccountTypeDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session
+			Query<AccountType> query = session
 					.createQuery(
-							"select a from AccountType a where a.customer.branch.ifscCode=:ifscCode")
+							"select a from AccountType a where a.customer.branch.ifscCode=:ifscCode",AccountType.class)
 					.setParameter("ifscCode", ifscCode);
 			List<AccountType> customers = query.list();
 

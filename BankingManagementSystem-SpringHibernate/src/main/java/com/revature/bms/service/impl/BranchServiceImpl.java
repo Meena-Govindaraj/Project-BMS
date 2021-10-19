@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.revature.bms.dao.BranchDAO;
 import com.revature.bms.dto.BranchDto;
 import com.revature.bms.entity.Branch;
-import com.revature.bms.exception.BussinessLogicException;
+import com.revature.bms.exception.BusinessLogicException;
 import com.revature.bms.exception.DatabaseException;
 import com.revature.bms.mapper.BranchMapper;
 import com.revature.bms.service.BranchService;
@@ -34,20 +34,21 @@ public class BranchServiceImpl implements BranchService {
 		logger.info(" Add Branch called in Service");
 		try {
 			if (branchDto == null)
-				throw new BussinessLogicException("Branch " + INVALID_DETAILS);
+				throw new BusinessLogicException("Branch " + INVALID_DETAILS);
 
 			if (!branchDAO.isBranchExistsBYCode(branchDto.getIfscCode()))
-				throw new BussinessLogicException("Branch IFSC Code: " + branchDto.getIfscCode() + DUPLICATE_RECORD);
+				throw new BusinessLogicException("Branch IFSC Code: " + branchDto.getIfscCode() + " "+DUPLICATE_RECORD);
 
 			// dto to entity
 			Branch branch = BranchMapper.dtoToEntity(branchDto);
 			return branchDAO.addBranch(branch);
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		} catch (ConstraintViolationException e) {
-			throw new BussinessLogicException(" Branch Already exists");
+			throw new BusinessLogicException(" Branch Already exists");
 		}
+		
 	}
 
 	@Override
@@ -56,11 +57,11 @@ public class BranchServiceImpl implements BranchService {
 		logger.info("Delete Branch Called in Service.... ");
 		try {
 			if (branchDAO.isBranchExists(branchId))
-				throw new BussinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
+				throw new BusinessLogicException("Branch Id:" + branchId + ID_NOT_FOUND);
 			else
 				return branchDAO.deleteBranch(branchId);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 
 		}
 	}
@@ -73,12 +74,12 @@ public class BranchServiceImpl implements BranchService {
 			List<Branch> branches = null;
 			branches = branchDAO.viewAllBranch();
 			if (branches == null)
-				throw new BussinessLogicException("No records Found");
+				throw new BusinessLogicException("No records Found");
 
 			return branches;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 
 		}
 	}
@@ -90,18 +91,20 @@ public class BranchServiceImpl implements BranchService {
 
 		try {
 			if (branchDto == null)
-				throw new BussinessLogicException("Branch " + INVALID_DETAILS);
+				throw new BusinessLogicException("Branch " + INVALID_DETAILS);
 
 			if (branchDAO.isBranchExists(branchDto.getId()))
-				throw new BussinessLogicException("Branch Id:" + branchDto.getId() + ID_NOT_FOUND);
+				throw new BusinessLogicException("Branch Id:" + branchDto.getId() + ID_NOT_FOUND);
 
 			// dto to entity
 			Branch branch = BranchMapper.dtoToEntity(branchDto);
 			return branchDAO.updateBranch(branch);
 		}
-
+		
 		catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
+		}catch (ConstraintViolationException e) {
+			throw new BusinessLogicException(" Branch Already exists");
 		}
 	}
 
@@ -114,12 +117,12 @@ public class BranchServiceImpl implements BranchService {
 		try {
 			branch = branchDAO.viewBranchById(branchId);
 			if (branch == null)
-				throw new BussinessLogicException("No records Found");
+				throw new BusinessLogicException("No records Found");
 
 			return branch;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -132,12 +135,12 @@ public class BranchServiceImpl implements BranchService {
 		try {
 			branch = branchDAO.getBranchByIfscCode(ifscCode);
 			if (branch == null)
-				throw new BussinessLogicException("No Record Found");
+				throw new BusinessLogicException("No Record Found");
 
 			return branch;
 
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -151,11 +154,11 @@ public class BranchServiceImpl implements BranchService {
 
 			branch = branchDAO.viewBranchByName(branchName);
 			if (branch == null)
-				throw new BussinessLogicException("No Record Found");
+				throw new BusinessLogicException("No Record Found");
 
 			return branch;
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 
 	}
@@ -167,7 +170,7 @@ public class BranchServiceImpl implements BranchService {
 		try {
 			return branchDAO.isBranchExistsBYCode(ifscCode);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 
@@ -179,7 +182,7 @@ public class BranchServiceImpl implements BranchService {
 		try {
 			return branchDAO.isBranchExists(branchId);
 		} catch (DatabaseException e) {
-			throw new BussinessLogicException(e.getMessage());
+			throw new BusinessLogicException(e.getMessage());
 		}
 	}
 }

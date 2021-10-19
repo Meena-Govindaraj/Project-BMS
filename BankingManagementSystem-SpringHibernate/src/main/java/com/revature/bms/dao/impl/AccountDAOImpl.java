@@ -54,7 +54,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query<Account> query = session.createQuery("select a from Account a");
+			Query<Account> query = session.createQuery("select a from Account a ",Account.class);
 			List<Account> account = query.list();
 
 			return (account.isEmpty() ? null : account);
@@ -72,8 +72,8 @@ public class AccountDAOImpl implements AccountDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = null;
-			query = session.createQuery("from Account c where c.accountType.customer.branch.ifscCode=:ifscCode")
+		
+			Query<Account> query = session.createQuery("from Account c where c.accountType.customer.branch.ifscCode=:ifscCode",Account.class)
 					.setParameter("ifscCode", ifscCode);
 
 			List<Account> customers = query.list();
@@ -92,8 +92,8 @@ public class AccountDAOImpl implements AccountDAO {
 
 		try (Session session = sessionFactory.openSession()) {
 
-			Query query = session
-					.createQuery("select a from Account a where a.accountType.customer.id=:customerId")
+			Query<Account> query = session
+					.createQuery("select a from Account a where a.accountType.customer.id=:customerId",Account.class)
 					.setParameter("customerId", customerId);
 
 			List<Account> customers = query.list();
@@ -113,7 +113,7 @@ public class AccountDAOImpl implements AccountDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Account> resultList = session
-					.createQuery("select a from Account a where a.accountType.accountNo=:accountNo")
+					.createQuery("select a from Account a where a.accountType.accountNo=:accountNo",Account.class)
 					.setParameter("accountNo", accountNo).getResultList();
 
 			return (resultList.isEmpty() ? null : resultList.get(0));
@@ -132,7 +132,7 @@ public class AccountDAOImpl implements AccountDAO {
 		try (Session session = sessionFactory.openSession()) {
 
 			List<Account> resultList = session.createQuery(
-					"select a from Account a where a.accountType.customer.id=:customerId and a.accountType.type=:type")
+					"select a from Account a where a.accountType.customer.id=:customerId and a.accountType.type=:type",Account.class)
 					.setParameter("customerId", customerId).setParameter("type", type).getResultList();
 
 			logger.info(resultList);

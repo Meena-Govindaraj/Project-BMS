@@ -12,7 +12,7 @@ public interface LoginService {
 	 * @param password
 	 * @return customer details on matched mobile no and password
 	 */
-	Customer validateCustomerLogin(String mobileNo, String password);
+	Customer validateCustomerLogin(String email, String password);
 
 	/**
 	 * to validate employee login on registered credentials
@@ -21,6 +21,6 @@ public interface LoginService {
 	 * @param password
 	 * @return returns employee data if login credentails are matched
 	 */
-	Employee validateEmployeeLogin(String mobileNo, String password);
+	Employee validateEmployeeLogin(String email, String password);
 
 }

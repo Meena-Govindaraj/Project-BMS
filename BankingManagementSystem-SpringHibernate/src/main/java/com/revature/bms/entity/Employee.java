@@ -40,7 +40,7 @@ public class Employee {
 	@Column(name = "mobile_no", nullable = false, unique = true)
 	private String mobileNo;
 
-	@Column(name = "email", nullable = false)
+	@Column(name = "email", nullable = false, unique = true)
 	private String email;
 
 	@Column(name = "address")
